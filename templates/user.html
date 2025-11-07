@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gebruiker</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+        }
+
+        .user-card {
+            border: 3px solid #007BFF;
+            border-radius: 10px;
+            padding: 30px 50px;
+            background-color: white;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .user-card h1 {
+            margin-bottom: 20px;
+            color: #007BFF;
+        }
+
+        .user-card p {
+            margin: 8px 0;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-card">
+        <h1>Gebruiker info</h1>
+        <p><strong>Voornaam:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Wachtwoord:</strong> ********</p> <!-- toon nooit de hash of echte wachtwoord -->
+    </div>
+</body>
+</html>

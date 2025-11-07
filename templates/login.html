@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login</title>
+<style>
+    body {
+        margin: 0;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .login-container {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        width: 350px;
+        padding: 40px 30px;
+        position: relative;
+        color: white;
+    }
+
+    .user-icon {
+        background: #0b2a4d;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        position: absolute;
+        top: -35px;
+        left: calc(50% - 35px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 3px solid white;
+        font-size: 36px;
+        color: #fff;
+    }
+
+    .login-container h2 {
+        margin-top: 40px;
+        margin-bottom: 30px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 24px;
+    }
+
+    .input-group {
+        position: relative;
+        margin-bottom: 25px;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 12px 15px 12px 40px;
+        border: none;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.3);
+        color: white;
+        font-size: 16px;
+        outline: none;
+        transition: background 0.3s ease;
+    }
+
+    .input-group input::placeholder {
+        color: #ddd;
+    }
+
+    .input-group input:focus {
+        background: rgba(255,255,255,0.5);
+    }
+
+    .input-icon {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        font-size: 18px;
+        opacity: 0.8;
+    }
+
+    .checkbox-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+    .forgot-password {
+        color: #cce4ff;
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .forgot-password:hover {
+        text-decoration: underline;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        background: #0b2a4d;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    button:hover {
+        background: #1a3b6d;
+    }
+
+    /* Simple icons from Unicode, for demo */
+    .input-icon.email::before {
+        content: "\2709"; /* envelope icon */
+    }
+
+    .input-icon.lock::before {
+        content: "\1F512"; /* lock icon */
+    }
+
+    /* Flash message */
+    .flash-message {
+        background: rgba(255, 0, 0, 0.7);
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+<div class="login-container">
+    <div class="user-icon">&#128100;</div>
+    <h2>Login</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <form method="POST" action="{{ url_for('login') }}">
+        <div class="input-group">
+            <span class="input-icon email"></span>
+            <input type="email" name="email" placeholder="Email ID" required />
+        </div>
+        <div class="input-group">
+            <span class="input-icon lock"></span>
+            <input type="password" name="password" placeholder="Password" required />
+        </div>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="remember"> Remember me</label>
+            <a href="#" class="forgot-password">Forgot Password?</a>
+        </div>
+        <button type="submit">LOGIN</button>
+    </form>
+</div>
+</body>
+</html>
