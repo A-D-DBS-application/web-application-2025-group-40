@@ -6,10 +6,20 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import (LoginManager, UserMixin, login_user,
                          login_required, logout_user, current_user)
 from werkzeug.security import generate_password_hash, check_password_hash
+from supabase import create_client
 from dotenv import load_dotenv
 
 # laad .env (optioneel)
 load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+print("SUPABASE_URL:", SUPABASE_URL)
+print("SUPABASE_KEY:", SUPABASE_KEY)
+
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "supersecretkey")
@@ -353,6 +363,15 @@ def init_demo():
     db.session.add_all([s1, s2])
     db.session.commit()
     return "Demo sectors aangemaakt."
+
+@app.route("/test-supabase")
+def test_supabase():
+    try:
+        response = supabase.table("app_user").select("*").limit(1).execute()
+        return f"Connected to Supabase! Sample data: {response.data}"
+    except Exception as e:
+        return f"Supabase connection failed: {str(e)}"
+
 
 # -----------------------
 # START
