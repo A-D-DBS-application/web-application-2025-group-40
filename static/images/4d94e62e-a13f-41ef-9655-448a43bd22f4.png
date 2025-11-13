@@ -1,0 +1,2 @@
+<img src="{{ url_for('static', filename='images/4d94e62e-a13f-41ef-9655-448a43bd22f4.png') }}" alt="Swipr Logo">
+
