@@ -1,5 +1,17 @@
-<form method="post" action="{{ url_for('login') }}">
-  <input type="email" name="email" placeholder="E-mail" />
-  <input type="password" name="password" placeholder="Wachtwoord" />
-  <button type="submit">Inloggen</button>
-</form>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - {{ role.capitalize() }}</title>
+</head>
+<body>
+  <h1>Login als {{ role }}</h1>
+  <form method="POST">
+    <label>Email:</label>
+    <input type="email" name="email" required><br>
+    <button type="submit">Login</button>
+  </form>
+  <br>
+  <a href="{{ url_for('main.index') }}">Terug naar rolkeuze</a>
+</body>
+</html>
