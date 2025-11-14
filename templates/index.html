@@ -10,164 +10,58 @@
             padding: 0;
             height: 100%;
             font-family: Arial, sans-serif;
-            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             background-color: #f0f0f0;
         }
 
         .container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            transition: transform 0.5s ease;
+            text-align: center;
         }
 
-        .slide {
-            min-width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 2rem;
-            transition: background-color 0.5s;
-            position: relative;
+        .container img {
+            width: 150px;
+            margin-bottom: 30px;
         }
 
-        .slide img {
-            width: 120px;
-            margin-bottom: 20px;
-        }
-
-        .company {
-            background-color: #007bff;
-        }
-
-        .student {
-            background-color: #00c853;
-        }
-
-        .buttons {
-            position: absolute;
-            bottom: 50px;
-            display: flex;
-            gap: 20px;
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #333;
         }
 
         .btn {
-            padding: 15px 30px;
+            display: block;
+            width: 200px;
+            padding: 15px;
+            margin: 15px auto;
             font-size: 1.2rem;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            transition: 0.3s;
             color: white;
-            background-color: rgba(0,0,0,0.3);
+            background-color: #007bff;
+            transition: 0.3s;
+        }
+
+        .btn.student {
+            background-color: #00c853;
         }
 
         .btn:hover {
-            background-color: rgba(0,0,0,0.5);
-        }
-
-        .dots {
-            position: absolute;
-            bottom: 20px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .dot {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background-color: rgba(255,255,255,0.5);
-            transition: 0.3s;
-        }
-
-        .dot.active {
-            background-color: white;
-        }
-
-        /* Hint voor swipe */
-        .swipe-hint {
-            position: absolute;
-            bottom: 100px;
-            font-size: 1rem;
-            color: rgba(255,255,255,0.8);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            animation: bounce 1s infinite alternate;
-        }
-
-        .swipe-hint span.arrow {
-            font-size: 1.5rem;
-        }
-
-        @keyframes bounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(10px); }
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
 
-    <div class="container" id="slides">
-        <div class="slide company">
-            <img src="{{ url_for('static', filename='images/4d94e62e-a13f-41ef-9655-448a43bd22f4.png') }}" alt="Swipr Logo">
-            <h1>Bedrijf bij Swipr</h1>
-            <button class="btn" onclick="window.location.href='{{ url_for('login') }}'">Login Bedrijf</button>
-            <button class="btn" onclick="window.location.href='{{ url_for('register') }}'">Registreren Bedrijf</button>
-            <div class="swipe-hint"><span class="arrow">⟶</span> Swipe voor Student</div>
-        </div>
-        <div class="slide student">
-            <img src="{{ url_for('static', filename='images/4d94e62e-a13f-41ef-9655-448a43bd22f4.png') }}" alt="Swipr Logo">
-            <h1>Student bij Swipr</h1>
-            <button class="btn" onclick="window.location.href='{{ url_for('login') }}'">Login Student</button>
-            <button class="btn" onclick="window.location.href='{{ url_for('register') }}'">Registreren Student</button>
-        </div>
+    <div class="container">
+        <img src="{{ url_for('static', filename='images/4d94e62e-a13f-41ef-9655-448a43bd22f4.png') }}" alt="Swipr Logo">
+        <h1>Kies uw rol</h1>
+        <button class="btn" onclick="window.location.href='{{ url_for('login') }}'">Login Bedrijf</button>
+        <button class="btn student" onclick="window.location.href='{{ url_for('login') }}'">Login Student</button>
     </div>
-
-    <div class="buttons">
-        <button class="btn" onclick="prevSlide()">⟵</button>
-        <button class="btn" onclick="nextSlide()">⟶</button>
-    </div>
-
-    <div class="dots">
-        <div class="dot active"></div>
-        <div class="dot"></div>
-    </div>
-
-    <script>
-        const slides = document.getElementById('slides');
-        const dots = document.querySelectorAll('.dot');
-        let current = 0;
-
-        function updateDots() {
-            dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
-        }
-
-        function nextSlide() {
-            current = (current + 1) % 2;
-            slides.style.transform = `translateX(-${current * 100}%)`;
-            updateDots();
-        }
-
-        function prevSlide() {
-            current = (current - 1 + 2) % 2;
-            slides.style.transform = `translateX(-${current * 100}%)`;
-            updateDots();
-        }
-
-        // Swipe support
-        let startX = 0;
-        slides.addEventListener('touchstart', e => startX = e.touches[0].clientX);
-        slides.addEventListener('touchend', e => {
-            const endX = e.changedTouches[0].clientX;
-            if(startX - endX > 50) nextSlide();
-            if(endX - startX > 50) prevSlide();
-        });
-    </script>
 
 </body>
 </html>
