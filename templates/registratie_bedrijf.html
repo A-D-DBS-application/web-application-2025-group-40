@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Swipr - Registratie Recruiter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 95%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    input:invalid {
+      border-color: red;
+    }
+    input:valid {
+      border-color: green;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      margin-top: 5px;
+    }
+    .row input {
+      flex: 1;
+    }
+    .error {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 4px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 20px;
+      background: #ff4b5c;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #e04352;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registratie Recruiter</h2>
+    <form id="registerForm">
+      <label for="companyName">Bedrijfsnaam</label>
+      <input type="text" id="companyName" name="companyName" placeholder="Naam van het bedrijf" required />
+
+      <label for="vatNumber">BTW-nummer</label>
+      <input type="text" id="vatNumber" name="vatNumber" placeholder="BE0123456789" required />
+      <div class="error" id="vatError"></div>
+
+      <label for="email">Zakelijke e-mail</label>
+      <input type="email" id="email" name="email" placeholder="bv. info@bedrijf.be" required />
+      <div class="error" id="emailError"></div>
+
+      <label for="password">Wachtwoord</label>
+      <input type="password" id="password" name="password" placeholder="Kies een wachtwoord" required />
+
+      <label>Contactpersoon</label>
+      <div class="row">
+        <input type="text" id="contactName" name="contactName" placeholder="Voornaam Achternaam" required />
+        <input type="tel" id="contactPhone" name="contactPhone" placeholder="+32 4xx xx xx xx" />
+      </div>
+
+      <button type="submit">Registreren</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const vatInput = document.getElementById('vatNumber');
+    const vatError = document.getElementById('vatError');
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+
+    form.addEventListener('submit', function (e) {
+      let valid = true;
+
+      // BTW-validatie: BE gevolgd door 10 cijfers
+      const vatPattern = /^BE[0-9]{10}$/;
+      if (!vatPattern.test(vatInput.value)) {
+        vatError.textContent = "BTW-nummer moet beginnen met 'BE' gevolgd door 10 cijfers.";
+        vatInput.setCustomValidity("Ongeldig BTW-nummer");
+        valid = false;
+      } else {
+        vatError.textContent = "";
+        vatInput.setCustomValidity("");
+      }
+
+      // E-mailvalidatie: geen gratis domeinen
+      const emailValue = emailInput.value.toLowerCase();
+      const forbiddenDomains = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com"];
+      if (forbiddenDomains.some(domain => emailValue.endsWith("@" + domain))) {
+        emailError.textContent = "Gebruik een professioneel bedrijfsdomein, geen gratis e-mailprovider.";
+        emailInput.setCustomValidity("Ongeldig e-mailadres");
+        valid = false;
+      } else {
+        emailError.textContent = "";
+        emailInput.setCustomValidity("");
+      }
+
+      if (!valid) {
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
