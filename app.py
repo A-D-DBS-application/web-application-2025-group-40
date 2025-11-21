@@ -22,7 +22,7 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET", "supersecretkey")
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
 
 # Database config: gebruik DATABASE_URL wanneer beschikbaar (bv. Postgres),
 # anders fallback naar sqlite voor development.
@@ -169,6 +169,10 @@ def load_user(user_id):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/recruiter/registratie')
+def recruiter_registratie():
+    return render_template('registratie_bedrijf.html')
 
 
 @app.route('/register', methods=['GET', 'POST'])
