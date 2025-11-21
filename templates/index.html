@@ -59,9 +59,11 @@
     <div class="container">
         <img src="{{ url_for('static', filename='images/4d94e62e-a13f-41ef-9655-448a43bd22f4.png') }}" alt="Swipr Logo">
         <h1>Kies uw rol</h1>
-        <button class="btn" onclick="window.location.href='{{ url_for('login') }}'">Login Bedrijf</button>
-        <button class="btn student" onclick="window.location.href='{{ url_for('login') }}'">Login Student</button>
+
+        <button class="btn" onclick="window.location.href='{{ url_for('login_bedrijf') }}'">Login Bedrijf</button>
+        <button class="btn student" onclick="window.location.href='{{ url_for('login_student') }}'">Login Student</button>
     </div>
+
 
 </body>
 </html>

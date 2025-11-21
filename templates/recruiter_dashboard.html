@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recruiter Dashboard — Swipr</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            swipr: '#e04352'   /* recruiter rood */
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .btn-ghost:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen antialiased">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
+          <p class="text-xs text-gray-500">Recruiter dashboard</p>
+        </div>
+      </div>
+
+      <nav class="hidden sm:flex items-center gap-4 text-sm">
+        <a href="#" class="text-gray-600 hover:text-swipr">Mijn Vacatures</a>
+        <a href="#" class="text-gray-600 hover:text-swipr">Bedrijfsprofiel</a>
+        <button id="logout" class="px-3 py-1 rounded-md text-sm border hover:bg-swipr hover:text-white">Uitloggen</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="max-w-3xl mx-auto mt-10 p-6">
+    <section class="bg-white p-6 rounded-xl shadow-md">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-swipr">Bedrijfsprofiel</h2>
+          <p class="text-gray-600 text-sm">Werk je bedrijfsgegevens bij zodat studenten je vacatures correct zien.</p>
+        </div>
+        <div class="text-right text-xs text-gray-500">
+          <div id="savedAt">Laatst opgeslagen: —</div>
+        </div>
+      </div>
+
+      <form id="companyForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label class="flex flex-col md:col-span-2">
+          <span class="text-sm font-medium text-gray-700">Bedrijfsnaam</span>
+          <input id="companyName" name="companyName" type="text" placeholder="Naam van het bedrijf" class="mt-2 p-3 border rounded-md focus:ring-2 focus:ring-swipr" required />
+        </label>
+
+        <label class="flex flex-col md:col-span-1">
+          <span class="text-sm font-medium text-gray-700">BTW-nummer</span>
+          <input id="vatNumber" name="vatNumber" type="text" placeholder="BE0123456789" class="mt-2 p-3 border rounded-md focus:ring-2 focus:ring-swipr" required />
+        </label>
+
+        <label class="flex flex-col md:col-span-1">
+          <span class="text-sm font-medium text-gray-700">Contactpersoon</span>
+          <input id="contactName" name="contactName" type="text" placeholder="Voornaam Achternaam" class="mt-2 p-3 border rounded-md focus:ring-2 focus:ring-swipr" required />
+        </label>
+
+        <label class="flex flex-col md:col-span-2">
+          <span class="text-sm font-medium text-gray-700">E-mail</span>
+          <input id="email" name="email" type="email" placeholder="contact@bedrijf.be" class="mt-2 p-3 border rounded-md focus:ring-2 focus:ring-swipr" required />
+        </label>
+
+        <div class="flex justify-between mt-2 md:col-span-2">
+          <div class="text-sm text-gray-500">Gegevens worden lokaal opgeslagen (demo).</div>
+          <div class="flex items-center gap-3">
+            <button type="button" id="resetBtn" class="px-4 py-2 border rounded-md btn-ghost">Reset</button>
+            <button type="submit" class="px-5 py-2 bg-swipr text-white rounded-md">Opslaan</button>
+          </div>
+        </div>
+      </form>
+
+      <div id="toast" class="fixed right-6 bottom-6 bg-white border shadow-lg px-4 py-3 rounded-md hidden">
+        <div class="text-sm text-gray-800">Gegevens opgeslagen ✅</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // zelfde localStorage logica als student dashboard, maar met recruiter velden
+  </script>
+</body>
+</html>
