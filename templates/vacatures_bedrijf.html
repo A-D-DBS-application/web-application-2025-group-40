@@ -27,7 +27,7 @@
       margin-top: 10px;
       color: #FF0000;
     }
-    input, textarea, select {
+    input, textarea {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -57,7 +57,8 @@
 <body>
   <div class="container">
     <h2>Vacature Plaatsen</h2>
-    <form id="jobForm">
+    <!-- Belangrijk: method=POST en action naar de Flask route -->
+    <form method="POST" action="{{ url_for('vacature_opslaan') }}">
       <label for="companyName">Bedrijfsnaam</label>
       <input type="text" id="companyName" name="companyName" placeholder="Naam van het bedrijf" required />
 
@@ -73,15 +74,5 @@
       <button type="submit">Vacature plaatsen</button>
     </form>
   </div>
-
-  <script>
-    const form = document.getElementById('jobForm');
-
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert("Vacature succesvol geplaatst!");
-      // Hier kan later een API-call toegevoegd worden om de vacature op te slaan
-    });
-  </script>
 </body>
 </html>

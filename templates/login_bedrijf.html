@@ -17,7 +17,7 @@
 <body>
   <div class="container">
     <h2>Bedrijf Login</h2>
-    <form>
+    <form method="POST" action="{{ url_for('login_bedrijf') }}">
       <label for="email">E-mail</label>
       <input type="email" id="email" name="email" placeholder="Bedrijf e-mail" required>
       

@@ -62,7 +62,7 @@
         </div>
       </div>
 
-      <form id="companyForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form id="companyForm" method="POST" action="{{ url_for('save_profile') }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label class="flex flex-col md:col-span-2">
           <span class="text-sm font-medium text-gray-700">Bedrijfsnaam</span>
           <input id="companyName" name="companyName" type="text" placeholder="Naam van het bedrijf" class="mt-2 p-3 border rounded-md focus:ring-2 focus:ring-swipr" required />

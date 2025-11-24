@@ -172,11 +172,53 @@ def index():
 
 @app.route('/login_bedrijf', methods=['GET', 'POST'])
 def login_bedrijf():
+    if request.method == 'POST':
+        # hier zou je normaal login-validatie doen
+        return redirect(url_for('bedrijf_home'))
     return render_template('login_bedrijf.html')
 
 @app.route('/login_student', methods=['GET', 'POST'])
 def login_student():
     return render_template('login_student.html')
+
+@app.route('/recruiter_dashboard')
+def recruiter_dashboard_view():
+    return render_template('recruiter_dashboard.html')
+
+@app.route('/save_profile', methods=['POST'])
+def save_profile():
+    # hier zou je normaal de form data opslaan
+    # bv. companyName = request.form['companyName']
+    # vatNumber = request.form['vatNumber']
+    # etc.
+
+    # na opslaan → terug naar homepage bedrijf
+    return redirect(url_for('bedrijf_home'))
+
+@app.route('/vacature/nieuw')
+def vacature_nieuw():
+    # Render de pagina waar een nieuwe vacature kan worden aangemaakt
+    return render_template('vacatures_bedrijf.html')
+
+@app.route('/vacature/opslaan', methods=['POST'])
+def vacature_opslaan():
+    # hier kan je de form data ophalen
+    job_title = request.form['jobTitle']
+    location = request.form['location']
+    description = request.form['description']
+    # normaal zou je dit opslaan in een database
+
+    flash("Vacature succesvol geplaatst ✅")
+    return redirect(url_for('bedrijf_home'))
+
+@app.route('/bedrijf')
+def bedrijf_home():
+    bedrijf_naam = "ACME BV"
+    vacatures = []  # of echte data
+    return render_template('HomePage_bedrijf.html',
+                           bedrijf_naam=bedrijf_naam,
+                           vacatures=vacatures)
+
 
 @app.route('/registratie_bedrijf', methods=['GET', 'POST'])
 def registratie_bedrijf():
@@ -202,7 +244,6 @@ def registratie_student():
         # handle student registration
         return redirect(url_for('login_student'))
     return render_template('registratie_student.html')
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
