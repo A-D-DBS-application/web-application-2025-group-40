@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f0f8ff; /* lichtblauwe achtergrond */
+      background: #f0f8ff;
     }
     .container {
       max-width: 400px;
@@ -33,12 +33,8 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-    input:invalid {
-      border-color: #007BFF;
-    }
-    input:valid {
-      border-color: #00AEEF;
-    }
+    input:invalid { border-color: #007BFF; }
+    input:valid { border-color: #00AEEF; }
     .error {
       color: #007BFF;
       font-size: 0.9em;
@@ -54,15 +50,27 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    button:hover {
-      background: #0056b3;
-    }
+    button:hover { background: #0056b3; }
+    .alert-success { color: green; margin-bottom: 10px; }
+    .alert-error { color: red; margin-bottom: 10px; }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Registratie Student</h2>
-    <form id="registerForm">
+
+    <!-- Flash-meldingen -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form id="registerForm" method="POST" action="{{ url_for('registratie_student') }}">
       <label for="firstName">Voornaam</label>
       <input type="text" id="firstName" name="firstName" placeholder="Voornaam" required />
 
@@ -75,6 +83,7 @@
 
       <label for="password">Wachtwoord</label>
       <input type="password" id="password" name="password" placeholder="Kies een wachtwoord" required />
+      <div class="error" id="passwordError"></div>
 
       <button type="submit">Registreren</button>
     </form>
@@ -84,20 +93,70 @@
     const form = document.getElementById('registerForm');
     const emailInput = document.getElementById('email');
     const emailError = document.getElementById('emailError');
+    const passwordInput = document.getElementById('password');
+    const passwordError = document.getElementById('passwordError');
+
+    // Toegestane domeinen
+    const allowedDomains = [
+      "ugent.be", "student.ugent.be",
+      "kuleuven.be", "student.kuleuven.be",
+      "hogent.be", "student.hogent.be",
+      "vub.be",
+      "arteveldehs.be",
+      "student.odisee.be",
+      "student.uantwerpen.be",
+      "student.vives.be",
+      "howest.be"
+    ];
+
+    // Live reset bij typen (email)
+    emailInput.addEventListener('input', () => {
+      const emailValue = emailInput.value.toLowerCase().trim();
+      const isAllowed = allowedDomains.some(domain => emailValue.endsWith("@" + domain));
+      if (isAllowed) {
+        emailError.textContent = "";
+        emailInput.setCustomValidity("");
+      }
+    });
+
+    // Wachtwoordsterkte live check
+    passwordInput.addEventListener('input', () => {
+      const value = passwordInput.value;
+      const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+      if (!strongPattern.test(value)) {
+        passwordError.textContent = "Min. 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.";
+        passwordInput.setCustomValidity("Wachtwoord niet sterk genoeg");
+      } else {
+        passwordError.textContent = "";
+        passwordInput.setCustomValidity("");
+      }
+    });
 
     form.addEventListener('submit', function (e) {
       let valid = true;
 
-      // E-mailvalidatie: moet eindigen op studentendomein
-      const emailValue = emailInput.value.toLowerCase();
-      const allowedDomains = ["student.ugent.be", "student.kuleuven.be", "student.hogent.be"];
-      if (!allowedDomains.some(domain => emailValue.endsWith("@" + domain))) {
+      // Email check
+      const emailValue = emailInput.value.toLowerCase().trim();
+      const isAllowed = allowedDomains.some(domain => emailValue.endsWith("@" + domain));
+      if (!isAllowed) {
         emailError.textContent = "Gebruik je officiële studenten e-mailadres.";
         emailInput.setCustomValidity("Ongeldig e-mailadres");
         valid = false;
       } else {
         emailError.textContent = "";
         emailInput.setCustomValidity("");
+      }
+
+      // Password check
+      const value = passwordInput.value;
+      const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+      if (!strongPattern.test(value)) {
+        passwordError.textContent = "Min. 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.";
+        passwordInput.setCustomValidity("Wachtwoord niet sterk genoeg");
+        valid = false;
+      } else {
+        passwordError.textContent = "";
+        passwordInput.setCustomValidity("");
       }
 
       if (!valid) {

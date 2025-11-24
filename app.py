@@ -170,9 +170,38 @@ def load_user(user_id):
 def index():
     return render_template('index.html')
 
-@app.route('/recruiter/registratie')
-def recruiter_registratie():
+@app.route('/login_bedrijf', methods=['GET', 'POST'])
+def login_bedrijf():
+    return render_template('login_bedrijf.html')
+
+@app.route('/login_student', methods=['GET', 'POST'])
+def login_student():
+    return render_template('login_student.html')
+
+@app.route('/registratie_bedrijf', methods=['GET', 'POST'])
+def registratie_bedrijf():
+    if request.method == 'POST':
+        print("POST ontvangen:", request.form)  # <- zie dit in je terminal
+        # haal velden op (namen moeten matchen met je 'name' in HTML)
+        company_name = request.form['companyName']
+        vat_number   = request.form['vatNumber']
+        email        = request.form['email']
+        password     = request.form['password']
+        contact_name = request.form['contactName']
+        contact_phone= request.form.get('contactPhone', '')
+
+        # hier eventueel opslaan...
+        return redirect(url_for('login_bedrijf'))
+
     return render_template('registratie_bedrijf.html')
+
+
+@app.route('/registratie_student', methods=['GET', 'POST'])
+def registratie_student():
+    if request.method == 'POST':
+        # handle student registration
+        return redirect(url_for('login_student'))
+    return render_template('registratie_student.html')
 
 
 @app.route('/register', methods=['GET', 'POST'])
