@@ -20,15 +20,10 @@ def login():
 def register():
     return render_template('register.html')
 
-@app.route('/matches')
-def match_list():
-    matches = (
-        db.session.query(Match, AppUser, JobListing)
-        .join(AppUser, Match.user_id == AppUser.id)
-        .join(JobListing, Match.job_id == JobListing.id)
-        .all()
-    )
-    return render_template('matches.html', matches=matches)
+@app.route('/match_page')
+def match_page():
+    return render_template('match_page.html', matches=matches)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

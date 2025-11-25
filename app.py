@@ -400,7 +400,7 @@ def like_job(job_id):
 
 
 # Matches overzicht (voor recruiter: alle matches voor jobs van hun employer)
-@app.route('/matches')
+@app.route('/match_page')
 @login_required
 def match_page():
     if current_user.role == 'recruiter':
