@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student – Vacature</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f7ff; /* licht blauw */
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Top navigation bar */
+    .navbar {
+      background-color: #0066cc;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+
+    .nav-buttons a {
+      color: white;
+      text-decoration: none;
+      margin-left: 15px;
+      font-weight: bold;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 5px;
+    }
+
+    .nav-buttons a:hover {
+      background: rgba(255,255,255,0.35);
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 80, 160, 0.2);
+    }
+
+    h2 {
+      color: #0066cc;
+      margin-bottom: 10px;
+    }
+
+    .label {
+      font-weight: bold;
+      margin-top: 15px;
+      color: #0066cc;
+      display: block;
+    }
+
+    .value {
+      margin-top: 5px;
+      font-size: 1.1em;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div><strong>Swipr – Vacature</strong></div>
+    <div class="nav-buttons">
+      <a href="{{ url_for('student_profiel') }}">Mijn Profiel</a>
+      <a href="{{ url_for('logout') }}">Uitloggen</a>
+    </div>
+  </div>
+
+  <!-- Vacancy container -->
+  <div class="container">
+    <h2>{{ job.title }}</h2>
+
+    <span class="label">Bedrijf</span>
+    <div class="value">{{ job.company_name }}</div>
+
+    <span class="label">Locatie</span>
+    <div class="value">{{ job.location }}</div>
+
+    <span class="label">Beschrijving</span>
+    <div class="value">{{ job.description }}</div>
+  </div>
+
+</body>
+</html>

@@ -425,6 +425,11 @@ def employer_profile(employer_id):
     emp = Employer.query.get_or_404(employer_id)
     return render_template('employer_profile.html', employer=emp)
 
+@app.route("/student/vacature/<int:job_id>")
+def student_vacature(job_id):
+    job = JobListing.query.get(job_id)
+    return render_template("student_vacature.html", job=job)
+
 
 # eenvoudige helper route om demo data aan te maken (optioneel)
 @app.route('/_init_demo')
