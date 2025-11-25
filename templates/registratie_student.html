@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Swipr - Registratie Student</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+    }
+    .container {
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #007BFF;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 95%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    input:invalid { border-color: #007BFF; }
+    input:valid { border-color: #00AEEF; }
+    .error {
+      color: #007BFF;
+      font-size: 0.9em;
+      margin-top: 4px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 20px;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover { background: #0056b3; }
+    .alert-success { color: green; margin-bottom: 10px; }
+    .alert-error { color: red; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registratie Student</h2>
+
+    <!-- Flash-meldingen -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form id="registerForm" method="POST" action="{{ url_for('registratie_student') }}">
+      <label for="firstName">Voornaam</label>
+      <input type="text" id="firstName" name="firstName" placeholder="Voornaam" required />
+
+      <label for="lastName">Naam</label>
+      <input type="text" id="lastName" name="lastName" placeholder="Achternaam" required />
+
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" placeholder="bv. naam@student.ugent.be" required />
+      <div class="error" id="emailError"></div>
+
+      <label for="password">Wachtwoord</label>
+      <input type="password" id="password" name="password" placeholder="Kies een wachtwoord" required />
+      <div class="error" id="passwordError"></div>
+
+      <button type="submit">Registreren</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    const passwordInput = document.getElementById('password');
+    const passwordError = document.getElementById('passwordError');
+
+    // Toegestane domeinen
+    const allowedDomains = [
+      "ugent.be", "student.ugent.be",
+      "kuleuven.be", "student.kuleuven.be",
+      "hogent.be", "student.hogent.be",
+      "vub.be",
+      "arteveldehs.be",
+      "student.odisee.be",
+      "student.uantwerpen.be",
+      "student.vives.be",
+      "howest.be"
+    ];
+
+    // Live reset bij typen (email)
+    emailInput.addEventListener('input', () => {
+      const emailValue = emailInput.value.toLowerCase().trim();
+      const isAllowed = allowedDomains.some(domain => emailValue.endsWith("@" + domain));
+      if (isAllowed) {
+        emailError.textContent = "";
+        emailInput.setCustomValidity("");
+      }
+    });
+
+    // Wachtwoordsterkte live check
+    passwordInput.addEventListener('input', () => {
+      const value = passwordInput.value;
+      const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+      if (!strongPattern.test(value)) {
+        passwordError.textContent = "Min. 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.";
+        passwordInput.setCustomValidity("Wachtwoord niet sterk genoeg");
+      } else {
+        passwordError.textContent = "";
+        passwordInput.setCustomValidity("");
+      }
+    });
+
+    form.addEventListener('submit', function (e) {
+      let valid = true;
+
+      // Email check
+      const emailValue = emailInput.value.toLowerCase().trim();
+      const isAllowed = allowedDomains.some(domain => emailValue.endsWith("@" + domain));
+      if (!isAllowed) {
+        emailError.textContent = "Gebruik je officiële studenten e-mailadres.";
+        emailInput.setCustomValidity("Ongeldig e-mailadres");
+        valid = false;
+      } else {
+        emailError.textContent = "";
+        emailInput.setCustomValidity("");
+      }
+
+      // Password check
+      const value = passwordInput.value;
+      const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+      if (!strongPattern.test(value)) {
+        passwordError.textContent = "Min. 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.";
+        passwordInput.setCustomValidity("Wachtwoord niet sterk genoeg");
+        valid = false;
+      } else {
+        passwordError.textContent = "";
+        passwordInput.setCustomValidity("");
+      }
+
+      if (!valid) {
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -3,74 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Swipr - Registratie Recruiter</title>
+  <title>Swipr - Registratie Bedrijf</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-    }
-    .container {
-      max-width: 500px;
-      margin: 50px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      color: #333;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
-    input {
-      width: 95%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    input:invalid {
-      border-color: red;
-    }
-    input:valid {
-      border-color: green;
-    }
-    .row {
-      display: flex;
-      gap: 10px;
-      margin-top: 5px;
-    }
-    .row input {
-      flex: 1;
-    }
-    .error {
-      color: red;
-      font-size: 0.9em;
-      margin-top: 4px;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 20px;
-      background: #ff4b5c;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #e04352;
-    }
+    body { font-family: Arial, sans-serif; background: #f5f5f5; }
+    .container { max-width: 500px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #333; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    input { width: 95%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; }
+    input:invalid { border-color: red; }
+    input:valid { border-color: green; }
+    .row { display: flex; gap: 10px; margin-top: 5px; }
+    .row input { flex: 1; }
+    .error { color: red; font-size: 0.9em; margin-top: 4px; }
+    button { width: 100%; padding: 10px; margin-top: 20px; background: #ff4b5c; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #e04352; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Registratie Recruiter</h2>
-    <form id="registerForm">
+    <h2>Registratie Bedrijf</h2>
+    <form id="registerForm" method="POST" action="{{ url_for('registratie_bedrijf') }}">
       <label for="companyName">Bedrijfsnaam</label>
       <input type="text" id="companyName" name="companyName" placeholder="Naam van het bedrijf" required />
 
@@ -102,12 +54,32 @@
     const emailInput = document.getElementById('email');
     const emailError = document.getElementById('emailError');
 
+    const vatPattern = /^BE\d{10}$/;
+    const forbiddenDomains = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com"];
+
+    // Live reset van fouten tijdens typen
+    vatInput.addEventListener('input', () => {
+      const v = vatInput.value.trim();
+      if (vatPattern.test(v)) {
+        vatError.textContent = "";
+        vatInput.setCustomValidity("");
+      }
+    });
+    emailInput.addEventListener('input', () => {
+      const v = emailInput.value.toLowerCase().trim();
+      const bad = forbiddenDomains.some(domain => v.endsWith("@" + domain));
+      if (!bad) {
+        emailError.textContent = "";
+        emailInput.setCustomValidity("");
+      }
+    });
+
     form.addEventListener('submit', function (e) {
       let valid = true;
 
-      // BTW-validatie: BE gevolgd door 10 cijfers
-      const vatPattern = /^BE[0-9]{10}$/;
-      if (!vatPattern.test(vatInput.value)) {
+      // BTW-validatie
+      const vatValue = vatInput.value.trim();
+      if (!vatPattern.test(vatValue)) {
         vatError.textContent = "BTW-nummer moet beginnen met 'BE' gevolgd door 10 cijfers.";
         vatInput.setCustomValidity("Ongeldig BTW-nummer");
         valid = false;
@@ -117,9 +89,9 @@
       }
 
       // E-mailvalidatie: geen gratis domeinen
-      const emailValue = emailInput.value.toLowerCase();
-      const forbiddenDomains = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com"];
-      if (forbiddenDomains.some(domain => emailValue.endsWith("@" + domain))) {
+      const emailValue = emailInput.value.toLowerCase().trim();
+      const isForbidden = forbiddenDomains.some(domain => emailValue.endsWith("@" + domain));
+      if (isForbidden) {
         emailError.textContent = "Gebruik een professioneel bedrijfsdomein, geen gratis e-mailprovider.";
         emailInput.setCustomValidity("Ongeldig e-mailadres");
         valid = false;
@@ -128,9 +100,11 @@
         emailInput.setCustomValidity("");
       }
 
+      console.log("Validatie status:", valid ? "OK, submit naar server" : "Fouten, blokkeren");
       if (!valid) {
-        e.preventDefault();
+        e.preventDefault(); // blokkeer alleen als er fouten zijn
       }
+      // Als valid = true, laat de browser de POST naar Flask doen en volgt de redirect daar
     });
   </script>
 </body>

@@ -1,67 +1,87 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kies uw rol</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f0f0f0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kies uw rol</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+    }
 
-        .container {
-            text-align: center;
-        }
+    .container {
+      text-align: center;
+    }
 
-        .container img {
-            width: 150px;
-            margin-bottom: 30px;
-        }
+    .logo {
+      display: inline-block;
+      margin-bottom: 10px;
+    }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 40px;
-            color: #333;
-        }
+    .arrow {
+      width: 60px;
+      height: 60px;
+      background-color: #007bff;
+      clip-path: polygon(0% 0%, 70% 0%, 70% 30%, 100% 50%, 70% 70%, 70% 100%, 0% 100%);
+      margin: 0 auto 10px auto;
+    }
 
-        .btn {
-            display: block;
-            width: 200px;
-            padding: 15px;
-            margin: 15px auto;
-            font-size: 1.2rem;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            color: white;
-            background-color: #007bff;
-            transition: 0.3s;
-        }
+    .logo-text {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 30px;
+    }
 
-        .btn.student {
-            background-color: #00c853;
-        }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+      color: #333;
+    }
 
-        .btn:hover {
-            opacity: 0.8;
-        }
-    </style>
+    .btn {
+      display: block;
+      width: 200px;
+      padding: 15px;
+      margin: 15px auto;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: white;
+      background-color: #007bff;
+      transition: 0.3s;
+    }
+
+    .btn.student {
+      background-color: #00c853;
+    }
+
+    .btn:hover {
+      opacity: 0.8;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <img src="{{ url_for('static', filename='images/4d94e62e-a13f-41ef-9655-448a43bd22f4.png') }}" alt="Swipr Logo">
-        <h1>Kies uw rol</h1>
-        <button class="btn" onclick="window.location.href='{{ url_for('login') }}'">Login Bedrijf</button>
-        <button class="btn student" onclick="window.location.href='{{ url_for('login') }}'">Login Student</button>
+  <div class="container">
+    <div class="logo">
+      <div class="arrow"></div>
+      <div class="logo-text">Swipr</div>
     </div>
+
+    <h1>Kies uw rol</h1>
+
+    <button class="btn" onclick="window.location.href='{{ url_for('login_bedrijf') }}'">Login Bedrijf</button>
+    <button class="btn student" onclick="window.location.href='{{ url_for('login_student') }}'">Login Student</button>
+  </div>
 
 </body>
 </html>
