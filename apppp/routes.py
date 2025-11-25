@@ -22,7 +22,7 @@ def register():
 
 @app.route('/match_page')
 def match_page():
-    return render_template('match_page.html', matches=matches)
+    return render_template('match_page.html')
 
 
 if __name__ == "__main__":
