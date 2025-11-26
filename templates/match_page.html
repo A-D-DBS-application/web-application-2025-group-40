@@ -58,19 +58,19 @@
 <div class="match-card">
 
     {% if job.company_name == "GoForJobs" %}
-        <div class="partner">🚀 Match met onze partner: GoForJobs</div>
+        <div class="partner"> Match met onze partner: GoForJobs</div>
     {% else %}
         <div class="partner">Match met {{ job.company_name }}</div>
     {% endif %}
 
     <div class="job-title">{{ job.title }}</div>
 
-    <div class="student-email">👤 Student: {{ user.email }}</div>
+    <div class="student-email"> Student: {{ user.email }}</div>
 
     <div class="meta">
         📍 Locatie: {{ job.location or '-' }} <br>
         ⏰ Gematcht op: {{ match.matched_at.strftime("%Y-%m-%d %H:%M") if match.matched_at else '-' }} <br>
-        🔔 Notificatie verstuurd: {{ 'Ja' if match.notification_sent else 'Nee' }}
+        ℹ️ Beschrijving: {{ job.description[:100] }}{% if job.description|length > 100 %}...{% endif %} <br>
     </div>
 </div>
 {% endfor %}
