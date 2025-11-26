@@ -44,62 +44,170 @@
       <nav class="hidden sm:flex items-center gap-4 text-sm">
         <a href="#" class="text-gray-600 hover:text-swipr">Mijn Vacatures</a>
         <a href="#" class="text-gray-600 hover:text-swipr">Bedrijfsprofiel</a>
-        <button id="logout" class="px-3 py-1 rounded-md text-sm border hover:bg-swipr hover:text-white">Uitloggen</button>
+        <a href="{{ url_for('main.logout') }}" class="px-3 py-1 rounded-md text-sm border hover:bg-swipr hover:text-white">
+          Uitloggen
+        </a>
       </nav>
     </div>
   </header>
 
   <!-- Main content -->
-  <main class="max-w-3xl mx-auto mt-10 p-6">
+  <main class="max-w-5xl mx-auto mt-8 p-4 space-y-8">
+
+    <!-- Statistieken kaarten -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-white rounded-xl shadow-sm p-4">
+        <p class="text-xs text-gray-500">Actieve vacatures</p>
+        <p class="text-2xl font-bold text-swipr">{{ stats.active_job_count }}</p>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm p-4">
+        <p class="text-xs text-gray-500">Totaal matches</p>
+        <p class="text-2xl font-bold text-swipr">{{ stats.total_matches }}</p>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm p-4">
+        <p class="text-xs text-gray-500">Matches (laatste 7 dagen)</p>
+        <p class="text-2xl font-bold text-swipr">{{ stats.matches_last_7_days }}</p>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm p-4">
+        <p class="text-xs text-gray-500">Gem. matches / vacature</p>
+        <p class="text-2xl font-bold text-swipr">{{ stats.avg_matches_per_job }}</p>
+      </div>
+    </section>
+
+    <!-- Vacatures overzicht -->
+    <section class="bg-white p-6 rounded-xl shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-800">Mijn vacatures</h2>
+        <a href="{{ url_for('main.create_job') if 'main.create_job' in current_app.view_functions else '#' }}"
+           class="px-3 py-2 text-sm rounded-md bg-swipr text-white">
+          + Nieuwe vacature
+        </a>
+      </div>
+
+      {% if jobs %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="border-b text-left text-gray-500">
+              <th class="py-2 pr-4">Titel</th>
+              <th class="py-2 pr-4">Locatie</th>
+              <th class="py-2 pr-4">Periode</th>
+              <th class="py-2 pr-4 text-right">Matches</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for job in jobs %}
+            <tr class="border-b last:border-0">
+              <td class="py-2 pr-4 font-medium text-gray-800">{{ job.title }}</td>
+              <td class="py-2 pr-4 text-gray-600">{{ job.location }}</td>
+              <td class="py-2 pr-4 text-gray-600">{{ job.periode }}</td>
+              <td class="py-2 pr-4 text-right font-semibold">{{ job.match_count }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <p class="text-sm text-gray-500">Nog geen vacatures aangemaakt.</p>
+      {% endif %}
+    </section>
+
+    <!-- Dubbele kolom: recente matches + team -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Recente matches -->
+      <div class="bg-white p-6 rounded-xl shadow-sm">
+        <h2 class="text-lg font-semibold mb-3 text-gray-800">Recente matches</h2>
+        {% if recent_matches %}
+          <ul class="space-y-2 text-sm">
+            {% for m in recent_matches %}
+              <li class="flex justify-between border-b last:border-0 pb-2">
+                <div>
+                  <p class="font-medium text-gray-800">{{ m.student_name }}</p>
+                  <p class="text-gray-500 text-xs">{{ m.job_title }}</p>
+                </div>
+                <div class="text-right text-xs text-gray-500">
+                  {{ m.matched_at }}
+                  {% if m.notification_sent %}
+                    <div class="text-[10px] text-green-600">notificatie verstuurd</div>
+                  {% endif %}
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-sm text-gray-500">Nog geen matches voor jouw vacatures.</p>
+        {% endif %}
+      </div>
+
+      <!-- Team -->
+      <div class="bg-white p-6 rounded-xl shadow-sm">
+        <h2 class="text-lg font-semibold mb-3 text-gray-800">Mijn team</h2>
+        {% if team %}
+          <ul class="space-y-2 text-sm">
+            {% for r in team %}
+              <li class="flex justify-between items-center border-b last:border-0 pb-2">
+                <div>
+                  <p class="font-medium text-gray-800">{{ r.name }}</p>
+                  <p class="text-gray-500 text-xs">{{ r.email }}</p>
+                </div>
+                {% if r.is_admin %}
+                <span class="px-2 py-1 rounded-full bg-red-50 text-red-600 text-[10px] font-semibold">
+                  Admin
+                </span>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-sm text-gray-500">Nog geen andere recruiters gekoppeld.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Bedrijfsprofiel-form (jouw bestaande stuk) -->
     <section class="bg-white p-6 rounded-xl shadow-md">
       <div class="flex items-center justify-between mb-4">
         <div>
           <h2 class="text-2xl font-bold text-swipr">Bedrijfsprofiel</h2>
-          <p class="text-gray-600 text-sm">Werk je bedrijfsgegevens bij zodat studenten je vacatures correct zien.</p>
-        </div>
-        <div class="text-right text-xs text-gray-500">
-          <div id="savedAt">Laatst opgeslagen: —</div>
+          <p class="text-gray-600 text-sm">
+            Werk je bedrijfsgegevens bij zodat studenten je vacatures correct zien.
+          </p>
         </div>
       </div>
 
-      <form id="companyForm" method="POST" action="{{ url_for('save_profile') }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Voor nu: enkel front-end form, je kunt het later koppelen aan een POST-route -->
+      <form id="companyForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label class="flex flex-col md:col-span-2">
           <span class="text-sm font-medium text-gray-700">Bedrijfsnaam</span>
-          <input id="companyName" name="companyName" type="text" placeholder="Naam van het bedrijf" class="mt-2 p-3 border rounded-md focus:ring-2 focus:ring-swipr" required />
-        </label>
-
-        <label class="flex flex-col md:col-span-1">
-          <span class="text-sm font-medium text-gray-700">BTW-nummer</span>
-          <input id="vatNumber" name="vatNumber" type="text" placeholder="BE0123456789" class="mt-2 p-3 border rounded-md focus:ring-2 focus:ring-swipr" required />
-        </label>
-
-        <label class="flex flex-col md:col-span-1">
-          <span class="text-sm font-medium text-gray-700">Contactpersoon</span>
-          <input id="contactName" name="contactName" type="text" placeholder="Voornaam Achternaam" class="mt-2 p-3 border rounded-md focus:ring-2 focus:ring-swipr" required />
+          <input
+            id="companyName"
+            name="companyName"
+            type="text"
+            value="{{ employer.name }}"
+            class="mt-2 p-3 border rounded-md focus:ring-2 focus:ring-swipr"
+          />
         </label>
 
         <label class="flex flex-col md:col-span-2">
           <span class="text-sm font-medium text-gray-700">E-mail</span>
-          <input id="email" name="email" type="email" placeholder="contact@bedrijf.be" class="mt-2 p-3 border rounded-md focus:ring-2 focus:ring-swipr" required />
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value="{{ employer.contact_email }}"
+            class="mt-2 p-3 border rounded-md focus:ring-2 focus:ring-swipr"
+          />
         </label>
 
-        <div class="flex justify-between mt-2 md:col-span-2">
-          <div class="text-sm text-gray-500">Gegevens worden lokaal opgeslagen (demo).</div>
-          <div class="flex items-center gap-3">
-            <button type="button" id="resetBtn" class="px-4 py-2 border rounded-md btn-ghost">Reset</button>
-            <button type="submit" class="px-5 py-2 bg-swipr text-white rounded-md">Opslaan</button>
-          </div>
+        <div class="flex justify-end mt-2 md:col-span-2">
+          <button type="button" class="px-5 py-2 bg-swipr text-white rounded-md">
+            Opslaan (demo)
+          </button>
         </div>
       </form>
-
-      <div id="toast" class="fixed right-6 bottom-6 bg-white border shadow-lg px-4 py-3 rounded-md hidden">
-        <div class="text-sm text-gray-800">Gegevens opgeslagen ✅</div>
-      </div>
     </section>
   </main>
 
-  <script>
-    // zelfde localStorage logica als student dashboard, maar met recruiter velden
-  </script>
 </body>
 </html>
+
