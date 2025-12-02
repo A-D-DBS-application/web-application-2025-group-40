@@ -70,6 +70,7 @@
       {% endif %}
     {% endwith %}
 
+    <!-- FORM VOOR SUPABASE REGISTRATIE -->
     <form id="registerForm" method="POST" action="{{ url_for('registratie_student') }}">
       <label for="firstName">Voornaam</label>
       <input type="text" id="firstName" name="firstName" placeholder="Voornaam" required />
@@ -96,7 +97,7 @@
     const passwordInput = document.getElementById('password');
     const passwordError = document.getElementById('passwordError');
 
-    // Toegestane domeinen
+    // Toegestane studentendomeinen
     const allowedDomains = [
       "ugent.be", "student.ugent.be",
       "kuleuven.be", "student.kuleuven.be",
@@ -109,17 +110,17 @@
       "howest.be"
     ];
 
-    // Live reset bij typen (email)
+    // Reset melding wanneer de gebruiker typt
     emailInput.addEventListener('input', () => {
       const emailValue = emailInput.value.toLowerCase().trim();
-      const isAllowed = allowedDomains.some(domain => emailValue.endsWith("@" + domain));
-      if (isAllowed) {
+      const valid = allowedDomains.some(domain => emailValue.endsWith("@" + domain));
+      if (valid) {
         emailError.textContent = "";
         emailInput.setCustomValidity("");
       }
     });
 
-    // Wachtwoordsterkte live check
+    // Live wachtwoordcontrole
     passwordInput.addEventListener('input', () => {
       const value = passwordInput.value;
       const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
@@ -132,12 +133,13 @@
       }
     });
 
+    // Validatie voor submit
     form.addEventListener('submit', function (e) {
       let valid = true;
 
-      // Email check
       const emailValue = emailInput.value.toLowerCase().trim();
       const isAllowed = allowedDomains.some(domain => emailValue.endsWith("@" + domain));
+
       if (!isAllowed) {
         emailError.textContent = "Gebruik je officiële studenten e-mailadres.";
         emailInput.setCustomValidity("Ongeldig e-mailadres");
@@ -147,9 +149,9 @@
         emailInput.setCustomValidity("");
       }
 
-      // Password check
       const value = passwordInput.value;
       const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+
       if (!strongPattern.test(value)) {
         passwordError.textContent = "Min. 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.";
         passwordInput.setCustomValidity("Wachtwoord niet sterk genoeg");
@@ -159,9 +161,7 @@
         passwordInput.setCustomValidity("");
       }
 
-      if (!valid) {
-        e.preventDefault();
-      }
+      if (!valid) e.preventDefault();
     });
   </script>
 </body>

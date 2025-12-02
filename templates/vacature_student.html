@@ -15,7 +15,7 @@
 
     /* Top navigation bar */
     .navbar {
-      background-color: #0066cc;
+      background-color: #007bff;
       padding: 15px 20px;
       display: flex;
       justify-content: space-between;
@@ -47,14 +47,14 @@
     }
 
     h2 {
-      color: #0066cc;
+      color: #007bff;
       margin-bottom: 10px;
     }
 
     .label {
       font-weight: bold;
       margin-top: 15px;
-      color: #0066cc;
+      color: #007bff;
       display: block;
     }
 
@@ -72,7 +72,8 @@
   <div class="navbar">
     <div><strong>Swipr – Vacature</strong></div>
     <div class="nav-buttons">
-      <a href="{{ url_for('student_profiel') }}">Mijn Profiel</a>
+      <a href="{{ url_for('student_dashboard') }}">Mijn Profiel</a>
+      <a href="{{ url_for('match_page')}}">Matches</a>
       <a href="{{ url_for('logout') }}">Uitloggen</a>
     </div>
   </div>

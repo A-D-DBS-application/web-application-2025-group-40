@@ -402,6 +402,17 @@ def student_vacature(job_id):
     job = JobListing.query.get(job_id)
     return render_template("student_vacature.html", job=job)
 
+@app.route("/test/vacature")
+def test_vacature():
+    class FakeJob:
+        title = "Student Marketeer"
+        company_name = "Cool Company"
+        location = "Gent"
+        description = "Je promoot ons merk op campussen."
+
+    job = FakeJob()
+    return render_template("vacature_student.html", job=job)
+
 
 # eenvoudige helper route om demo data aan te maken (optioneel)
 @app.route('/_init_demo')
