@@ -71,6 +71,8 @@
         📍 Locatie: {{ job.location or '-' }} <br>
         ⏰ Gematcht op: {{ match.matched_at.strftime("%Y-%m-%d %H:%M") if match.matched_at else '-' }} <br>
         ℹ️ Beschrijving: {{ job.description[:100] }}{% if job.description|length > 100 %}...{% endif %} <br>
+        📧 E-mail: maldegem@go4jobs.be <br>
+        📞 Telefoon: +3250740640 <br>
     </div>
 </div>
 {% endfor %}
