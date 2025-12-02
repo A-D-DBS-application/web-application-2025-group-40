@@ -5,21 +5,48 @@ from sqlalchemy.dialects.postgresql import ARRAY, DATERANGE
 db = SQLAlchemy()
 
 
-class AppUser(db.Model):
-    __tablename__ = 'app_user'
+from werkzeug.security import generate_password_hash, check_password_hash
 
-    id = db.Column(db.BigInteger, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    role = db.Column(db.String(50), db.CheckConstraint("role IN ('student', 'recruiter')"))
-    created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, String, UniqueConstraint
+
+db = SQLAlchemy()
+
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, String, UniqueConstraint
+from sqlalchemy.exc import IntegrityError
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    firstName = db.Column(db.String(50), nullable=False)
+    lastName = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)  # hashed wachtwoord
+
+
+
+
+
 
     # relaties
     matches = db.relationship('Match', backref='user', lazy=True)
     recruiter_links = db.relationship('RecruiterUser', backref='user', lazy=True)
     student_profile = db.relationship('Student', backref='user', uselist=False)
 
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
     def __repr__(self):
         return f'<AppUser {self.email}>'
+
 
 
 class Employer(db.Model):
