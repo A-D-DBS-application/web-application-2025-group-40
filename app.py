@@ -16,7 +16,7 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 print("SUPABASE_URL:", SUPABASE_URL)
-print("SUPABASE_KEY:", SUPABASE_KEY)
+print("SUPABASE_KEY (start):", SUPABASE_KEY[:20] if SUPABASE_KEY else None)
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -31,6 +31,9 @@ if DATABASE_URL:
     app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tinderjobs.db'
+
+print("SQLALCHEMY_DATABASE_URI =", app.config['SQLALCHEMY_DATABASE_URI'])
+
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -245,38 +248,7 @@ def registratie_student():
         return redirect(url_for('login_student'))
     return render_template('registratie_student.html')
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        role = request.form.get('role')
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
 
-        if not email or not password or not role:
-            flash("Vul email, wachtwoord en rol in.", "danger")
-            return redirect(url_for('register'))
-
-        if AppUser.query.filter_by(email=email).first():
-            flash("E-mail bestaat al.", "danger")
-            return redirect(url_for('register'))
-
-        user = AppUser(email=email, role=role)
-        user.set_password(password)
-        db.session.add(user)
-        db.session.commit()
-
-        if role == 'student':
-            student = Student(user_id=user.id, first_name=first_name, last_name=last_name)
-            db.session.add(student)
-            db.session.commit()
-        # voor recruiter: later kan recruiter-account aan employer gekoppeld worden
-
-        flash("Account aangemaakt. Log in.", "success")
-        return redirect(url_for('login'))
-
-    return render_template('register.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
