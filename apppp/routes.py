@@ -8,11 +8,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Group40Ufora%21@d
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# User model
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), nullable=False, unique=True)
+# ------------------ MODELS ------------------
+
+class AppUser(db.Model):
+    __tablename__ = 'app_user'
+    id = db.Column(db.BigInteger, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    role = db.Column(db.String(20), nullable=False)  # 'student' of 'recruiter'
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     password = db.Column(db.String(200), nullable=False)
 
     def set_password(self, password):
@@ -20,6 +24,16 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+class Employer(db.Model):
+    __tablename__ = 'employer'
+    id = db.Column(db.BigInteger, primary_key=True)
+
+class RecruiterUser(db.Model):
+    __tablename__ = 'recruiter_user'
+    employer_id = db.Column(db.BigInteger, db.ForeignKey('employer.id'), primary_key=True)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('app_user.id'), primary_key=True)
+    is_admin = db.Column(db.Boolean, default=False)
 
 # ------------------ ROUTES ------------------
 
@@ -39,9 +53,27 @@ def login():
 def register():
     if request.method == 'POST':
         data = request.form
-        result = register_user(data['email'], data['password'])
+        result = register_user(
+            username=data.get('username'),
+            email=data['email'],
+            password=data['password'],
+            role=data.get('role', 'student')  # standaard student
+        )
         return jsonify(result)
     return render_template('register.html')
+
+@app.route('/register_bedrijf', methods=['GET', 'POST'])
+def register_bedrijf():
+    if request.method == 'POST':
+        data = request.form
+        result = register_company(
+            username=data['username'],
+            email=data['email'],
+            password=data['password'],
+            company_name=data.get('company_name', 'Onbekend')
+        )
+        return jsonify(result)
+    return render_template('registratie_bedrijf.html')
 
 @app.route("/api/vacatures", methods=["GET"])
 def get_vacatures():
@@ -61,12 +93,12 @@ def send_notificatie():
 
 # ------------------ FUNCTIES ------------------
 
-def register_user(email, password):
-    existing_user = User.query.filter_by(email=email).first()
+def register_user(username, email, password, role="student"):
+    existing_user = AppUser.query.filter_by(email=email).first()
     if existing_user:
         return {"error": "Dit emailadres is al gebruikt."}
 
-    new_user = User(email=email)
+    new_user = AppUser(username=username, email=email, role=role)
     new_user.set_password(password)
 
     try:
@@ -75,33 +107,48 @@ def register_user(email, password):
         return {"success": "Account aangemaakt!"}
     except IntegrityError:
         db.session.rollback()
-        return {"error": "Dit emailadres is al gebruikt."}
+        return {"error": "Dit emailadres of username is al gebruikt."}
 
 def login_user(email, password):
-    user = User.query.filter_by(email=email).first()
+    user = AppUser.query.filter_by(email=email).first()
     if not user:
         return {"error": "Geen account gevonden."}
     if not user.check_password(password):
         return {"error": "Verkeerd wachtwoord."}
-    return {"success": "Ingelogd!"}
+    return {"success": f"Ingelogd als {user.role}!"}
+
+def register_company(username, email, password, company_name):
+    # 1. Maak employer aan
+    new_employer = Employer()
+    db.session.add(new_employer)
+    db.session.flush()
+
+    # 2. Maak recruiter user aan
+    recruiter = AppUser(
+        username=username,
+        email=email,
+        role="recruiter"
+    )
+    recruiter.set_password(password)
+    db.session.add(recruiter)
+    db.session.flush()
+
+    # 3. Koppel recruiter aan employer
+    recruiter_link = RecruiterUser(
+        employer_id=new_employer.id,
+        user_id=recruiter.id,
+        is_admin=True
+    )
+    db.session.add(recruiter_link)
+
+    try:
+        db.session.commit()
+        return {"success": f"Bedrijf '{company_name}' aangemaakt met recruiter {username}"}
+    except IntegrityError:
+        db.session.rollback()
+        return {"error": "Kon bedrijf niet registreren"}
 
 # ------------------ MAIN ------------------
 
 if __name__ == "__main__":
-    import sqlalchemy  # voeg dit hier bovenaan toe
-    
-    # Test Supabase verbinding
-    try:
-        engine = sqlalchemy.create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-        with engine.connect() as conn:
-            print("CONNECTED TO SUPABASE!")
-    except Exception as e:
-        print("FAILED:", e)
-
-    db.create_all()  # maakt tabel aan als die nog niet bestaat
-    app.run(debug=True)
-
-
-if __name__ == "__main__":
-    db.create_all()  # maakt de tabel aan als die nog niet bestaat
     app.run(debug=True)
