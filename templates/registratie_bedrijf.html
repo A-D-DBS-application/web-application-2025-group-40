@@ -7,7 +7,7 @@
   <style>
     body { font-family: Arial, sans-serif; background: #f5f5f5; }
     .container { max-width: 500px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; color: #333; }
+    h2 { text-align: center; color: #007bff; }
     label { font-weight: bold; display: block; margin-top: 10px; }
     input { width: 95%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; }
     input:invalid { border-color: red; }
@@ -57,7 +57,6 @@
     const vatPattern = /^BE\d{10}$/;
     const forbiddenDomains = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com"];
 
-    // Live reset van fouten tijdens typen
     vatInput.addEventListener('input', () => {
       const v = vatInput.value.trim();
       if (vatPattern.test(v)) {
@@ -77,7 +76,6 @@
     form.addEventListener('submit', function (e) {
       let valid = true;
 
-      // BTW-validatie
       const vatValue = vatInput.value.trim();
       if (!vatPattern.test(vatValue)) {
         vatError.textContent = "BTW-nummer moet beginnen met 'BE' gevolgd door 10 cijfers.";
@@ -88,7 +86,6 @@
         vatInput.setCustomValidity("");
       }
 
-      // E-mailvalidatie: geen gratis domeinen
       const emailValue = emailInput.value.toLowerCase().trim();
       const isForbidden = forbiddenDomains.some(domain => emailValue.endsWith("@" + domain));
       if (isForbidden) {
@@ -100,11 +97,9 @@
         emailInput.setCustomValidity("");
       }
 
-      console.log("Validatie status:", valid ? "OK, submit naar server" : "Fouten, blokkeren");
       if (!valid) {
-        e.preventDefault(); // blokkeer alleen als er fouten zijn
+        e.preventDefault();
       }
-      // Als valid = true, laat de browser de POST naar Flask doen en volgt de redirect daar
     });
   </script>
 </body>

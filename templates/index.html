@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kies uw rol</title>
   <style>
     body, html {
@@ -13,75 +13,96 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #f0f0f0;
+      background-color: #f5f6fa;
     }
 
     .container {
       text-align: center;
+      background: white;
+      padding: 40px 60px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
 
     .logo {
-      display: inline-block;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
 
-    .arrow {
-      width: 60px;
-      height: 60px;
+    .logo-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 14px;
       background-color: #007bff;
-      clip-path: polygon(0% 0%, 70% 0%, 70% 30%, 100% 50%, 70% 70%, 70% 100%, 0% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin: 0 auto 10px auto;
     }
 
     .logo-text {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: bold;
       color: #007bff;
-      margin-bottom: 30px;
+      margin-bottom: 35px;
+      letter-spacing: 1px;
     }
 
     h1 {
-      font-size: 2.5rem;
-      margin-bottom: 40px;
+      font-size: 2rem;
+      margin-bottom: 35px;
       color: #333;
     }
 
     .btn {
       display: block;
-      width: 200px;
+      width: 220px;
       padding: 15px;
       margin: 15px auto;
       font-size: 1.2rem;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
       color: white;
       background-color: #007bff;
-      transition: 0.3s;
+      transition: 0.3s ease;
+    }
+
+    .btn.bedrijf {
+      background-color: #ff4b5c;
     }
 
     .btn.student {
-      background-color: #00c853;
+      background-color: #007bff;
+      /* refreshed color applied */
+    }
+
+    .btn.student {
+      background-color: #007bff;
     }
 
     .btn:hover {
-      opacity: 0.8;
+      transform: scale(1.03);
+      opacity: 0.9;
     }
   </style>
 </head>
 <body>
-
   <div class="container">
     <div class="logo">
-      <div class="arrow"></div>
+      <div class="logo-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <div class="logo-text">Swipr</div>
     </div>
 
     <h1>Kies uw rol</h1>
 
-    <button class="btn" onclick="window.location.href='{{ url_for('login_bedrijf') }}'">Login Bedrijf</button>
+    <button class="btn bedrijf" onclick="window.location.href='{{ url_for('login_bedrijf') }}'">Login Bedrijf</button>
+    <script></script></button>
     <button class="btn student" onclick="window.location.href='{{ url_for('login_student') }}'">Login Student</button>
   </div>
-
 </body>
 </html>
