@@ -10,30 +10,10 @@ db = SQLAlchemy(app)
 
 # ------------------ MODELS ------------------
 
-class AppUser(db.Model):
-    __tablename__ = 'app_user'
-    id = db.Column(db.BigInteger, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    role = db.Column(db.String(20), nullable=False)  # 'student' of 'recruiter'
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    password = db.Column(db.String(200), nullable=False)
+from models import db, AppUser, Employer, RecruiterUser
 
-    def set_password(self, password):
-        self.password = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
-
-class Employer(db.Model):
-    __tablename__ = 'employer'
-    id = db.Column(db.BigInteger, primary_key=True)
-
-class RecruiterUser(db.Model):
-    __tablename__ = 'recruiter_user'
-    employer_id = db.Column(db.BigInteger, db.ForeignKey('employer.id'), primary_key=True)
-    user_id = db.Column(db.BigInteger, db.ForeignKey('app_user.id'), primary_key=True)
-    is_admin = db.Column(db.Boolean, default=False)
+db.init_app(app)
+# 2 maal opslaan van gegevens die al in models.py stonden, is niet nodig. Gewoon importeren.
 
 # ------------------ ROUTES ------------------
 

@@ -10,7 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, UniqueConstraint
 
-db = SQLAlchemy()
+
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, UniqueConstraint
@@ -19,18 +19,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
 
-class User(db.Model):
+
+class AppUser(db.Model):
+    __tablename__ = 'app_user'
     id = db.Column(db.Integer, primary_key=True)
     firstName = db.Column(db.String(50), nullable=False)
     lastName = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)  # hashed wachtwoord
-
-
-
-
 
 
     # relaties
