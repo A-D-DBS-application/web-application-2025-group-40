@@ -10,7 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, UniqueConstraint
 
-db = SQLAlchemy()
+
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, UniqueConstraint
@@ -19,9 +19,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
 
-class User(db.Model):
+
+class AppUser(db.Model):
+    __tablename__ = 'app_user'
     id = db.Column(db.Integer, primary_key=True)
     firstName = db.Column(db.String(50), nullable=False)
     lastName = db.Column(db.String(50), nullable=False)
@@ -30,10 +31,14 @@ class User(db.Model):
 
 
 
+
+
+
     # relaties
     matches = db.relationship('Match', backref='user', lazy=True)
     recruiter_links = db.relationship('RecruiterUser', backref='user', lazy=True)
     student_profile = db.relationship('Student', backref='user', uselist=False)
+    liked_jobs = db.relationship("Joblike", back_populates="user", lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -158,3 +163,17 @@ class Student(db.Model):
 
     def __repr__(self):
         return f'<Student {self.first_name} {self.last_name}>'
+
+class Joblike(db.Model):
+    __tablename__ = 'joblike'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('app_user.id'), nullable=False)
+    job_id = db.Column(db.BigInteger, db.ForeignKey('job_listing.id'), nullable=False)
+    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+
+    # relaties
+    user = db.relationship("AppUser", back_populates="liked_jobs")
+
+    def __repr__(self):
+        return f'<Joblike user_id={self.user_id} job_id={self.job_id}>'
