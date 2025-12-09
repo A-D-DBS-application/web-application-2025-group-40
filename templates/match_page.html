@@ -1,19 +1,4 @@
-<<<<<<< HEAD
 {% extends "base.html" %}
-=======
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <title>Jouw Matches</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #fff;
-            margin: 0;
-            padding: 2rem;
-        }
->>>>>>> c20f845041bc8018f85cb89add35c37c2a61f580
 
 {% block title %}Jouw Matches{% endblock %}
 
@@ -24,40 +9,9 @@
   {% for match, user, job in matches %}
     <div class="match-card">
 
-<<<<<<< HEAD
       {% if job.company_name == "GoForJobs" %}
         <div class="partner">Match met onze partner: GoForJobs</div>
       {% else %}
-=======
-        .student-email {
-            color: #333;
-            font-size: 1rem;
-            margin-bottom: .5rem;
-        }
-
-        .job-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .meta {
-            color: #777;
-            margin-top: .5rem;
-            font-size: .9rem;
-        }
-    </style>
-</head>
-<body>
-
-<h1>Mijn Matches</h1>
-
-{% for match, user, job in matches %}
-<div class="match-card">
-
-    {% if job.company_name == "GoForJobs" %}
-        <div class="partner"> Match met onze partner: GoForJobs</div>
-    {% else %}
->>>>>>> c20f845041bc8018f85cb89add35c37c2a61f580
         <div class="partner">Match met {{ job.company_name }}</div>
       {% endif %}
 
@@ -76,4 +30,3 @@
   {% endfor %}
 </div>
 {% endblock %}
-
