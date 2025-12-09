@@ -181,6 +181,7 @@ STOPWORDS = {
 def tokenize(text):
     if not text:
         return []
+
     words = re.findall(r'\w+', text.lower())
     filtered = [w for w in words if w not in STOPWORDS and len(w) > 2]
     return filtered
