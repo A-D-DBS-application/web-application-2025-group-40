@@ -1,12 +1,8 @@
-<!doctype html>
-<html lang="nl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Student Dashboard — Swipr</title>
-  <meta name="description" content="Student dashboard om naam, voornaam en e-mail te bewerken" />
+{% extends "base.html" %}
 
-  <!-- Tailwind CDN voor snelle styling -->
+{% block title %}Student Dashboard — Swipr{% endblock %}
+
+{% block extra_head %}
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -19,19 +15,14 @@
       }
     }
   </script>
+{% endblock %}
 
-  <style>
-    /* Klein visueel detail voor een nette knop-animatie */
-    .btn-ghost:hover { transform: translateY(-2px); }
-  </style>
-</head>
-<body class="bg-gray-50 min-h-screen antialiased">
+{% block content %}
+<div class="bg-gray-50 min-h-screen antialiased">
 
-  <!-- Header -->
   <header class="bg-white shadow-sm">
     <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <!-- eenvoudige SVG icoon geïnspireerd op jullie logo -->
         <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -47,18 +38,19 @@
       <nav class="hidden sm:flex items-center gap-4 text-sm">
         <a href="#" class="text-gray-600 hover:text-swipr">Vacatures</a>
         <a href="#" class="text-gray-600 hover:text-swipr">Profiel</a>
-        <button id="logout" class="px-3 py-1 rounded-md text-sm border">Uitloggen</button>
+        <a href="{{ url_for('logout') }}" class="px-3 py-1 rounded-md text-sm border">Uitloggen</a>
       </nav>
     </div>
   </header>
 
-  <!-- Main content -->
   <main class="max-w-3xl mx-auto mt-10 p-6">
     <section class="bg-white p-6 rounded-xl shadow-md">
       <div class="flex items-center justify-between mb-4">
         <div>
           <h2 class="text-2xl font-bold text-swipr">Student profiel</h2>
-          <p class="text-gray-600 text-sm">Werk je gegevens bij zodat werkgevers je correct kunnen benaderen.</p>
+          <p class="text-gray-600 text-sm">
+            Werk je gegevens bij zodat werkgevers je correct kunnen benaderen.
+          </p>
         </div>
         <div class="text-right text-xs text-gray-500">
           <div id="savedAt">Laatst opgeslagen: —</div>
@@ -68,32 +60,38 @@
       <form id="profileForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label class="flex flex-col">
           <span class="text-sm font-medium text-gray-700">Voornaam</span>
-          <input id="firstName" name="firstName" type="text" placeholder="Voornaam" class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+          <input id="firstName" name="firstName" type="text" placeholder="Voornaam"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
         </label>
 
         <label class="flex flex-col">
           <span class="text-sm font-medium text-gray-700">Achternaam</span>
-          <input id="lastName" name="lastName" type="text" placeholder="Achternaam" class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+          <input id="lastName" name="lastName" type="text" placeholder="Achternaam"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
         </label>
 
         <label class="flex flex-col md:col-span-2">
           <span class="text-sm font-medium text-gray-700">E-mail</span>
-          <input id="email" name="email" type="email" placeholder="jij@example.com" class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+          <input id="email" name="email" type="email" placeholder="jij@example.com"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
         </label>
 
-        <!-- Nieuw: wachtwoord wijzigen -->
         <label class="flex flex-col md:col-span-1">
           <span class="text-sm font-medium text-gray-700">Nieuw wachtwoord</span>
-          <input id="password" name="password" type="password" placeholder="Nieuw wachtwoord" class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
+          <input id="password" name="password" type="password" placeholder="Nieuw wachtwoord"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
         </label>
 
         <label class="flex flex-col md:col-span-1">
           <span class="text-sm font-medium text-gray-700">Bevestig wachtwoord</span>
-          <input id="passwordConfirm" name="passwordConfirm" type="password" placeholder="Bevestig wachtwoord" class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
+          <input id="passwordConfirm" name="passwordConfirm" type="password" placeholder="Bevestig wachtwoord"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
         </label>
 
-        <$1 justify-between mt-2">
-          <div class="text-sm text-gray-500">Je gegevens worden lokaal opgeslagen in je browser (demo).</div>
+        <div class="flex items-center justify-between mt-2 md:col-span-2">
+          <div class="text-sm text-gray-500">
+            Je gegevens worden lokaal opgeslagen in je browser (demo).
+          </div>
           <div class="flex items-center gap-3">
             <button type="button" id="resetBtn" class="px-4 py-2 border rounded-md btn-ghost">Reset</button>
             <button type="submit" class="px-5 py-2 bg-swipr text-white rounded-md">Gegevens opslaan</button>
@@ -101,13 +99,11 @@
         </div>
       </form>
 
-      <!-- confirmation -->
       <div id="toast" class="fixed right-6 bottom-6 bg-white border shadow-lg px-4 py-3 rounded-md hidden">
         <div class="text-sm text-gray-800">Gegevens opgeslagen ✅</div>
       </div>
     </section>
 
-    <!-- Extra: snel overzicht -->
     <section class="mt-6 text-sm text-gray-600">
       <h3 class="font-medium mb-2">Tips</h3>
       <ul class="list-disc ml-5 space-y-1">
@@ -116,78 +112,76 @@
       </ul>
     </section>
   </main>
+</div>
 
-  <script>
-    // Simpele client-side persistente opslag (localStorage) — geschikt voor demo / schoolproject
-    const form = document.getElementById('profileForm');
-    const firstName = document.getElementById('firstName');
-    const lastName = document.getElementById('lastName');
-    const email = document.getElementById('email');
-    const toast = document.getElementById('toast');
-    const savedAt = document.getElementById('savedAt');
-    const resetBtn = document.getElementById('resetBtn');
+<script>
+  const form = document.getElementById('profileForm');
+  const firstName = document.getElementById('firstName');
+  const lastName = document.getElementById('lastName');
+  const email = document.getElementById('email');
+  const toast = document.getElementById('toast');
+  const savedAt = document.getElementById('savedAt');
+  const resetBtn = document.getElementById('resetBtn');
 
-    const STORAGE_KEY = 'swipr_student_profile_v1';
+  const STORAGE_KEY = 'swipr_student_profile_v1';
 
-    function showToast(message = 'Gegevens opgeslagen ✅') {
-      toast.textContent = message;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 2200);
+  function showToast(message = 'Gegevens opgeslagen ✅') {
+    toast.textContent = message;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 2200);
+  }
+
+  function saveData(data) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      const now = new Date();
+      savedAt.textContent = 'Laatst opgeslagen: ' + now.toLocaleString();
+      showToast();
+    } catch (e) {
+      alert('Kan niet opslaan in localStorage');
     }
+  }
 
-    function saveData(data) {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        const now = new Date();
-        savedAt.textContent = 'Laatst opgeslagen: ' + now.toLocaleString();
-        showToast();
-      } catch (e) {
-        alert('Kan niet opslaan in localStorage');
-      }
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) {
+      return null;
     }
+  }
 
-    function loadData() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return null;
-        return JSON.parse(raw);
-      } catch (e) {
-        return null;
-      }
-    }
+  function populateForm() {
+    const data = loadData();
+    if (!data) return;
+    firstName.value = data.firstName || '';
+    lastName.value = data.lastName || '';
+    email.value = data.email || '';
+    if (data.savedAt) savedAt.textContent = 'Laatst opgeslagen: ' + new Date(data.savedAt).toLocaleString();
+  }
 
-    function populateForm() {
-      const data = loadData();
-      if (!data) return;
-      firstName.value = data.firstName || '';
-      lastName.value = data.lastName || '';
-      email.value = data.email || '';
-      if (data.savedAt) savedAt.textContent = 'Laatst opgeslagen: ' + new Date(data.savedAt).toLocaleString();
-    }
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const payload = {
+      firstName: firstName.value.trim(),
+      lastName: lastName.value.trim(),
+      email: email.value.trim(),
+      savedAt: new Date().toISOString()
+    };
+    saveData(payload);
+  });
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const payload = {
-        firstName: firstName.value.trim(),
-        lastName: lastName.value.trim(),
-        email: email.value.trim(),
-        savedAt: new Date().toISOString()
-      };
-      saveData(payload);
-    });
+  resetBtn.addEventListener('click', () => {
+    if (!confirm('Weet je zeker dat je je opgeslagen gegevens wilt verwijderen?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    firstName.value = '';
+    lastName.value = '';
+    email.value = '';
+    savedAt.textContent = 'Laatst opgeslagen: —';
+    showToast('Opgeslagen gegevens verwijderd');
+  });
 
-    resetBtn.addEventListener('click', () => {
-      if (!confirm('Weet je zeker dat je je opgeslagen gegevens wilt verwijderen?')) return;
-      localStorage.removeItem(STORAGE_KEY);
-      firstName.value = '';
-      lastName.value = '';
-      email.value = '';
-      savedAt.textContent = 'Laatst opgeslagen: —';
-      showToast('Opgeslagen gegevens verwijderd');
-    });
-
-    // Init
-    populateForm();
-  </script>
-</body>
-</html>
+  populateForm();
+</script>
+{% endblock %}

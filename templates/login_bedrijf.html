@@ -1,34 +1,23 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Swipr - Bedrijf Login</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; }
-    .container { max-width: 400px; margin: 80px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; color: #333; }
-    input { width: 95%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; }
-    button { width: 100%; padding: 10px; background: #4bc3ff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #e04352; }
-    .link { text-align: center; margin-top: 10px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>Bedrijf Login</h2>
-    <form method="POST" action="{{ url_for('login_bedrijf') }}">
-      <label for="email">E-mail</label>
-      <input type="email" id="email" name="email" placeholder="Bedrijf e-mail" required>
-      
-      <label for="password">Wachtwoord</label>
-      <input type="password" id="password" name="password" placeholder="Wachtwoord" required>
-      
-      <button type="submit">Inloggen</button>
-    </form>
-    <div class="link">
-      <p>Nog geen account? <a href="{{ url_for('registratie_bedrijf') }}">Registreer hier</a></p>
-    </div>
+{% extends "base.html" %}
+
+{% block title %}Swipr - Bedrijf Login{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <h2>Bedrijf Login</h2>
+
+  <form method="POST" action="{{ url_for('login_bedrijf') }}">
+    <label for="email">E-mail</label>
+    <input type="email" id="email" name="email" placeholder="Bedrijf e-mail" required>
+
+    <label for="password">Wachtwoord</label>
+    <input type="password" id="password" name="password" placeholder="Wachtwoord" required>
+
+    <button type="submit">Inloggen</button>
+  </form>
+
+  <div class="auth-link">
+    <p>Nog geen account? <a href="{{ url_for('registratie_bedrijf') }}">Registreer hier</a></p>
   </div>
-</body>
-</html>
+</div>
+{% endblock %}

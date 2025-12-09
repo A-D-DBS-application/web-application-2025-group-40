@@ -1,83 +1,15 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Login - Swipr</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f5f7fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+{% extends "base.html" %}
 
-        .login-container {
-            background-color: white;
-            padding: 50px 40px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            width: 350px;
-            text-align: center;
-        }
+{% block title %}Student Login - Swipr{% endblock %}
 
-        .login-container h1 {
-            color: #007bff;
-            margin-bottom: 30px;
-        }
-
-        .login-container input {
-            width: 100%;
-            padding: 12px 15px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .login-container button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 20px;
-            border: none;
-            border-radius: 8px;
-            background-color: #007bff;
-            color: white;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .login-container button:hover {
-            background-color: #0056b3;
-        }
-
-        .login-container .register-link {
-            margin-top: 15px;
-            display: block;
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .login-container .register-link:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="login-container">
-        <h1>Student Login</h1>
-        <form action="/student_login" method="POST">
-            <input type="email" name="email" placeholder="E-mail" required>
-            <input type="password" name="password" placeholder="Wachtwoord" required>
-            <button type="submit">Login</button>
-        </form>
-        <p>Nog geen account? <a href="{{ url_for('registratie_student') }}">Registreer hier</a></p>
-    </div>
-
-</body>
-</html>
+{% block content %}
+<div class="login-container">
+  <h1>Student Login</h1>
+  <form action="{{ url_for('login_student') }}" method="POST">
+    <input type="email" name="email" placeholder="E-mail" required>
+    <input type="password" name="password" placeholder="Wachtwoord" required>
+    <button type="submit">Login</button>
+  </form>
+  <p>Nog geen account? <a href="{{ url_for('registratie_student') }}">Registreer hier</a></p>
+</div>
+{% endblock %}

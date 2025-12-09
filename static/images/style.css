@@ -1,7 +1,0 @@
-.logo {
-  display: block;
-  margin: 0 auto 20px auto;
-  max-width: 150px;
-  max-height: 80px; /* extra beperking */
-  object-fit: contain;
-}

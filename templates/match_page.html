@@ -1,81 +1,33 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <title>Jouw Matches</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f7f7f7;
-            margin: 0;
-            padding: 2rem;
-        }
+{% extends "base.html" %}
 
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 2rem;
-        }
+{% block title %}Jouw Matches{% endblock %}
 
-        .match-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 1.5rem;
-            border-left: 6px solid #4CAF50;
-        }
+{% block content %}
+<div class="match-page">
+  <h1>Mijn Matches</h1>
 
-        .partner {
-            font-weight: bold;
-            color: #4CAF50;
-            font-size: 1.1rem;
-        }
+  {% for match, user, job in matches %}
+    <div class="match-card">
 
-        .student-email {
-            color: #333;
-            font-size: 1rem;
-            margin-bottom: .5rem;
-        }
-
-        .job-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .meta {
-            color: #777;
-            margin-top: .5rem;
-            font-size: .9rem;
-        }
-    </style>
-</head>
-<body>
-
-<h1>🎉 Nieuwe Matches</h1>
-
-{% for match, user, job in matches %}
-<div class="match-card">
-
-    {% if job.company_name == "GoForJobs" %}
-        <div class="partner"> Match met onze partner: GoForJobs</div>
-    {% else %}
+      {% if job.company_name == "GoForJobs" %}
+        <div class="partner">Match met onze partner: GoForJobs</div>
+      {% else %}
         <div class="partner">Match met {{ job.company_name }}</div>
-    {% endif %}
+      {% endif %}
 
-    <div class="job-title">{{ job.title }}</div>
+      <div class="job-title">{{ job.title }}</div>
 
-    <div class="student-email"> Student: {{ user.email }}</div>
+      <div class="student-email">Student: {{ user.email }}</div>
 
-    <div class="meta">
+      <div class="meta">
         📍 Locatie: {{ job.location or '-' }} <br>
         ⏰ Gematcht op: {{ match.matched_at.strftime("%Y-%m-%d %H:%M") if match.matched_at else '-' }} <br>
         ℹ️ Beschrijving: {{ job.description[:100] }}{% if job.description|length > 100 %}...{% endif %} <br>
         📧 E-mail: maldegem@go4jobs.be <br>
         📞 Telefoon: +3250740640 <br>
+      </div>
     </div>
+  {% endfor %}
 </div>
-{% endfor %}
+{% endblock %}
 
-</body>
-</html>
