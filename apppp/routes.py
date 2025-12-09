@@ -179,7 +179,7 @@ STOPWORDS = {
     "door","aan","tot","uit","bij","ook","wat","hoe","waar","wanneer","wel","niet","geen",
     "zijn","was","wordt","heb","heeft","hebben","kan","kunnen","moet","moeten","zal","zullen"
 }
-
+        #in supababsa anders heel de tijd update#
 def tokenize(text):
     #Haalt woorden op, maakt lowercase, verwijdert stopwoorden.#
     if not text:
