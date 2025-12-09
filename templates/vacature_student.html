@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Student – Vacature</title>
+{% extends "base.html" %}
 
+<<<<<<< HEAD
+{% block title %}Student – Vacature{% endblock %}
+=======
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,85 +10,28 @@
       margin: 0;
       padding: 0;
     }
+>>>>>>> c20f845041bc8018f85cb89add35c37c2a61f580
 
-    /* Top navigation bar */
-    .navbar {
-      background-color: #007bff;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: white;
-    }
-
-    .nav-buttons a {
-      color: white;
-      text-decoration: none;
-      margin-left: 15px;
-      font-weight: bold;
-      padding: 8px 12px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 5px;
-    }
-
-    .nav-buttons a:hover {
-      background: rgba(255,255,255,0.35);
-    }
-
-    .container {
-      max-width: 700px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 80, 160, 0.2);
-    }
-
-    h2 {
-      color: #007bff;
-      margin-bottom: 10px;
-    }
-
-    .label {
-      font-weight: bold;
-      margin-top: 15px;
-      color: #007bff;
-      display: block;
-    }
-
-    .value {
-      margin-top: 5px;
-      font-size: 1.1em;
-    }
-
-  </style>
-</head>
-
-<body>
-
-  <!-- Navbar -->
-  <div class="navbar">
-    <div><strong>Swipr – Vacature</strong></div>
-    <div class="nav-buttons">
-      <a href="{{ url_for('student_dashboard') }}">Mijn Profiel</a>
-      <a href="{{ url_for('match_page')}}">Matches</a>
-      <a href="{{ url_for('logout') }}">Uitloggen</a>
-    </div>
+{% block content %}
+<div class="navbar">
+  <div><strong>Swipr – Vacature</strong></div>
+  <div class="nav-buttons">
+    <a href="{{ url_for('student_dashboard') }}">Mijn Profiel</a>
+    <a href="{{ url_for('match_page') }}">Matches</a>
+    <a href="{{ url_for('logout') }}">Uitloggen</a>
   </div>
+</div>
 
-  <!-- Vacancy container -->
-  <div class="container">
-    <h2>{{ job.title }}</h2>
+<div class="vacancy-container">
+  <h2>{{ job.title }}</h2>
 
-    <span class="label">Bedrijf</span>
-    <div class="value">{{ job.company_name }}</div>
+  <span class="label">Bedrijf</span>
+  <div class="value">{{ job.company_name }}</div>
 
-    <span class="label">Locatie</span>
-    <div class="value">{{ job.location }}</div>
+  <span class="label">Locatie</span>
+  <div class="value">{{ job.location }}</div>
 
-    <span class="label">Beschrijving</span>
-    <div class="value">{{ job.description }}</div>
-  </div>
-
-</body>
-</html>
+  <span class="label">Beschrijving</span>
+  <div class="value">{{ job.description }}</div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{% block title %}Swipr{% endblock %}</title>
+
+    <!-- Globale CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Extra scripts/CSS voor specifieke pagina's (bijv. Tailwind) -->
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- Inhoud die elke pagina zal tonen -->
+    {% block content %}{% endblock %}
+
+    <!-- Standaard footer -->
+    <footer class="site-footer">
+        &copy; 2025 Swipr
+    </footer>
+
+</body>
+</html>

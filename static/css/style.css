@@ -1,0 +1,485 @@
+/* ===== Basis ===== */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  color: #333;
+}
+
+/* Handige generieke container */
+.container-box {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Globale knop-stijl */
+.button,
+.btn,
+button {
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s ease;
+}
+
+/* Rood accent (bedrijf) */
+.button,
+.btn.bedrijf {
+  background-color: #ff4b5c;
+  color: #fff;
+}
+
+.button:hover,
+.btn.bedrijf:hover {
+  background-color: #e04352;
+}
+
+/* Blauw accent (student) */
+.btn.student {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn.student:hover {
+  background-color: #0056b3;
+}
+
+/* Flash-berichten */
+.flash-success {
+  background:#d4edda;
+  color:#155724;
+  padding:10px;
+  border-radius:5px;
+  margin-bottom:15px;
+}
+
+/* Footer */
+.site-footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #f2f2f2;
+  margin-top: 40px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* ===== Homepage bedrijf ===== */
+
+header.swipr-header {
+  background-color: #ff4b5c;
+  color: white;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+header.swipr-header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+header.swipr-header p {
+  margin: 5px 0 0;
+  font-size: 16px;
+}
+
+main.page-content {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+h2.section-title {
+  color: #ff4b5c;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #ff4b5c;
+  padding-bottom: 5px;
+}
+
+ul.vacature-list {
+  list-style: none;
+  padding: 0;
+}
+
+ul.vacature-list li {
+  background: #fafafa;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+ul.vacature-list li strong {
+  font-size: 18px;
+  color: #222;
+}
+
+/* ===== Index (rol kiezen) ===== */
+
+.role-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+.role-card {
+  text-align: center;
+  background: white;
+  padding: 40px 60px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  margin-bottom: 20px;
+}
+
+.logo-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 14px;
+  background-color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px auto;
+}
+
+.logo-text {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 35px;
+  letter-spacing: 1px;
+}
+
+/* ===== Login bedrijf ===== */
+
+.auth-container {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.auth-container h2 {
+  text-align: center;
+  color: #333;
+}
+
+.auth-container input {
+  width: 95%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.auth-container button {
+  width: 100%;
+  padding: 10px;
+  background: #ff4b5c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.auth-container button:hover {
+  background: #e04352;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* ===== Login student ===== */
+
+.login-container {
+  background-color: white;
+  padding: 50px 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  width: 350px;
+  text-align: center;
+  margin: 80px auto;
+}
+
+.login-container h1 {
+  color: #007bff;
+  margin-bottom: 30px;
+}
+
+.login-container input {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-container button:hover {
+  background-color: #0056b3;
+}
+
+.login-container .register-link {
+  margin-top: 15px;
+  display: block;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.login-container .register-link:hover {
+  text-decoration: underline;
+}
+
+/* ===== Match page ===== */
+
+.match-page {
+  padding: 2rem;
+}
+
+.match-page h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.match-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 1.5rem;
+  border-left: 6px solid #4CAF50;
+}
+
+.match-card .partner {
+  font-weight: bold;
+  color: #4CAF50;
+  font-size: 1.1rem;
+}
+
+.match-card .student-email {
+  color: #333;
+  font-size: 1rem;
+  margin-bottom: .5rem;
+}
+
+.match-card .job-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.match-card .meta {
+  color: #777;
+  margin-top: .5rem;
+  font-size: .9rem;
+}
+
+/* ===== Registratie bedrijf ===== */
+
+.form-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-container h2 {
+  text-align: center;
+  color: #ff4b5c;
+}
+
+.form-container label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+}
+
+.form-container input {
+  width: 95%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.form-row input {
+  flex: 1;
+}
+
+.error {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+/* ===== Registratie student ===== */
+
+.student-register-body {
+  background: #f0f8ff;
+}
+
+.student-register-title {
+  text-align: center;
+  color: #007BFF;
+}
+
+.student-register input:invalid {
+  border-color: #007BFF;
+}
+
+.student-register input:valid {
+  border-color: #0056B3;
+}
+
+.alert-success { color: green; margin-bottom: 10px; }
+.alert-error { color: red; margin-bottom: 10px; }
+
+/* ===== Vacature student ===== */
+
+.navbar {
+  background-color: #007bff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.nav-buttons a {
+  color: white;
+  text-decoration: none;
+  margin-left: 15px;
+  font-weight: bold;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 5px;
+}
+
+.nav-buttons a:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+.vacancy-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 80, 160, 0.2);
+}
+
+.vacancy-container h2 {
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.label {
+  font-weight: bold;
+  margin-top: 15px;
+  color: #007bff;
+  display: block;
+}
+
+.value {
+  margin-top: 5px;
+  font-size: 1.1em;
+}
+
+/* ===== Vacature plaatsen (bedrijf) ===== */
+
+.vacature-form-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(255,0,0,0.2);
+}
+
+.vacature-form-container h2 {
+  text-align: center;
+  color: #FF4B5C;
+}
+
+.vacature-form-container label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+  color: #FF4B5C;
+}
+
+.vacature-form-container input,
+.vacature-form-container textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #FF4B5C;
+  border-radius: 4px;
+}
+
+.vacature-form-container textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.vacature-form-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  background: #FF4B5C;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.vacature-form-container button:hover {
+  background: #E05342;
+}
+
+/* ===== Kleine extra voor Tailwind dashboards ===== */
+
+.btn-ghost:hover {
+  transform: translateY(-2px);
+}

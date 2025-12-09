@@ -1,32 +1,31 @@
-<!doctype html>
-<html lang="nl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Recruiter Dashboard — Swipr</title>
+{% extends "base.html" %}
 
-  <!-- Tailwind CDN -->
+{% block title %}Recruiter Dashboard — Swipr{% endblock %}
+
+{% block extra_head %}
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
+<<<<<<< HEAD
+            swipr: '#ff4b5c',
+            swipr_blue: '#007bff'
+=======
             swipr: '#ff4b5c',   /* recruiter rood */
             swipr_blue: '#007bff' /* blauw */
+>>>>>>> c20f845041bc8018f85cb89add35c37c2a61f580
           }
         }
       }
     }
   </script>
+{% endblock %}
 
-  <style>
-    .btn-ghost:hover { transform: translateY(-2px); }
-  </style>
-</head>
-<body class="bg-gray-50 min-h-screen antialiased">
+{% block content %}
+<div class="bg-gray-50 min-h-screen antialiased">
 
-  <!-- Header -->
   <header class="bg-white shadow-sm">
     <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -43,8 +42,13 @@
       </div>
 
       <nav class="hidden sm:flex items-center gap-4 text-sm">
+<<<<<<< HEAD
+        <a href="#" class="text-gray-600 hover:text-swipr_blue">Mijn Vacatures</a>
+        <a href="#" class="text-gray-600 hover:text-swipr_blue">Bedrijfsprofiel</a>
+=======
         <a href="#" class="text-gray-600 hover:text-swipr-blue">Mijn Vacatures</a>
         <a href="#" class="text-gray-600 hover:text-swipr-blue">Bedrijfsprofiel</a>
+>>>>>>> c20f845041bc8018f85cb89add35c37c2a61f580
         <a href="{{ url_for('main.logout') }}" class="px-3 py-1 rounded-md text-sm border hover:bg-swipr hover:text-white">
           Uitloggen
         </a>
@@ -52,16 +56,21 @@
     </div>
   </header>
 
-  <!-- Main content -->
   <main class="max-w-5xl mx-auto mt-8 p-4 space-y-8">
 
+<<<<<<< HEAD
+=======
     <!-- Welkomstbanner zonder bedrijfsnaam -->
+>>>>>>> c20f845041bc8018f85cb89add35c37c2a61f580
     <section class="bg-swipr text-white rounded-xl shadow-sm p-6">
       <h2 class="text-xl font-semibold">Welkom bij Swipr</h2>
       <p class="text-sm opacity-90">Beheer uw vacatures en matches</p>
     </section>
 
+<<<<<<< HEAD
+=======
     <!-- Statistieken kaarten -->
+>>>>>>> c20f845041bc8018f85cb89add35c37c2a61f580
     <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div class="bg-white rounded-xl shadow-sm p-4">
         <p class="text-xs text-gray-500">Actieve vacatures</p>
@@ -81,7 +90,6 @@
       </div>
     </section>
 
-    <!-- Vacatures overzicht -->
     <section class="bg-white p-6 rounded-xl shadow-sm">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-semibold text-gray-800">Mijn vacatures</h2>
@@ -90,6 +98,15 @@
           + Nieuwe vacature
         </a>
       </div>
+<<<<<<< HEAD
+      <!-- hier kan later je vacaturelijst komen -->
+    </section>
+
+  </main>
+</div>
+{% endblock %}
+
+=======
       <!-- ... rest blijft ongewijzigd ... -->
     </section>
 
@@ -97,3 +114,4 @@
 
 </body>
 </html>
+>>>>>>> c20f845041bc8018f85cb89add35c37c2a61f580

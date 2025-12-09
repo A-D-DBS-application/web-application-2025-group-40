@@ -1,3 +1,13 @@
+<<<<<<< HEAD
+{% extends "base.html" %}
+
+{% block title %}Kies uw rol — Swipr{% endblock %}
+
+{% block content %}
+<div class="role-wrapper">
+  <div class="role-card">
+
+=======
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -88,6 +98,7 @@
 </head>
 <body>
   <div class="container">
+>>>>>>> c20f845041bc8018f85cb89add35c37c2a61f580
     <div class="logo">
       <div class="logo-icon">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -98,11 +109,29 @@
       <div class="logo-text">Swipr</div>
     </div>
 
-    <h1>Kies uw rol</h1>
+    <h1 style="font-size: 2rem; margin-bottom: 35px; color: #333;">Kies uw rol</h1>
 
+    <button class="btn bedrijf"
+            style="width: 220px; margin: 15px auto;"
+            onclick="window.location.href='{{ url_for('login_bedrijf') }}'">
+      Bedrijf
+    </button>
+
+    <button class="btn student"
+            style="width: 220px; margin: 15px auto;"
+            onclick="window.location.href='{{ url_for('login_student') }}'">
+      Student
+    </button>
+
+<<<<<<< HEAD
+  </div>
+</div>
+{% endblock %}
+=======
     <button class="btn bedrijf" onclick="window.location.href='{{ url_for('login_bedrijf') }}'">Bedrijf</button>
     <script></script></button>
     <button class="btn student" onclick="window.location.href='{{ url_for('login_student') }}'">Student</button>
   </div>
 </body>
 </html>
+>>>>>>> c20f845041bc8018f85cb89add35c37c2a61f580
