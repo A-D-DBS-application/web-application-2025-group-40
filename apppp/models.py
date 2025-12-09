@@ -1,53 +1,53 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.dialects.postgresql import ARRAY, DATERANGE
-
-db = SQLAlchemy()
-
-
-from werkzeug.security import generate_password_hash, check_password_hash
-
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, String, UniqueConstraint
-
-db = SQLAlchemy()
-
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, String, UniqueConstraint
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from flask_sqlalchemy import SQLAlchemy
-
 db = SQLAlchemy()
 
-class User(db.Model):
+
+# ---------------------------------------------------
+# USER MODEL
+# ---------------------------------------------------
+
+class AppUser(db.Model):
+    __tablename__ = 'app_user'
+
     id = db.Column(db.Integer, primary_key=True)
     firstName = db.Column(db.String(50), nullable=False)
     lastName = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)  # hashed wachtwoord
-
-
-
-
-
+    password = db.Column(db.String(200), nullable=False)  # hashed password
 
     # relaties
     matches = db.relationship('Match', backref='user', lazy=True)
     recruiter_links = db.relationship('RecruiterUser', backref='user', lazy=True)
     student_profile = db.relationship('Student', backref='user', uselist=False)
+    liked_jobs = db.relationship("Joblike", back_populates="user", lazy=True)
 
+    # password methods
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password, password)
+
+    # authentication helper
+    @staticmethod
+    def authenticatie(email, password):
+        user = AppUser.query.filter_by(email=email).first()
+        if user and user.check_password(password):
+            return user
+        return None
 
     def __repr__(self):
         return f'<AppUser {self.email}>'
 
 
+# ---------------------------------------------------
+# EMPLOYER
+# ---------------------------------------------------
 
 class Employer(db.Model):
     __tablename__ = 'employer'
@@ -60,13 +60,16 @@ class Employer(db.Model):
     is_agency = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
 
-    # relaties
     job_listings = db.relationship('JobListing', backref='employer', lazy=True)
     recruiters = db.relationship('RecruiterUser', backref='employer', lazy=True)
 
     def __repr__(self):
         return f'<Employer {self.name}>'
 
+
+# ---------------------------------------------------
+# SECTOR
+# ---------------------------------------------------
 
 class Sector(db.Model):
     __tablename__ = 'sector'
@@ -79,6 +82,10 @@ class Sector(db.Model):
     def __repr__(self):
         return f'<Sector {self.name}>'
 
+
+# ---------------------------------------------------
+# JOB LISTING
+# ---------------------------------------------------
 
 class JobListing(db.Model):
     __tablename__ = 'job_listing'
@@ -93,13 +100,16 @@ class JobListing(db.Model):
     requirements = db.Column(ARRAY(db.Text))
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
 
-    # relaties
     matches = db.relationship('Match', backref='job', lazy=True)
     sectors = db.relationship('JobListingSector', backref='job', lazy=True)
 
     def __repr__(self):
         return f'<JobListing {self.title}>'
 
+
+# ---------------------------------------------------
+# MANY-TO-MANY: JOBLISTING — SECTOR
+# ---------------------------------------------------
 
 class JobListingSector(db.Model):
     __tablename__ = 'job_listing_sector'
@@ -110,6 +120,10 @@ class JobListingSector(db.Model):
     def __repr__(self):
         return f'<JobListingSector job_id={self.job_id} sector_id={self.sector_id}>'
 
+
+# ---------------------------------------------------
+# MATCHES
+# ---------------------------------------------------
 
 class Match(db.Model):
     __tablename__ = 'match'
@@ -126,6 +140,10 @@ class Match(db.Model):
         return f'<Match user_id={self.user_id} job_id={self.job_id}>'
 
 
+# ---------------------------------------------------
+# RECRUITER USER LINK
+# ---------------------------------------------------
+
 class RecruiterUser(db.Model):
     __tablename__ = 'recruiter_user'
 
@@ -137,6 +155,10 @@ class RecruiterUser(db.Model):
         return f'<RecruiterUser employer_id={self.employer_id} user_id={self.user_id}>'
 
 
+# ---------------------------------------------------
+# STUDENT
+# ---------------------------------------------------
+
 class Student(db.Model):
     __tablename__ = 'student'
 
@@ -147,3 +169,21 @@ class Student(db.Model):
 
     def __repr__(self):
         return f'<Student {self.first_name} {self.last_name}>'
+
+
+# ---------------------------------------------------
+# JOBLIKE
+# ---------------------------------------------------
+
+class Joblike(db.Model):
+    __tablename__ = 'joblike'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('app_user.id'), nullable=False)
+    job_id = db.Column(db.BigInteger, db.ForeignKey('job_listing.id'), nullable=False)
+    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+
+    user = db.relationship("AppUser", back_populates="liked_jobs")
+
+    def __repr__(self):
+        return f'<Joblike user_id={self.user_id} job_id={self.job_id}>'
