@@ -434,11 +434,6 @@ def test_supabase():
     except Exception as e:
         return f"Supabase connection failed: {str(e)}"
 
-def load_stopwords():
-    rows = Stopword.query.all()
-    return {row.word for row in rows}
-
-STOPWORDS = load_stopwords()
 
 # -----------------------
 # START

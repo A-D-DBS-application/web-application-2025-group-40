@@ -192,3 +192,6 @@ class Joblike(db.Model):
         __tablename__ = 'stopwords'
         id = db.Column(db.Integer, primary_key=True)
         word = db.Column(db.String(50), unique=True, nullable=False)
+        
+        def __repr__(self):
+            return f'<Stopword {self.word}>'    
