@@ -448,8 +448,8 @@ def test_supabase():
     except Exception as e:
         return f"Supabase connection failed: {str(e)}"
 
-<<<<<<< HEAD
-=======
+
+
 
 # ------------------ UTILITIES ------------------
 def load_stopwords():
@@ -461,7 +461,7 @@ def load_stopwords():
     }
 
 STOPWORDS = load_stopwords()
->>>>>>> 2e3aa8a1d26193042963682bc8e9fb276d98a2eb
+
 
 
 # eenvoudige vacatures pagina voor studenten
