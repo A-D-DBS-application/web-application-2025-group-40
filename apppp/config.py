@@ -16,3 +16,5 @@ class Config:
     #Eventuele Supabase URL's / sleutels, mochten we deze later nodig hebben
     SUPABASE_URL = os.environ.get('SUPABASE_URL')
     SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+
+#hallo
