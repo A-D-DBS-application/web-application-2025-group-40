@@ -30,9 +30,6 @@ class User(db.Model):
 
 
 
-
-
-
     # relaties
     matches = db.relationship('Match', backref='user', lazy=True)
     recruiter_links = db.relationship('RecruiterUser', backref='user', lazy=True)
@@ -46,7 +43,21 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<AppUser {self.email}>'
+    
+    def authenticatie(email, password):
+        # Zoekt een gebruiker op basis van email en controleert het wachtwoord.
+        # Geeft het User object terug bij succes, anders None.
+        # 1. Zoek de gebruiker op basis van het unieke e-mailadres
+        user = User.query.filter_by(email=email).first()
 
+        # 2. Controleer of de gebruiker bestaat en of het wachtwoord klopt
+        if user and user.check_password(password):
+            return user
+        
+        return None
+
+    def __repr__(self):
+        return f'<User {self.email}>'
 
 
 class Employer(db.Model):
