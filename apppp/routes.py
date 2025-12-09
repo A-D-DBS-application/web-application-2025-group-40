@@ -33,7 +33,6 @@ class AppUser(db.Model, UserMixin):
     password = db.Column(db.String(200), nullable=False)  # hashed password
     role = db.Column(db.String(50), default='student')
 
-    # relationships
     matches = db.relationship('Match', backref='user', lazy=True)
     recruiter_links = db.relationship('RecruiterUser', backref='user', lazy=True)
     student_profile = db.relationship('Student', backref='user', uselist=False)
@@ -224,7 +223,6 @@ def login_route():
         user, error = authenticate_user(email, password)
         if error:
             return jsonify({'error': error}), 400
-        # use Flask-Login to log the user in
         login_user(user)
         return jsonify({'success': f'Ingelogd als {user.role}!'}), 200
     return render_template('login.html')
@@ -270,7 +268,6 @@ def register_company_route():
         password = request.form.get('password')
         company_name = request.form.get('company_name', 'Onbekend')
 
-        # simple uniqueness check
         if AppUser.query.filter((AppUser.email == email) | (AppUser.username == username)).first():
             return jsonify({'error': 'Email of username al in gebruik.'}), 400
 
@@ -393,7 +390,6 @@ def recommend_jobs_route():
 
 
 # ------------------ DB DEBUG (ONE-TIME USE) ------------------
-# Uncomment the following to create tables when developing (use flask-migrate in production)
 # with app.app_context():
 #     db.create_all()
 

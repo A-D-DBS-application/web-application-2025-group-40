@@ -1,4 +1,4 @@
-# app.py
+# ...existing code...
 import os
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
@@ -9,17 +9,22 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from supabase import create_client
 from dotenv import load_dotenv
 
-# laad .env (optioneel)
+# laad .env
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 print("SUPABASE_URL:", SUPABASE_URL)
-print("SUPABASE_KEY (start):", SUPABASE_KEY[:20] if SUPABASE_KEY else None)
+print("SUPABASE_KEY (start):", (SUPABASE_KEY[:20] + "...") if SUPABASE_KEY else None)
 
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
+# maak supabase client alleen als beide variabelen bestaan
+supabase = None
+if SUPABASE_URL and SUPABASE_KEY:
+    try:
+        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+    except Exception as e:
+        print("Supabase client kon niet aangemaakt worden:", e)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
@@ -34,14 +39,14 @@ else:
 
 print("SQLALCHEMY_DATABASE_URI =", app.config['SQLALCHEMY_DATABASE_URI'])
 
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+# als student login vereist is redirect naar login_student
+login_manager.login_view = 'login_student'
 
 
 # -----------------------
@@ -66,8 +71,6 @@ class AppUser(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-
-    # Flask-Login vereist .get_id(); UserMixin levert dat.
 
 
 class Student(db.Model):
@@ -113,8 +116,7 @@ class JobListing(db.Model):
     description = db.Column(db.Text)
     location = db.Column(db.String(120))
     salary = db.Column(db.Numeric, nullable=True)
-    periode = db.Column(db.String(80))  # houd simpel (tekst)
-    # requirements als comma-separated string (of later JSON/ARRAY)
+    periode = db.Column(db.String(80))
     requirements = db.Column(db.Text)
 
     employer = db.relationship('Employer', back_populates='job_listings')
@@ -173,51 +175,61 @@ def load_user(user_id):
 def index():
     return render_template('index.html')
 
+
 @app.route('/login_bedrijf', methods=['GET', 'POST'])
 def login_bedrijf():
     if request.method == 'POST':
-        # hier zou je normaal login-validatie doen
         return redirect(url_for('bedrijf_home'))
     return render_template('login_bedrijf.html')
 
+
+# student login - POST verwerkt, redirect naar vacatures_student
 @app.route('/login_student', methods=['GET', 'POST'])
 def login_student():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = AppUser.query.filter_by(email=email).first()
+        if not user or not user.check_password(password):
+            flash("Foute email of wachtwoord!", "danger")
+            return redirect(url_for('login_student'))
+        if user.role != 'student':
+            flash("Dit account is geen student account.", "danger")
+            return redirect(url_for('login_student'))
+        login_user(user)
+        flash("Inloggen gelukt.", "success")
+        return redirect(url_for('vacatures_student'))
     return render_template('login_student.html')
+
 
 @app.route('/recruiter_dashboard')
 def recruiter_dashboard_view():
     return render_template('recruiter_dashboard.html')
 
+
 @app.route('/save_profile', methods=['POST'])
 def save_profile():
-    # hier zou je normaal de form data opslaan
-    # bv. companyName = request.form['companyName']
-    # vatNumber = request.form['vatNumber']
-    # etc.
-
-    # na opslaan → terug naar homepage bedrijf
     return redirect(url_for('bedrijf_home'))
+
 
 @app.route('/vacature/nieuw')
 def vacature_nieuw():
-    # Render de pagina waar een nieuwe vacature kan worden aangemaakt
     return render_template('vacatures_bedrijf.html')
+
 
 @app.route('/vacature/opslaan', methods=['POST'])
 def vacature_opslaan():
-    # hier kan je de form data ophalen
-    job_title = request.form['jobTitle']
-    location = request.form['location']
-    description = request.form['description']
-    # normaal zou je dit opslaan in een database
-
+    job_title = request.form.get('jobTitle')
+    location = request.form.get('location')
+    description = request.form.get('description')
     flash("Vacature succesvol geplaatst ✅")
     return redirect(url_for('bedrijf_home'))
+
 
 @app.route('/bedrijf')
 def bedrijf_home():
     bedrijf_naam = "ACME BV"
-    vacatures = []  # of echte data
+    vacatures = []
     return render_template('HomePage_bedrijf.html',
                            bedrijf_naam=bedrijf_naam,
                            vacatures=vacatures)
@@ -226,29 +238,41 @@ def bedrijf_home():
 @app.route('/registratie_bedrijf', methods=['GET', 'POST'])
 def registratie_bedrijf():
     if request.method == 'POST':
-        print("POST ontvangen:", request.form)  # <- zie dit in je terminal
-        # haal velden op (namen moeten matchen met je 'name' in HTML)
-        company_name = request.form['companyName']
-        vat_number   = request.form['vatNumber']
-        email        = request.form['email']
-        password     = request.form['password']
-        contact_name = request.form['contactName']
+        company_name = request.form.get('companyName')
+        vat_number   = request.form.get('vatNumber')
+        email        = request.form.get('email')
+        password     = request.form.get('password')
+        contact_name = request.form.get('contactName')
         contact_phone= request.form.get('contactPhone', '')
-
-        # hier eventueel opslaan...
         return redirect(url_for('login_bedrijf'))
-
     return render_template('registratie_bedrijf.html')
 
 
 @app.route('/registratie_student', methods=['GET', 'POST'])
 def registratie_student():
     if request.method == 'POST':
-        # handle student registration
-        return redirect(url_for('login_student'))
+        # eenvoudige registratie: maak AppUser + Student en login direct naar vacatures_student
+        email = request.form.get('email')
+        password = request.form.get('password')
+        first_name = request.form.get('first_name', '')
+        last_name = request.form.get('last_name', '')
+
+        if AppUser.query.filter_by(email=email).first():
+            flash("Email is al in gebruik.", "danger")
+            return redirect(url_for('registratie_student'))
+
+        user = AppUser(email=email, role='student')
+        user.set_password(password)
+        db.session.add(user)
+        db.session.flush()
+        student = Student(user_id=user.id, first_name=first_name, last_name=last_name)
+        db.session.add(student)
+        db.session.commit()
+        login_user(user)
+        flash("Account aangemaakt.", "success")
+        return redirect(url_for('vacatures_student'))
+
     return render_template('registratie_student.html')
-
-
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -260,7 +284,6 @@ def login():
         if user and user.check_password(password):
             login_user(user)
             flash("Inloggen gelukt.", "success")
-            # route naar dashboard afhankelijk van rol
             if user.role == 'student':
                 return redirect(url_for('student_dashboard'))
             else:
@@ -268,7 +291,6 @@ def login():
         else:
             flash("Foute email of wachtwoord!", "danger")
             return redirect(url_for('login'))
-
     return render_template('login.html')
 
 
@@ -280,25 +302,23 @@ def logout():
     return redirect(url_for('login'))
 
 
-# Student swipe dashboard (eenvoudig: lijst van jobs en like button)
+# Student swipe dashboard
 @app.route('/student')
 @login_required
 def student_dashboard():
     if current_user.role != 'student':
         abort(403)
-    # toon jobs die nog niet gematcht zijn met deze user
     matched_job_ids = [m.job_id for m in current_user.matches]
     jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids)).all()
     return render_template('student_dashboard.html', jobs=jobs)
 
 
-# Recruiter dashboard: overzicht eigen vacatures
+# Recruiter dashboard
 @app.route('/recruiter')
 @login_required
 def recruiter_dashboard():
     if current_user.role != 'recruiter':
         abort(403)
-    # vind recruiter record en bijhorende employer jobs (vereenvoudigd)
     rec = current_user.recruiter
     jobs = []
     if rec and rec.employer:
@@ -316,15 +336,13 @@ def create_job():
     if not rec or not rec.employer:
         flash("Je moet gekoppeld zijn aan een werkgever om vacatures te plaatsen.", "danger")
         return redirect(url_for('recruiter_dashboard'))
-
     if request.method == 'POST':
         title = request.form.get('title')
         location = request.form.get('location')
         salary = request.form.get('salary') or None
         periode = request.form.get('periode')
         description = request.form.get('description')
-        requirements = request.form.get('requirements')  # comma-separated
-
+        requirements = request.form.get('requirements')
         job = JobListing(
             employer_id=rec.employer.id,
             title=title,
@@ -338,7 +356,6 @@ def create_job():
         db.session.commit()
         flash("Vacature aangemaakt.", "success")
         return redirect(url_for('recruiter_dashboard'))
-
     return render_template('create_job.html')
 
 
@@ -357,13 +374,10 @@ def like_job(job_id):
     if current_user.role != 'student':
         abort(403)
     job = JobListing.query.get_or_404(job_id)
-
-    # check of match al bestaat
     existing = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first()
     if existing:
         flash("Je hebt deze job al geliked.", "info")
         return redirect(url_for('student_dashboard'))
-
     m = Match(user_id=current_user.id, job_id=job.id)
     db.session.add(m)
     db.session.commit()
@@ -371,7 +385,7 @@ def like_job(job_id):
     return redirect(url_for('student_dashboard'))
 
 
-# Matches overzicht (voor recruiter: alle matches voor jobs van hun employer)
+# Matches overzicht
 @app.route('/match_page')
 @login_required
 def match_page():
@@ -379,13 +393,11 @@ def match_page():
         rec = current_user.recruiter
         matches = []
         if rec and rec.employer:
-            # alle matches voor employer jobs
             for job in rec.employer.job_listings:
                 for m in job.matches:
                     matches.append(m)
         return render_template('match_page.html', matches=matches)
     else:
-        # student: toon eigen matches
         matches = current_user.matches
         return render_template('match_page.html', matches=matches)
 
@@ -397,10 +409,12 @@ def employer_profile(employer_id):
     emp = Employer.query.get_or_404(employer_id)
     return render_template('employer_profile.html', employer=emp)
 
+
 @app.route("/student/vacature/<int:job_id>")
 def student_vacature(job_id):
     job = JobListing.query.get(job_id)
     return render_template("student_vacature.html", job=job)
+
 
 @app.route("/test/vacature")
 def test_vacature():
@@ -409,15 +423,12 @@ def test_vacature():
         company_name = "Cool Company"
         location = "Gent"
         description = "Je promoot ons merk op campussen."
-
     job = FakeJob()
     return render_template("vacature_student.html", job=job)
 
 
-# eenvoudige helper route om demo data aan te maken (optioneel)
 @app.route('/_init_demo')
 def init_demo():
-    # enkel als er nog geen sectors bestaan
     if Sector.query.first():
         return "Demo al geïnitialiseerd."
     s1 = Sector(name='Horeca')
@@ -426,19 +437,40 @@ def init_demo():
     db.session.commit()
     return "Demo sectors aangemaakt."
 
+
 @app.route("/test-supabase")
 def test_supabase():
+    if not supabase:
+        return "Supabase niet geconfigureerd."
     try:
         response = supabase.table("app_user").select("*").limit(1).execute()
         return f"Connected to Supabase! Sample data: {response.data}"
     except Exception as e:
         return f"Supabase connection failed: {str(e)}"
 
+
+# ------------------ UTILITIES ------------------
 def load_stopwords():
-    rows = Stopword.query.all()
-    return {row.word for row in rows}
+    return {
+        "de","het","een","en","van","met","je","jij","u","ik","hij","zij","we","wij","ze",
+        "die","dat","dit","daar","hier","als","maar","om","te","is","in","op","voor","naar",
+        "door","aan","tot","uit","bij","ook","wat","hoe","waar","wanneer","wel","niet","geen",
+        "zijn","was","wordt","heb","heeft","hebben","kan","kunnen","moet","moeten","zal","zullen"
+    }
 
 STOPWORDS = load_stopwords()
+
+
+# eenvoudige vacatures pagina voor studenten
+@app.route('/vacatures_student')
+@login_required
+def vacatures_student():
+    if current_user.role != 'student':
+        flash('Alleen studenten kunnen deze pagina bekijken.', 'danger')
+        return redirect(url_for('index'))
+    jobs = JobListing.query.all()
+    return render_template('vacatures_student.html', jobs=jobs)
+
 
 # -----------------------
 # START
@@ -446,5 +478,5 @@ STOPWORDS = load_stopwords()
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    # voor dev: debug True
     app.run(debug=True)
+# ...existing code...
