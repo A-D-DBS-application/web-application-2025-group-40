@@ -1,8 +1,0 @@
-# Lokale omgevingsbestanden (GEHEIM!)
-.env
-
-# Python Caching Mappen
-__pycache__/
-
-# Virtuele omgeving negeren
-venv/
