@@ -714,6 +714,10 @@ def delete_job(job_id):
         return jsonify({'error': 'Toegang geweigerd'}), 403
 
     try:
+        # remove dependent rows first to avoid orphans
+        Match.query.filter_by(job_id=job.id).delete()
+        Dislike.query.filter_by(job_id=job.id).delete()
+        JobListingSector.query.filter_by(job_id=job.id).delete()
         db.session.delete(job)
         db.session.commit()
         return jsonify({'success': True}), 200
