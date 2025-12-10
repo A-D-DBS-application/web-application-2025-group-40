@@ -204,7 +204,14 @@ def login_student():
 
 @app.route('/recruiter_dashboard')
 def recruiter_dashboard_view():
-    return render_template('recruiter_dashboard.html')
+    # Create a simple stats object for the dashboard
+    stats = {
+        'active_job_count': 0,
+        'total_matches': 0,
+        'matches_last_7_days': 0,
+        'avg_matches_per_job': 0
+    }
+    return render_template('recruiter_dashboard.html', stats=stats)
 
 
 @app.route('/save_profile', methods=['POST'])
