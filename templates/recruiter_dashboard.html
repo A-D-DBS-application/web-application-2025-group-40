@@ -84,12 +84,11 @@
           <ul class="space-y-3">
             {% for job in jobs %}
               <li class="p-4 border rounded-lg">
-                <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
                   <div>
                     <h3 class="font-semibold text-gray-800">{{ job.title }}</h3>
                     <p class="text-sm text-gray-500">{{ job.location }}</p>
                   </div>
-                  <a href="/jobs/{{ job.id }}" class="text-swipr_blue text-sm">Bekijk</a>
                 </div>
                 {% if job.description %}
                   <p class="mt-2 text-sm text-gray-700">{{ job.description }}</p>
