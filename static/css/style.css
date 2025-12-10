@@ -355,21 +355,167 @@ ul.vacature-list li strong {
 /* ===== Registratie student ===== */
 
 .student-register-body {
-  background: #f0f8ff;
+  background: #f0f8ff; /* zacht blauw */
+  font-family: 'Segoe UI', 'Roboto', sans-serif; /* modern en leesbaar */
 }
 
 .student-register-title {
   text-align: center;
-  color: #007bff;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 25px;
-  letter-spacing: 0.5px;
+  color: #007BFF; /* helder blauw */
+  font-size: 2rem; /* groter en opvallend */
+  font-weight: bold;
+  font-family: 'Poppins', 'Segoe UI', sans-serif; /* mooi lettertype */
+  margin-bottom: 20px;
 }
 
-.student-register-container {
-  max-width: 500px;
-  margin: 60px auto;
-  padding:
-  
+.student-register input:invalid {
+  border: 2px solid #007BFF;
+  border-radius: 5px;
+}
+
+.student-register input:valid {
+  border: 2px solid #0056B3;
+  border-radius: 5px;
+}
+
+.alert-success { 
+  color: green; 
+  margin-bottom: 10px; 
+  font-weight: 500;
+}
+
+.alert-error { 
+  color: red; 
+  margin-bottom: 10px; 
+  font-weight: 500;
+}
+
+/* Grote blauwe kader voor de registreer-knop */
+.student-register button {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  background-color: #007BFF;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.student-register button:hover {
+  background-color: #0056B3; /* donkerder blauw bij hover */
+}
+
+
+/* ===== Vacature student ===== */
+
+.navbar {
+  background-color: #007bff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.nav-buttons a {
+  color: white;
+  text-decoration: none;
+  margin-left: 15px;
+  font-weight: bold;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 5px;
+}
+
+.nav-buttons a:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+.vacancy-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 80, 160, 0.2);
+}
+
+.vacancy-container h2 {
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.label {
+  font-weight: bold;
+  margin-top: 15px;
+  color: #007bff;
+  display: block;
+}
+
+.value {
+  margin-top: 5px;
+  font-size: 1.1em;
+}
+
+/* ===== Vacature plaatsen (bedrijf) ===== */
+
+.vacature-form-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(255,0,0,0.2);
+}
+
+.vacature-form-container h2 {
+  text-align: center;
+  color: #FF4B5C;
+}
+
+.vacature-form-container label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+  color: #FF4B5C;
+}
+
+.vacature-form-container input,
+.vacature-form-container textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #FF4B5C;
+  border-radius: 4px;
+}
+
+.vacature-form-container textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.vacature-form-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  background: #FF4B5C;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.vacature-form-container button:hover {
+  background: #E05342;
+}
+
+/* ===== Kleine extra voor Tailwind dashboards ===== */
+
+.btn-ghost:hover {
+  transform: translateY(-2px);
+}
