@@ -504,6 +504,9 @@ def mijn_profiel():
     see their employer name (company edits handled separately).
     """
     user = current_user
+    # Only students can use this profile page. Prevent recruiters from accessing student profile.
+    if getattr(user, 'role', None) != 'student':
+        abort(403)
     if request.method == 'POST':
         # update email/password and student fields if present
         email = request.form.get('email')
