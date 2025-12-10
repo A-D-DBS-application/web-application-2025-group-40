@@ -93,6 +93,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" />
                       </svg>
                     </button>
+                    <button onclick="viewLikes({{ job.id }})" title="Bekijk likes" class="text-swipr hover:text-swipr_blue p-2 rounded-md">
+                      <!-- user-heart icon -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
                 {% if job.description %}
@@ -146,6 +152,42 @@
     } catch (e) {
       console.error(e);
       alert('Fout bij verwijderen (netwerkfout)');
+    }
+  }
+</script>
+<script>
+  async function viewLikes(jobId) {
+    try {
+      const res = await fetch(`/jobs/${jobId}/likes`, { credentials: 'same-origin' });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        alert(body.error || 'Kan likes niet ophalen');
+        return;
+      }
+      const data = await res.json();
+      // build modal content
+      let html = `<div class="p-4"><h3 class=\"font-semibold mb-2\">Likes voor: ${data.title}</h3>`;
+      if (!data.likes || data.likes.length === 0) {
+        html += '<div class="text-sm text-gray-600">Geen likes</div>';
+      } else {
+        html += '<ul class="divide-y">';
+        data.likes.forEach(l => {
+          html += `<li class=\"py-2\"><div class=\"text-sm font-medium\">${l.name || l.email}</div><div class=\"text-xs text-gray-500\">${l.email}</div></li>`;
+        });
+        html += '</ul>';
+      }
+      html += '<div class="mt-4 text-right"><button id="closeLikes" class="px-3 py-1 bg-swipr text-white rounded-md">Sluiten</button></div></div>';
+
+      // insert and show modal
+      let modal = document.createElement('div');
+      modal.id = 'likesModal';
+      modal.className = 'fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center';
+      modal.innerHTML = `<div class=\"bg-white rounded-md shadow-lg max-w-md w-full\">${html}</div>`;
+      document.body.appendChild(modal);
+      document.getElementById('closeLikes').addEventListener('click', () => modal.remove());
+    } catch (err) {
+      alert('Fout bij ophalen likes');
+      console.error(err);
     }
   }
 </script>

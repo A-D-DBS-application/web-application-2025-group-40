@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta
-from flask import Flask, render_template, request, redirect, url_for, flash, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (LoginManager, UserMixin, login_user,
                          login_required, logout_user, current_user)
@@ -384,6 +384,42 @@ def vacature_opslaan():
     flash("Vacature succesvol geplaatst ✅")
     # redirect to the public recruiter dashboard which will show posted vacatures
     return redirect('/recruiter_dashboard')
+
+
+@app.route('/jobs/<int:job_id>/likes', methods=['GET'])
+@login_required
+def job_likes(job_id):
+    # Only recruiters may view likes for their own job
+    if getattr(current_user, 'role', None) != 'recruiter':
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+    job = JobListing.query.get(job_id)
+    if not job:
+        return jsonify({'error': 'Vacature niet gevonden'}), 404
+
+    # ensure recruiter belongs to the employer that posted the job
+    if not rec or not rec.employer or rec.employer.id != job.employer_id:
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    # Find users who liked (Match) this job
+    matches = Match.query.filter_by(job_id=job.id).all()
+    result = []
+    for m in matches:
+        user = AppUser.query.get(m.user_id)
+        # try to include student name if present
+        student = getattr(user, 'student', None)
+        name = None
+        if student:
+            name = f"{student.first_name or ''} {student.last_name or ''}".strip()
+        result.append({
+            'user_id': user.id,
+            'email': user.email,
+            'name': name,
+            'matched_at': m.matched_at.isoformat() if m.matched_at else None
+        })
+
+    return jsonify({'job_id': job.id, 'title': job.title, 'likes': result})
 
 
 @app.route('/bedrijf')
