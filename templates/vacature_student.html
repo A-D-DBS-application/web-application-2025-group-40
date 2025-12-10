@@ -13,32 +13,42 @@
 </div>
 
 {% if job %}
-<div class="vacancy-container">
-  <h2>{{ job.title }}</h2>
-
-  <span class="label">Bedrijf</span>
-  <div class="value">{{ job.company_name }}</div>
-
-  <span class="label">Locatie</span>
-  <div class="value">{{ job.location }}</div>
-
-  <span class="label">Beschrijving</span>
-  <div class="value">{{ job.description }}</div>
-  <div style="margin-top:12px; display:flex; gap:10px;">
-    {% if current_user.is_authenticated and current_user.role == 'student' %}
-      <form action="/jobs/{{ job.id }}/like" method="POST" style="display:inline;">
-        <button type="submit" class="px-4 py-2 bg-swipr text-white rounded-md">👍 Like</button>
-      </form>
-      <form action="/jobs/{{ job.id }}/dislike" method="POST" style="display:inline;">
-        <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md">👎 Dislike</button>
-      </form>
+  {# bepaal bedrijfsnaam robuust: eerst relation job.company, dan job.company_name, anders 'Onbekend' #}
+  {% set company_display = 'Onbekend' %}
+  {% if job.company is defined and job.company %}
+    {% if job.company.name is defined and job.company.name %}
+      {% set company_display = job.company.name %}
     {% endif %}
+  {% elif job.company_name is defined and job.company_name %}
+    {% set company_display = job.company_name %}
+  {% endif %}
+
+  <div class="vacancy-container">
+    <h2>{{ job.title }}</h2>
+
+    <span class="label">Bedrijf</span>
+    <div class="value">{{ company_display }}</div>
+
+    <span class="label">Locatie</span>
+    <div class="value">{{ job.location }}</div>
+
+    <span class="label">Beschrijving</span>
+    <div class="value">{{ job.description }}</div>
+    <div style="margin-top:12px; display:flex; gap:10px;">
+      {% if current_user.is_authenticated and current_user.role == 'student' %}
+        <form action="/jobs/{{ job.id }}/like" method="POST" style="display:inline;">
+          <button type="submit" class="px-4 py-2 bg-swipr text-white rounded-md">👍 Like</button>
+        </form>
+        <form action="/jobs/{{ job.id }}/dislike" method="POST" style="display:inline;">
+          <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md">👎 Dislike</button>
+        </form>
+      {% endif %}
+    </div>
   </div>
-</div>
 {% else %}
-<div class="vacancy-container">
-  <p>Geen vacatures beschikbaar op dit moment.</p>
-</div>
+  <div class="vacancy-container">
+    <p>Geen vacatures beschikbaar op dit moment.</p>
+  </div>
 {% endif %}
 {% endblock %}
 
