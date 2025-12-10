@@ -7,6 +7,7 @@ from datetime import datetime
 from sqlalchemy.dialects.postgresql import ARRAY, DATERANGE
 from collections import Counter
 import re
+from utils.stopwords import load_stopwords_from_db
 
 # ------------------ APP SETUP ------------------
 app = Flask(__name__)
@@ -181,9 +182,9 @@ def tokenize(text):
     if not text:
         return []
 
-    words = re.findall(r'\w+', text.lower())
-    filtered = [w for w in words if w not in STOPWORDS and len(w) > 2]
-    return filtered
+    words = re.findall(r"\w+", text.lower())
+    return [w for w in words if w not in STOPWORDS]
+
 
 
 # ------------------ AUTH / REGISTER HELPERS ------------------
@@ -388,6 +389,15 @@ def recommend_jobs_route():
         })
     return jsonify(result), 200
 
+STOPWORDS = load_stopwords_from_db()
+
+def extract_keywords(text):
+    if not text:
+        return []
+
+    words = re.findall(r"\w+", text.lower())
+
+    return [w for w in words if w not in STOPWORDS]
 
 # ------------------ DB DEBUG (ONE-TIME USE) ------------------
 # with app.app_context():
