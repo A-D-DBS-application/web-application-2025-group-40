@@ -30,6 +30,19 @@ login_manager.init_app(app)
 # als student login vereist is redirect naar login_student
 login_manager.login_view = 'login_student'
 
+# ------------------ Supabase client (optional) ------------------
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+if SUPABASE_URL and SUPABASE_KEY:
+    try:
+        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+    except Exception:
+        supabase = None
+        app.logger.exception('Kon Supabase client niet initialiseren')
+else:
+    supabase = None
+    app.logger.warning('Supabase credentials niet gevonden; Supabase operaties zijn uitgeschakeld')
+
 
 # -----------------------
 # MODELS (volgens ER)
@@ -172,7 +185,20 @@ def index():
 @app.route('/login_bedrijf', methods=['GET', 'POST'])
 def login_bedrijf():
     if request.method == 'POST':
-        return redirect('/recruiter_dashboard')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = AppUser.query.filter_by(email=email).first()
+        if not user or not user.check_password(password):
+            flash("Foute email of wachtwoord!", "danger")
+            return redirect(url_for('login_bedrijf'))
+        if user.role != 'recruiter':
+            flash("Dit account is geen bedrijf/recruiter account.", "danger")
+            return redirect(url_for('login_bedrijf'))
+        login_user(user)
+        flash("Inloggen gelukt.", "success")
+        # Redirect company login to the student dashboard view requested
+        return redirect(url_for('student_dashboard_view'))
+
     return render_template('login_bedrijf.html')
 
 
@@ -280,9 +306,84 @@ def registratie_bedrijf():
         password     = request.form.get('password')
         contact_name = request.form.get('contactName')
         contact_phone= request.form.get('contactPhone', '')
-        # After company registration, redirect directly to the recruiter dashboard
-        # (assumes either a simple landing dashboard or further authentication elsewhere)
-        return redirect('/recruiter_dashboard')
+        # Controleer of e-mail al bestaat lokaal
+        if AppUser.query.filter_by(email=email).first():
+            flash("Email is al in gebruik.", "danger")
+            return redirect(url_for('registratie_bedrijf'))
+
+        # Controleer ook in Supabase (indien geconfigureerd)
+        if supabase:
+            try:
+                existing = supabase.table('app_user').select('id').eq('email', email).execute()
+                if existing and getattr(existing, 'data', None) and len(existing.data) > 0:
+                    flash("Email is al in gebruik (Supabase).", "danger")
+                    return redirect(url_for('registratie_bedrijf'))
+            except Exception:
+                app.logger.exception('Fout bij check Supabase email')
+
+        try:
+            # 1) Schrijf naar Supabase als beschikbaar
+            sup_emp_id = None
+            sup_user_id = None
+            if supabase:
+                try:
+                    timestamp = datetime.utcnow().isoformat()
+                    # Insert employer
+                    res_emp = supabase.table('employer').insert({
+                        'name': company_name,
+                        'contact_email': email,
+                        'created_at': timestamp
+                    }).execute()
+                    if getattr(res_emp, 'error', None):
+                        raise Exception(f"Supabase employer insert fout: {res_emp.error}")
+                    sup_emp_id = res_emp.data[0].get('id') if res_emp.data else None
+
+                    # Insert app_user (bewaar hashed password)
+                    pwd_hash = generate_password_hash(password)
+                    res_user = supabase.table('app_user').insert({
+                        'email': email,
+                        'role': 'recruiter',
+                        'password_hash': pwd_hash,
+                        'created_at': timestamp
+                    }).execute()
+                    if getattr(res_user, 'error', None):
+                        raise Exception(f"Supabase user insert fout: {res_user.error}")
+                    sup_user_id = res_user.data[0].get('id') if res_user.data else None
+
+                    # Insert recruiter link
+                    res_link = supabase.table('recruiter_user').insert({
+                        'employer_id': sup_emp_id,
+                        'user_id': sup_user_id,
+                        'is_admin': True
+                    }).execute()
+                    if getattr(res_link, 'error', None):
+                        raise Exception(f"Supabase recruiter_user insert fout: {res_link.error}")
+                except Exception as se:
+                    app.logger.exception('Supabase opslaan mislukt: %s', se)
+                    flash('Kon gegevens niet naar Supabase schrijven. Probeer later.', 'danger')
+                    return redirect(url_for('registratie_bedrijf'))
+
+            # 2) Schrijf lokaal via SQLAlchemy (zodat de app huidige auth blijft gebruiken)
+            employer = Employer(name=company_name, contact_email=email)
+            db.session.add(employer)
+            db.session.flush()
+
+            user = AppUser(email=email, role='recruiter')
+            user.set_password(password)
+            db.session.add(user)
+            db.session.flush()
+
+            rec = RecruiterUser(employer_id=employer.id, user_id=user.id, is_admin=True)
+            db.session.add(rec)
+            db.session.commit()
+
+            flash("Account aangemaakt. Je kunt nu inloggen.", "success")
+            return redirect(url_for('login_bedrijf'))
+        except Exception as e:
+            db.session.rollback()
+            app.logger.exception('Fout bij registratie bedrijf: %s', e)
+            flash("Kon bedrijf niet registreren. Probeer opnieuw.", "danger")
+            return redirect(url_for('registratie_bedrijf'))
     return render_template('registratie_bedrijf.html')
 
 
@@ -349,6 +450,17 @@ def student_dashboard():
         abort(403)
     matched_job_ids = [m.job_id for m in current_user.matches]
     jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids)).all()
+    return render_template('student_dashboard.html', jobs=jobs)
+
+
+@app.route('/student_dashboard_view')
+@login_required
+def student_dashboard_view():
+    """Shared view of the student dashboard that can be used after bedrijf login.
+    This does not enforce the role==student check so recruiters can be redirected here.
+    """
+    matched_job_ids = [m.job_id for m in current_user.matches] if getattr(current_user, 'matches', None) else []
+    jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids)).all() if matched_job_ids else JobListing.query.all()
     return render_template('student_dashboard.html', jobs=jobs)
 
 
