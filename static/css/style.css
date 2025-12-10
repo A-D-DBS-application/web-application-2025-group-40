@@ -355,59 +355,49 @@ ul.vacature-list li strong {
 /* ===== Registratie student ===== */
 
 .student-register-body {
-  background: #f0f8ff; /* zacht blauw */
-  font-family: 'Segoe UI', 'Roboto', sans-serif; /* modern en leesbaar */
+  background: #f0f8ff; /* lichtblauwe achtergrond */
 }
 
 .student-register-title {
   text-align: center;
-  color: #007BFF; /* helder blauw */
-  font-size: 2rem; /* groter en opvallend */
-  font-weight: bold;
-  font-family: 'Poppins', 'Segoe UI', sans-serif; /* mooi lettertype */
-  margin-bottom: 20px;
+  color: #007bff;              /* blauw accent */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* modern, strak lettertype */
+  font-size: 2rem;             /* iets groter voor nadruk */
+  font-weight: 600;            /* semi-bold voor balans */
+  margin-bottom: 25px;
+  letter-spacing: 0.5px;       /* subtiele spatiëring */
 }
 
-.student-register input:invalid {
-  border: 2px solid #007BFF;
-  border-radius: 5px;
+.student-register input {
+  border: 1px solid #007bff; /* standaard blauwe rand */
+  border-radius: 6px;
+  padding: 10px;
 }
 
-.student-register input:valid {
-  border: 2px solid #0056B3;
-  border-radius: 5px;
+.student-register input:focus {
+  outline: none;
+  border-color: #0056b3; /* donkerder blauw bij focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
 }
 
-.alert-success { 
-  color: green; 
-  margin-bottom: 10px; 
-  font-weight: 500;
-}
-
-.alert-error { 
-  color: red; 
-  margin-bottom: 10px; 
-  font-weight: 500;
-}
-
-/* Grote blauwe kader voor de registreer-knop */
 .student-register button {
-  display: block;
   width: 100%;
-  padding: 15px;
-  background-color: #007BFF;
+  padding: 12px;
+  margin-top: 20px;
+  background-color: #007bff; /* knop blauw */
   color: white;
-  font-size: 1.2rem;
-  font-weight: bold;
   border: none;
-  border-radius: 10px;
+  border-radius: 6px;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .student-register button:hover {
-  background-color: #0056B3; /* donkerder blauw bij hover */
+  background-color: #0056b3; /* donkerder blauw bij hover */
 }
+
+
 
 
 /* ===== Vacature student ===== */
