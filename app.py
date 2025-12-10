@@ -179,7 +179,6 @@ def login_student():
             flash("Dit account is geen student account.", "danger")
             return redirect(url_for('login_student'))
         login_user(user)
-        flash("Inloggen gelukt.", "success")
         return redirect('/vacatures_student')
     return render_template('login_student.html')
 
@@ -410,12 +409,10 @@ def like_job(job_id):
     job = JobListing.query.get_or_404(job_id)
     existing = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first()
     if existing:
-        flash("Je hebt deze job al geliked.", "info")
         return redirect('/match_page')
     m = Match(user_id=current_user.id, job_id=job.id)
     db.session.add(m)
     db.session.commit()
-    flash("Match geregistreerd! Wacht op bevestiging van recruiter.", "success")
     return redirect('/match_page')
 
 
@@ -426,11 +423,9 @@ def dislike_job(job_id):
         abort(403)
     m = Match.query.filter_by(user_id=current_user.id, job_id=job_id).first()
     if not m:
-        flash("Geen match gevonden om te verwijderen.", "info")
         return redirect('/vacatures_student')
     db.session.delete(m)
     db.session.commit()
-    flash("Match verwijderd.", "success")
     return redirect('/vacatures_student')
 
 
