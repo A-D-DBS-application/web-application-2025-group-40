@@ -393,7 +393,12 @@ def create_job():
 @login_required
 def job_detail(job_id):
     job = JobListing.query.get_or_404(job_id)
-    return render_template('job_detail.html', job=job)
+    # reuse vacancy detail template for students
+    job.company_name = job.employer.name if job.employer else "Onbekend"
+    liked = False
+    if current_user.is_authenticated and hasattr(current_user, 'id'):
+        liked = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first() is not None
+    return render_template('vacature_student.html', job=job, liked=liked)
 
 
 # Student likes a job -> create match
@@ -456,8 +461,13 @@ def employer_profile(employer_id):
 
 @app.route("/student/vacature/<int:job_id>")
 def student_vacature(job_id):
-    job = JobListing.query.get(job_id)
-    return render_template("student_vacature.html", job=job)
+    job = JobListing.query.get_or_404(job_id)
+    # Provide company_name and liked flag for the student vacancy view
+    job.company_name = job.employer.name if job.employer else "Onbekend"
+    liked = False
+    if current_user.is_authenticated and hasattr(current_user, 'id'):
+        liked = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first() is not None
+    return render_template("vacature_student.html", job=job, liked=liked)
 
 
 @app.route("/test/vacature")
