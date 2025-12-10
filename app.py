@@ -198,7 +198,7 @@ def login_student():
             return redirect(url_for('login_student'))
         login_user(user)
         flash("Inloggen gelukt.", "success")
-        return redirect(url_for('vacatures_student'))
+        return redirect('/vacatures_student')
     return render_template('login_student.html')
 
 
