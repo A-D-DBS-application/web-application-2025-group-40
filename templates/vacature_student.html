@@ -75,7 +75,7 @@
         {% if current_user.is_authenticated and current_user.role == 'student' %}
           <div class="flex gap-3 mt-6">
             <form action="/jobs/{{ job.id }}/like" method="POST">
-              <button type="submit" class="px-6 py-3 bg-swipr text-white rounded-md hover:bg-[#0056B3] transition-colors">
+              <button type="submit" class="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors">
                 👍 Like
               </button>
             </form>
