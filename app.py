@@ -342,7 +342,7 @@ def logout():
 
 
 # Student swipe dashboard
-@app.route('/student')
+@app.route('/student_dashboard')
 @login_required
 def student_dashboard():
     if current_user.role != 'student':
