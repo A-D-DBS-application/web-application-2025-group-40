@@ -540,20 +540,52 @@ def vacatures_student():
     if current_user.role != 'student':
         flash('Alleen studenten kunnen deze pagina bekijken.', 'danger')
         return redirect(url_for('index'))
-    # Get all available jobs, excluding ones the student has already liked or disliked
+
+    # Import stopwords loader
+    from utils.stopwords import load_stopwords_from_db
+
+    # Get stopwords from DB if possible, else fallback
+    try:
+        stopwords = load_stopwords_from_db()
+        if not stopwords:
+            stopwords = STOPWORDS
+    except Exception:
+        stopwords = STOPWORDS
+
+    # Get all jobs not liked or disliked by the student
     jobs = JobListing.query.all()
-    jobs_with_liked = []
+    liked_matches = Match.query.filter_by(user_id=current_user.id).all()
+    liked_job_ids = [m.job_id for m in liked_matches]
+    disliked_job_ids = [d.job_id for d in Dislike.query.filter_by(user_id=current_user.id).all()]
+
+    # Collect words from liked jobs (title, description, location)
+    liked_words = []
+    for m in liked_matches:
+        job = JobListing.query.get(m.job_id)
+        if job:
+            fields = f"{job.title} {job.description or ''} {job.location or ''}"
+            liked_words.extend(fields.lower().split())
+    # Remove stopwords
+    liked_words = [w for w in liked_words if w not in stopwords]
+    liked_word_set = set(liked_words)
+
+    def job_fit_score(job):
+        # Score = overlap of job words with liked_word_set
+        fields = f"{job.title} {job.description or ''} {job.location or ''}"
+        job_words = [w for w in fields.lower().split() if w not in stopwords]
+        return len(set(job_words) & liked_word_set)
+
+    jobs_to_show = []
     for job in jobs:
-        # Skip jobs the student has already liked or disliked
-        liked = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first() is not None
-        disliked = Dislike.query.filter_by(user_id=current_user.id, job_id=job.id).first() is not None
-        
-        if liked or disliked:
-            continue  # Skip this job
-        
+        if job.id in liked_job_ids or job.id in disliked_job_ids:
+            continue
         job.company_name = job.employer.name if job.employer else "Onbekend"
-        jobs_with_liked.append({'job': job, 'liked': False})
-    
+        jobs_to_show.append(job)
+
+    # Sort jobs by fit score (descending)
+    jobs_sorted = sorted(jobs_to_show, key=job_fit_score, reverse=True)
+    jobs_with_liked = [{'job': job, 'liked': False} for job in jobs_sorted]
+
     return render_template('vacatures_list.html', jobs=jobs_with_liked)
 
 
