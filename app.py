@@ -594,10 +594,11 @@ def vacatures_student():
             continue
         job.company_name = job.employer.name if job.employer else "Onbekend"
         overlap, pct = job_fit_score_and_pct(job)
-        jobs_to_show.append({'job': job, 'liked': False, 'fit_pct': pct})
+        jobs_to_show.append({'job': job, 'liked': False, 'fit_pct': pct, 'overlap': overlap})
 
-    # Sort jobs by fit score (descending)
-    jobs_sorted = sorted(jobs_to_show, key=lambda x: job_fit_score_and_pct(x['job'])[0], reverse=True)
+    # Sort jobs by fit percentage (descending), then by overlap score (descending)
+    # This ensures highest matching jobs appear first
+    jobs_sorted = sorted(jobs_to_show, key=lambda x: (x['fit_pct'], x['overlap']), reverse=True)
 
     return render_template('vacatures_list.html', jobs=jobs_sorted)
 
