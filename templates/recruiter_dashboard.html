@@ -79,11 +79,19 @@
         {% if jobs and jobs|length > 0 %}
           <ul class="space-y-3">
             {% for job in jobs %}
-              <li class="p-4 border rounded-lg">
-                <div class="flex items-center gap-4">
+              <li id="job-{{ job.id }}" class="p-4 border rounded-lg">
+                <div class="flex items-center justify-between gap-4">
                   <div>
                     <h3 class="font-semibold text-gray-800">{{ job.title }}</h3>
                     <p class="text-sm text-gray-500">{{ job.location }}</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button onclick="confirmDelete({{ job.id }})" title="Verwijderen" class="text-red-500 hover:text-red-700 p-2 rounded-md">
+                      <!-- vuilbak icoon -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
                 {% if job.description %}
@@ -100,5 +108,45 @@
 
   </main>
 </div>
+<script>
+  async function confirmDelete(jobId) {
+    if (!confirm('Weet je zeker dat je deze vacature wilt verwijderen?')) return;
+    try {
+      const res = await fetch(`/jobs/${jobId}/delete`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+      if (!res.ok) {
+        // probeer JSON, anders plain text
+        let msg = 'Fout bij verwijderen';
+        try {
+          const body = await res.json();
+          msg = body.error || msg;
+        } catch (jsonErr) {
+          try {
+            msg = await res.text();
+          } catch (textErr) {
+            /* fallback */
+          }
+        }
+        alert(msg);
+        return;
+      }
+
+      // verwijder item uit DOM
+      const el = document.getElementById(`job-${jobId}`);
+      if (el) el.remove();
+
+      // update actieve vacatures teller als aanwezig
+      const counter = document.querySelector('.text-2xl.font-bold.text-swipr');
+      if (counter && !isNaN(parseInt(counter.textContent))) {
+        const val = parseInt(counter.textContent) - 1;
+        counter.textContent = val >= 0 ? val : 0;
+      }
+
+      alert('Vacature verwijderd');
+    } catch (e) {
+      console.error(e);
+      alert('Fout bij verwijderen (netwerkfout)');
+    }
+  }
+</script>
 {% endblock %}
 

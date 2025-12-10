@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -229,6 +229,25 @@ def login_route():
     return render_template('login.html')
 
 
+@app.route('/login_bedrijf', methods=['GET', 'POST'])
+def login_bedrijf():
+    """Login voor recruiters/bedrijven —zelfde flow als student login maar controleert rol."""
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user, error = authenticate_user(email, password)
+        if error:
+            return jsonify({'error': error}), 400
+
+        # Zorg dat alleen recruiters/bedrijven via deze route kunnen inloggen
+        if not user or user.role != 'recruiter':
+            return jsonify({'error': 'Geen bedrijf/recruiter account gevonden voor deze inloggegevens.'}), 403
+
+        login_user(user)
+        return jsonify({'success': f'Ingelogd als {user.role}!'}), 200
+    return render_template('login_bedrijf.html')
+
+
 @app.route('/logout')
 @login_required
 def logout_route():
@@ -328,6 +347,95 @@ def like_job(job_id):
     db.session.add(like)
     db.session.commit()
     return jsonify({'message': 'Job geliked'}), 201
+
+
+# ------------------ RECRUITER: LIST & DELETE OWN JOBS ------------------
+@app.route('/api/my-jobs', methods=['GET'])
+@login_required
+def get_my_jobs():
+    # Haal employer ids waar huidige gebruiker recruiter voor is
+    recruiter_links = RecruiterUser.query.filter_by(user_id=current_user.id).all()
+    employer_ids = [link.employer_id for link in recruiter_links]
+
+    if not employer_ids:
+        return jsonify([]), 200
+
+    jobs = JobListing.query.filter(JobListing.employer_id.in_(employer_ids)).all()
+    result = []
+    for job in jobs:
+        result.append({
+            'id': int(job.id),
+            'title': job.title,
+            'location': job.location,
+            'description': job.description or ''
+        })
+    return jsonify(result), 200
+
+
+@app.route('/jobs/<int:job_id>/delete', methods=['POST'])
+@login_required
+def delete_job(job_id):
+    job = JobListing.query.get(job_id)
+    if not job:
+        app.logger.info('Delete attempt failed: job %s not found (user %s)', job_id, getattr(current_user, 'id', None))
+        return jsonify({'error': 'Job bestaat niet'}), 404
+
+    app.logger.info('Delete attempt for job %s (employer_id=%s) by user %s', job_id, job.employer_id, getattr(current_user, 'id', None))
+
+    # Controleer of huidige gebruiker recruiter is voor het bedrijf van de vacature
+    recruiter_link = RecruiterUser.query.filter_by(
+        user_id=current_user.id,
+        employer_id=job.employer_id
+    ).first()
+
+    if not recruiter_link:
+        app.logger.info('Delete denied: user %s is not recruiter for employer %s', current_user.id, job.employer_id)
+        return jsonify({'error': 'Je hebt geen toestemming om deze vacature te verwijderen'}), 403
+
+    try:
+        # Verwijder gerelateerde likes en matches
+        JobLike.query.filter_by(job_id=job_id).delete()
+        Match.query.filter_by(job_id=job_id).delete()
+
+        db.session.delete(job)
+        db.session.commit()
+        app.logger.info('Vacature %s verwijderd door user %s', job_id, current_user.id)
+        return jsonify({'message': 'Vacature verwijderd'}), 200
+    except Exception as e:
+        db.session.rollback()
+        app.logger.exception('Fout bij verwijderen vacature %s', job_id)
+        # stuur foutmelding terug (veilig: korte boodschap)
+        return jsonify({'error': 'Interne serverfout bij verwijderen (zie server logs)'}), 500
+
+@app.route('/jobs/<int:job_id>/delete', methods=['POST'])
+@login_required
+def delete_job(job_id):
+    job = JobListing.query.get(job_id)
+    if not job:
+        return jsonify({'error': 'Job bestaat niet'}), 404
+
+    # Check of huidige recruiter eigenaar is van dit bedrijf
+    recruiter_link = RecruiterUser.query.filter_by(
+        user_id=current_user.id,
+        employer_id=job.employer_id
+    ).first()
+    
+    if not recruiter_link:
+        return jsonify({'error': 'Je hebt geen toestemming om deze vacature te verwijderen'}), 403
+
+    try:
+        # Verwijder gerelateerde likes en matches
+        JobLike.query.filter_by(job_id=job_id).delete()
+        Match.query.filter_by(job_id=job_id).delete()
+        
+        # Verwijder de job
+        db.session.delete(job)
+        db.session.commit()
+        return jsonify({'message': 'Vacature verwijderd'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Fout bij verwijdering: {str(e)}'}), 500
+        
 
 
 # ------------------ RECOMMENDATION LOGIC ------------------

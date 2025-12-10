@@ -220,8 +220,9 @@ ul.vacature-list li strong {
   margin: 80px auto;
 }
 
+/* Make login card use company red by default */
 .login-container h1 {
-  color: #007bff;
+  color: #ff4b5c;
   margin-bottom: 30px;
 }
 
@@ -240,7 +241,7 @@ ul.vacature-list li strong {
   margin-top: 20px;
   border: none;
   border-radius: 8px;
-  background-color: #007bff;
+  background-color: #ff4b5c; /* company red */
   color: white;
   font-size: 1.1rem;
   cursor: pointer;
@@ -248,13 +249,13 @@ ul.vacature-list li strong {
 }
 
 .login-container button:hover {
-  background-color: #0056b3;
+  background-color: #e04352;
 }
 
 .login-container .register-link {
   margin-top: 15px;
   display: block;
-  color: #007bff;
+  color: #ff4b5c;
   text-decoration: none;
 }
 
@@ -313,8 +314,11 @@ ul.vacature-list li strong {
   margin: 50px auto;
   padding: 20px;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+  /* prominent red border to create the big red frame */
+  border: 4px solid #ff4b5c;
+  padding: 28px;
 }
 
 .form-container h2 {
@@ -330,10 +334,48 @@ ul.vacature-list li strong {
 
 .form-container input {
   width: 95%;
-  padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 12px 14px;
+  margin-top: 8px;
+  border: 2px solid #ffd6d9; /* soft red by default */
+  border-radius: 8px;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.form-container label {
+  color: #b30020; /* darker red for labels */
+}
+
+.form-container input:focus {
+  outline: none;
+  border-color: #ff4b5c;
+  box-shadow: 0 6px 18px rgba(224,67,82,0.12);
+}
+
+.form-container .register-button {
+  display: block;
+  width: 100%;
+  padding: 14px 18px;
+  margin-top: 18px;
+  background-color: #ff4b5c;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(224,67,82,0.18);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.form-container .register-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(224,67,82,0.22);
+}
+
+.form-container .small-note {
+  text-align: center;
+  margin-top: 10px;
+  color: #6b0012;
 }
 
 .form-row {
