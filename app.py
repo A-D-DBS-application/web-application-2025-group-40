@@ -499,55 +499,7 @@ def student_dashboard():
     return render_template('student_dashboard.html', jobs=jobs)
 
 
-@app.route('/mijn_profiel', methods=['GET', 'POST'])
-@login_required
-def mijn_profiel():
-    """Generic profile page for students and recruiters. Students can edit
-    first/last name and email/password. Recruiters can edit email/password and
-    see their employer name (company edits handled separately).
-    """
-    user = current_user
-    # Only students can use this profile page. Prevent recruiters from accessing student profile.
-    if getattr(user, 'role', None) != 'student':
-        abort(403)
-    if request.method == 'POST':
-        # update email/password and student fields if present
-        email = request.form.get('email')
-        password = request.form.get('password')
-        first_name = request.form.get('firstName')
-        last_name = request.form.get('lastName')
 
-        # validate unique email
-        if email and email != user.email:
-            if AppUser.query.filter_by(email=email).first():
-                flash('Email is al in gebruik.', 'danger')
-                return redirect(url_for('mijn_profiel'))
-            user.email = email
-
-        if password:
-            user.set_password(password)
-
-        # student fields
-        if getattr(user, 'student', None):
-            student = user.student
-            if first_name is not None:
-                student.first_name = first_name
-            if last_name is not None:
-                student.last_name = last_name
-            db.session.add(student)
-
-        db.session.add(user)
-        db.session.commit()
-        flash('Profiel bijgewerkt.', 'success')
-        return redirect(url_for('mijn_profiel'))
-
-    # GET: render the form populated with current data
-    student = getattr(user, 'student', None)
-    bedrijf_naam = None
-    if getattr(user, 'recruiter', None) and user.recruiter.employer:
-        bedrijf_naam = user.recruiter.employer.name
-
-    return render_template('mijn_profiel.html', user=user, student=student, bedrijf_naam=bedrijf_naam)
 
 
 @app.route('/student_dashboard_view')
