@@ -179,7 +179,7 @@ def index():
 @app.route('/login_bedrijf', methods=['GET', 'POST'])
 def login_bedrijf():
     if request.method == 'POST':
-        return redirect(url_for('bedrijf_home'))
+        return redirect('/recruiter_dashboard')
     return render_template('login_bedrijf.html')
 
 
