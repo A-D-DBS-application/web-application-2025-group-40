@@ -30,14 +30,12 @@
         <div class="value">{{ item.job.description }}</div>
         
         <div style="margin-top: 15px; display: flex; gap: 10px;">
-          {% if current_user.is_authenticated and current_user.role == 'student' %}
-            <form action="/jobs/{{ item.job.id }}/like" method="POST" style="display:inline;">
-              <button type="submit" class="px-4 py-2 bg-swipr text-white rounded-md">👍 Like</button>
-            </form>
-            <form action="/jobs/{{ item.job.id }}/dislike" method="POST" style="display:inline;">
-              <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md">👎 Dislike</button>
-            </form>
-          {% endif %}
+          <form action="/jobs/{{ item.job.id }}/like" method="POST" style="display:inline;">
+            <button type="submit" class="px-4 py-2 bg-swipr text-white rounded-md">👍 Like</button>
+          </form>
+          <form action="/jobs/{{ item.job.id }}/dislike" method="POST" style="display:inline;">
+            <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md">👎 Dislike</button>
+          </form>
         </div>
       </div>
     {% endfor %}

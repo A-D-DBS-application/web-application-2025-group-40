@@ -120,6 +120,17 @@ class Match(db.Model):
     job = db.relationship('JobListing', back_populates='matches')
 
 
+class Dislike(db.Model):
+    __tablename__ = 'dislike'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('app_user.id'), nullable=False)
+    job_id = db.Column(db.BigInteger, db.ForeignKey('job_listing.id'), nullable=False)
+    disliked_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('AppUser', backref='dislikes')
+    job = db.relationship('JobListing', backref='dislikes')
+
+
 class JobListingSector(db.Model):
     __tablename__ = 'job_listing_sector'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
@@ -409,11 +420,11 @@ def like_job(job_id):
     job = JobListing.query.get_or_404(job_id)
     existing = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first()
     if existing:
-        return redirect('/match_page')
+        return redirect('/vacatures_student')
     m = Match(user_id=current_user.id, job_id=job.id)
     db.session.add(m)
     db.session.commit()
-    return redirect('/match_page')
+    return redirect('/vacatures_student')
 
 
 @app.route('/jobs/<int:job_id>/dislike', methods=['POST'])
@@ -421,11 +432,12 @@ def like_job(job_id):
 def dislike_job(job_id):
     if current_user.role != 'student':
         abort(403)
-    m = Match.query.filter_by(user_id=current_user.id, job_id=job_id).first()
-    if not m:
-        return redirect('/vacatures_student')
-    db.session.delete(m)
-    db.session.commit()
+    # Check if already disliked
+    existing_dislike = Dislike.query.filter_by(user_id=current_user.id, job_id=job_id).first()
+    if not existing_dislike:
+        dislike = Dislike(user_id=current_user.id, job_id=job_id)
+        db.session.add(dislike)
+        db.session.commit()
     return redirect('/vacatures_student')
 
 
@@ -520,13 +532,20 @@ def vacatures_student():
     if current_user.role != 'student':
         flash('Alleen studenten kunnen deze pagina bekijken.', 'danger')
         return redirect(url_for('index'))
-    # Get all available jobs with like status
+    # Get all available jobs, excluding ones the student has already liked or disliked
     jobs = JobListing.query.all()
     jobs_with_liked = []
     for job in jobs:
-        job.company_name = job.employer.name if job.employer else "Onbekend"
+        # Skip jobs the student has already liked or disliked
         liked = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first() is not None
-        jobs_with_liked.append({'job': job, 'liked': liked})
+        disliked = Dislike.query.filter_by(user_id=current_user.id, job_id=job.id).first() is not None
+        
+        if liked or disliked:
+            continue  # Skip this job
+        
+        job.company_name = job.employer.name if job.employer else "Onbekend"
+        jobs_with_liked.append({'job': job, 'liked': False})
+    
     return render_template('vacatures_list.html', jobs=jobs_with_liked)
 
 
