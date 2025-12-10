@@ -406,12 +406,27 @@ def like_job(job_id):
     existing = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first()
     if existing:
         flash("Je hebt deze job al geliked.", "info")
-        return redirect(url_for('student_dashboard'))
+        return redirect('/match_page')
     m = Match(user_id=current_user.id, job_id=job.id)
     db.session.add(m)
     db.session.commit()
     flash("Match geregistreerd! Wacht op bevestiging van recruiter.", "success")
-    return redirect(url_for('student_dashboard'))
+    return redirect('/match_page')
+
+
+@app.route('/jobs/<int:job_id>/dislike', methods=['POST'])
+@login_required
+def dislike_job(job_id):
+    if current_user.role != 'student':
+        abort(403)
+    m = Match.query.filter_by(user_id=current_user.id, job_id=job_id).first()
+    if not m:
+        flash("Geen match gevonden om te verwijderen.", "info")
+        return redirect('/vacatures_student')
+    db.session.delete(m)
+    db.session.commit()
+    flash("Match verwijderd.", "success")
+    return redirect('/vacatures_student')
 
 
 # Matches overzicht
@@ -505,10 +520,14 @@ def vacatures_student():
     if job:
         # Transform JobListing to match vacature_student.html expectations
         job.company_name = job.employer.name if job.employer else "Onbekend"
-        return render_template('vacature_student.html', job=job)
+        # determine if current student already liked this job
+        liked = False
+        if current_user.is_authenticated and hasattr(current_user, 'id'):
+            liked = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first() is not None
+        return render_template('vacature_student.html', job=job, liked=liked)
     else:
         # If no jobs available, show a message
-        return render_template('vacature_student.html', job=None)
+        return render_template('vacature_student.html', job=None, liked=False)
 
 
 # -----------------------
