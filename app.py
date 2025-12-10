@@ -22,6 +22,15 @@ else:
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# If using a remote Postgres (e.g. Supabase) reduce pool size to avoid connection limits
+if DATABASE_URL and DATABASE_URL.startswith(('postgres://', 'postgresql://')):
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_size': 1,
+        'max_overflow': 0,
+        'pool_timeout': 30,
+        'pool_pre_ping': True
+    }
+
 db = SQLAlchemy(app)
 
 
@@ -196,8 +205,8 @@ def login_bedrijf():
             return redirect(url_for('login_bedrijf'))
         login_user(user)
         flash("Inloggen gelukt.", "success")
-        # Redirect company login to the student dashboard view requested
-        return redirect(url_for('student_dashboard_view'))
+        # Redirect company login to the recruiter dashboard
+        return redirect(url_for('recruiter_dashboard_view'))
 
     return render_template('login_bedrijf.html')
 
@@ -464,17 +473,11 @@ def student_dashboard_view():
     return render_template('student_dashboard.html', jobs=jobs)
 
 
-# Recruiter dashboard
+# Backwards-compatibility route: redirect /recruiter -> /recruiter_dashboard
 @app.route('/recruiter')
 @login_required
-def recruiter_dashboard():
-    if current_user.role != 'recruiter':
-        abort(403)
-    rec = current_user.recruiter
-    jobs = []
-    if rec and rec.employer:
-        jobs = rec.employer.job_listings
-    return render_template('recruiter_dashboard.html', jobs=jobs)
+def recruiter_redirect():
+    return redirect(url_for('recruiter_dashboard_view'))
 
 
 # Create job (recruiter)
@@ -674,6 +677,11 @@ def vacatures_student():
 # -----------------------
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        db_uri = app.config.get('SQLALCHEMY_DATABASE_URI', '') or ''
+        # Only auto-create tables for local SQLite during development
+        if 'sqlite' in db_uri:
+            db.create_all()
+        else:
+            app.logger.info('Skipping db.create_all for non-sqlite DB to avoid connection/pool issues. Use migrations instead.')
     app.run(debug=True)
 # ...existing code...
