@@ -261,8 +261,7 @@ def vacature_opslaan():
     job = JobListing(employer_id=employer.id,
                      title=job_title,
                      description=description,
-                     location=location,
-                     created_at=datetime.utcnow())
+                     location=location)
     db.session.add(job)
     db.session.commit()
 
