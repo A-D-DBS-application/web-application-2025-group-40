@@ -569,24 +569,27 @@ def vacatures_student():
     liked_words = [w for w in liked_words if w not in stopwords]
     liked_word_set = set(liked_words)
 
-    def job_fit_score(job):
+    def job_fit_score_and_pct(job):
         # Score = overlap of job words with liked_word_set
         fields = f"{job.title} {job.description or ''} {job.location or ''}"
         job_words = [w for w in fields.lower().split() if w not in stopwords]
-        return len(set(job_words) & liked_word_set)
+        overlap = len(set(job_words) & liked_word_set)
+        total = len(set(job_words))
+        pct = int((overlap / total) * 100) if total > 0 else 0
+        return overlap, pct
 
     jobs_to_show = []
     for job in jobs:
         if job.id in liked_job_ids or job.id in disliked_job_ids:
             continue
         job.company_name = job.employer.name if job.employer else "Onbekend"
-        jobs_to_show.append(job)
+        overlap, pct = job_fit_score_and_pct(job)
+        jobs_to_show.append({'job': job, 'liked': False, 'fit_pct': pct})
 
     # Sort jobs by fit score (descending)
-    jobs_sorted = sorted(jobs_to_show, key=job_fit_score, reverse=True)
-    jobs_with_liked = [{'job': job, 'liked': False} for job in jobs_sorted]
+    jobs_sorted = sorted(jobs_to_show, key=lambda x: job_fit_score_and_pct(x['job'])[0], reverse=True)
 
-    return render_template('vacatures_list.html', jobs=jobs_with_liked)
+    return render_template('vacatures_list.html', jobs=jobs_sorted)
 
 
 # -----------------------
