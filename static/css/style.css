@@ -355,24 +355,60 @@ ul.vacature-list li strong {
 /* ===== Registratie student ===== */
 
 .student-register-body {
-  background: #f0f8ff;
+  background: #f0f8ff; /* zacht blauw */
+  font-family: 'Segoe UI', 'Roboto', sans-serif; /* modern en leesbaar */
 }
 
 .student-register-title {
   text-align: center;
-  color: #007BFF;
+  color: #007BFF; /* helder blauw */
+  font-size: 2rem; /* groter en opvallend */
+  font-weight: bold;
+  font-family: 'Poppins', 'Segoe UI', sans-serif; /* mooi lettertype */
+  margin-bottom: 20px;
 }
 
 .student-register input:invalid {
-  border-color: #007BFF;
+  border: 2px solid #007BFF;
+  border-radius: 5px;
 }
 
 .student-register input:valid {
-  border-color: #0056B3;
+  border: 2px solid #0056B3;
+  border-radius: 5px;
 }
 
-.alert-success { color: green; margin-bottom: 10px; }
-.alert-error { color: red; margin-bottom: 10px; }
+.alert-success { 
+  color: green; 
+  margin-bottom: 10px; 
+  font-weight: 500;
+}
+
+.alert-error { 
+  color: red; 
+  margin-bottom: 10px; 
+  font-weight: 500;
+}
+
+/* Grote blauwe kader voor de registreer-knop */
+.student-register button {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  background-color: #007BFF;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.student-register button:hover {
+  background-color: #0056B3; /* donkerder blauw bij hover */
+}
+
 
 /* ===== Vacature student ===== */
 
