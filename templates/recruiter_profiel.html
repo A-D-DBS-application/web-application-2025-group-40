@@ -76,23 +76,6 @@
                  class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
         </label>
 
-        <label class="flex flex-col md:col-span-2">
-          <span class="text-sm font-medium text-gray-700">Beschrijving</span>
-          <textarea name="description" rows="4" class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr">{{ employer.description if employer else '' }}</textarea>
-        </label>
-
-        <label class="flex items-center gap-3 md:col-span-2">
-          <input type="checkbox" name="is_agency" id="is_agency" {% if employer and employer.is_agency %}checked{% endif %} />
-          <span class="text-sm text-gray-700">Is agency</span>
-        </label>
-
-        <hr class="md:col-span-2" />
-
-        <label class="flex flex-col md:col-span-2">
-          <span class="text-sm font-medium text-gray-700">Account e-mail</span>
-          <input name="email" type="email" placeholder="jij@example.com" value="{{ user.email or '' }}"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
-        </label>
 
         <label class="flex flex-col md:col-span-1">
           <span class="text-sm font-medium text-gray-700">Nieuw wachtwoord</span>
