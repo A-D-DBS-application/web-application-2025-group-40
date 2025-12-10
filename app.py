@@ -128,6 +128,7 @@ class JobListing(db.Model):
     __tablename__ = 'job_listing'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     employer_id = db.Column(db.Integer, db.ForeignKey('employer.id'), nullable=False)
+    posted_company_name = db.Column(db.String(200))
     title = db.Column(db.String(140), nullable=False)
     description = db.Column(db.Text)
     location = db.Column(db.String(120))
@@ -373,8 +374,9 @@ def vacature_opslaan():
         db.session.add(employer)
         db.session.commit()
 
-    # create the job and persist
+    # create the job and persist. Store the posted_company_name so it can differ from employer.name
     job = JobListing(employer_id=employer.id,
+                     posted_company_name=company_name,
                      title=job_title,
                      description=description,
                      location=location)
@@ -635,12 +637,14 @@ def create_job():
     if request.method == 'POST':
         title = request.form.get('title')
         location = request.form.get('location')
+        company_name = request.form.get('company_name') or (rec.employer.name if rec.employer else None)
         salary = request.form.get('salary') or None
         periode = request.form.get('periode')
         description = request.form.get('description')
         requirements = request.form.get('requirements')
         job = JobListing(
             employer_id=rec.employer.id,
+            posted_company_name=company_name,
             title=title,
             location=location,
             salary=salary,
@@ -661,7 +665,8 @@ def create_job():
 def job_detail(job_id):
     job = JobListing.query.get_or_404(job_id)
     # reuse vacancy detail template for students
-    job.company_name = job.employer.name if job.employer else "Onbekend"
+    # Prefer the posted company name (may differ from employer record) when present
+    job.company_name = job.posted_company_name or (job.employer.name if job.employer else "Onbekend")
     liked = False
     if current_user.is_authenticated and hasattr(current_user, 'id'):
         liked = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first() is not None
@@ -760,7 +765,7 @@ def employer_profile(employer_id):
 def student_vacature(job_id):
     job = JobListing.query.get_or_404(job_id)
     # Provide company_name and liked flag for the student vacancy view
-    job.company_name = job.employer.name if job.employer else "Onbekend"
+    job.company_name = job.posted_company_name or (job.employer.name if job.employer else "Onbekend")
     liked = False
     if current_user.is_authenticated and hasattr(current_user, 'id'):
         liked = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first() is not None
