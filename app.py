@@ -24,8 +24,6 @@ else:
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)   # <-- heel belangrijk: NA db = SQLAlchemy(app)
-
 
 
 login_manager = LoginManager()
