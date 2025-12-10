@@ -1,4 +1,3 @@
-# ...existing code...
 import os
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
@@ -8,40 +7,26 @@ from flask_login import (LoginManager, UserMixin, login_user,
 from werkzeug.security import generate_password_hash, check_password_hash
 from supabase import create_client
 from dotenv import load_dotenv
+from flask_migrate import Migrate
 
 # laad .env
 load_dotenv()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-
-print("SUPABASE_URL:", SUPABASE_URL)
-print("SUPABASE_KEY (start):", (SUPABASE_KEY[:20] + "...") if SUPABASE_KEY else None)
-
-# maak supabase client alleen als beide variabelen bestaan
-supabase = None
-if SUPABASE_URL and SUPABASE_KEY:
-    try:
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-    except Exception as e:
-        print("Supabase client kon niet aangemaakt worden:", e)
-
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
 
-# Database config: gebruik DATABASE_URL wanneer beschikbaar (bv. Postgres),
-# anders fallback naar sqlite voor development.
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:
     app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tinderjobs.db'
 
-print("SQLALCHEMY_DATABASE_URI =", app.config['SQLALCHEMY_DATABASE_URI'])
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)   # <-- heel belangrijk: NA db = SQLAlchemy(app)
+
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
