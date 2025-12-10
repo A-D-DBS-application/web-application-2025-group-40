@@ -113,6 +113,7 @@ class Employer(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(120), nullable=False)
     location = db.Column(db.String(120))
+    contact_person = db.Column(db.String(120))
     btw_number = db.Column(db.String(60))
     description = db.Column(db.Text)
     contact_email = db.Column(db.String(120))
@@ -303,7 +304,7 @@ def recruiter_profiel():
 
         # Employer/company fields
         company_name = request.form.get('company_name')
-        location = request.form.get('location')
+        contact_person = request.form.get('contact_person')
         description = request.form.get('description')
         contact_email = request.form.get('contact_email')
         btw_number = request.form.get('btw_number')
@@ -322,7 +323,7 @@ def recruiter_profiel():
         # ensure employer exists
         if not employer:
             # create new employer and link recruiter
-            employer = Employer(name=company_name or 'Onbekend', location=location, description=description, contact_email=contact_email, is_agency=is_agency, btw_number=btw_number)
+            employer = Employer(name=company_name or 'Onbekend', contact_person=contact_person, description=description, contact_email=contact_email, is_agency=is_agency, btw_number=btw_number)
             db.session.add(employer)
             db.session.flush()
             if rec:
@@ -332,7 +333,7 @@ def recruiter_profiel():
             # update employer fields
             if company_name:
                 employer.name = company_name
-            employer.location = location
+            employer.contact_person = contact_person
             employer.description = description
             employer.contact_email = contact_email
             employer.btw_number = btw_number
