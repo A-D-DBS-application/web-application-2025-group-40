@@ -134,6 +134,7 @@ class JobListing(db.Model):
     salary = db.Column(db.Numeric, nullable=True)
     periode = db.Column(db.String(80))
     requirements = db.Column(db.Text)
+    posted_company_name = db.Column(db.String(200))
     is_active = db.Column(db.Boolean, default=True)
 
     employer = db.relationship('Employer', back_populates='job_listings')

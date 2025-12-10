@@ -84,6 +84,7 @@
                 <div class="flex items-center justify-between gap-4">
                   <div>
                     <h3 class="font-semibold text-gray-800">{{ job.title }}</h3>
+                    <p class="text-sm text-gray-600 font-medium">{{ job.posted_company_name or job.employer.name }}</p>
                     <p class="text-sm text-gray-500">{{ job.location }}</p>
                   </div>
                   <div class="flex items-center gap-2">
