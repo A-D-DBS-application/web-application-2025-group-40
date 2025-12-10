@@ -87,7 +87,7 @@
 
     <script>
       async function loadVacatures() {
-        const res = await fetch('/api/my-jobs');
+        const res = await fetch('/api/my-jobs', { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
         if (!res.ok) {
           document.getElementById('vacaturesList').innerHTML = '<p class="text-red-600">Kan vacatures niet laden.</p>';
           return;
@@ -116,13 +116,19 @@
 
       async function deleteJob(jobId) {
         if (!confirm('Weet je zeker dat je deze vacature wilt verwijderen?')) return;
-        const res = await fetch(`/jobs/${jobId}/delete`, { method: 'POST' });
+        const res = await fetch(`/jobs/${jobId}/delete`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
         if (res.ok) {
           alert('Vacature verwijderd');
           loadVacatures();
         } else {
-          const body = await res.json().catch(() => ({}));
-          alert(body.error || 'Fout bij verwijderen');
+          let msg = 'Fout bij verwijdering';
+          try {
+            const body = await res.json();
+            msg = body.error || msg;
+          } catch (e) {
+            try { msg = await res.text(); } catch (_) {}
+          }
+          alert(msg);
         }
       }
 

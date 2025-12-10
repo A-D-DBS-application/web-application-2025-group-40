@@ -112,10 +112,21 @@
   async function confirmDelete(jobId) {
     if (!confirm('Weet je zeker dat je deze vacature wilt verwijderen?')) return;
     try {
-      const res = await fetch(`/jobs/${jobId}/delete`, { method: 'POST' });
+      const res = await fetch(`/jobs/${jobId}/delete`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        alert(body.error || 'Fout bij verwijderen');
+        // probeer JSON, anders plain text
+        let msg = 'Fout bij verwijderen';
+        try {
+          const body = await res.json();
+          msg = body.error || msg;
+        } catch (jsonErr) {
+          try {
+            msg = await res.text();
+          } catch (textErr) {
+            /* fallback */
+          }
+        }
+        alert(msg);
         return;
       }
 
@@ -133,7 +144,7 @@
       alert('Vacature verwijderd');
     } catch (e) {
       console.error(e);
-      alert('Fout bij verwijderen');
+      alert('Fout bij verwijderen (netwerkfout)');
     }
   }
 </script>

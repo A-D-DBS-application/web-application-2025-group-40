@@ -378,7 +378,9 @@ def delete_job(job_id):
         return jsonify({'message': 'Vacature verwijderd'}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': f'Fout bij verwijdering: {str(e)}'}), 500
+        app.logger.exception('Fout bij verwijderen vacature %s', job_id)
+        # stuur foutmelding terug (veilig: korte boodschap)
+        return jsonify({'error': 'Interne serverfout bij verwijderen (zie server logs)'}), 500
 
 @app.route('/jobs/<int:job_id>/delete', methods=['POST'])
 @login_required
