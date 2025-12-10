@@ -17,8 +17,18 @@ app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:
     app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+    # Configure connection pool for Supabase
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_size': 3,
+        'pool_recycle': 3600,
+        'pool_pre_ping': True,
+        'max_overflow': 0,
+        'connect_args': {'connect_timeout': 10}
+    }
 else:
+    # Use SQLite for local development to avoid Supabase connection limits
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tinderjobs.db'
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {}
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
