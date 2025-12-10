@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Vacatures - Swipr{% endblock %}
+
+{% block content %}
+<div class="navbar">
+  <div><strong>Swipr – Vacatures</strong></div>
+  <div class="nav-buttons">
+    <a href="/student">Mijn Profiel</a>
+    <a href="/match_page">Matches</a>
+    <a href="/logout">Uitloggen</a>
+  </div>
+</div>
+
+<div class="vacancy-container">
+  <h1>Beschikbare Vacatures</h1>
+  
+  {% if jobs %}
+    {% for item in jobs %}
+      <div style="border: 1px solid #e0e0e0; padding: 20px; margin-bottom: 20px; border-radius: 8px; background-color: #f9f9f9;">
+        <h3>{{ item.job.title }}</h3>
+        
+        <span class="label">Bedrijf</span>
+        <div class="value">{{ item.job.company_name }}</div>
+        
+        <span class="label">Locatie</span>
+        <div class="value">{{ item.job.location }}</div>
+        
+        <span class="label">Beschrijving</span>
+        <div class="value">{{ item.job.description }}</div>
+        
+        <div style="margin-top: 15px; display: flex; gap: 10px;">
+          {% if current_user.is_authenticated and current_user.role == 'student' %}
+            <form action="/jobs/{{ item.job.id }}/like" method="POST" style="display:inline;">
+              <button type="submit" class="px-4 py-2 bg-swipr text-white rounded-md">👍 Like</button>
+            </form>
+            <form action="/jobs/{{ item.job.id }}/dislike" method="POST" style="display:inline;">
+              <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md">👎 Dislike</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>Geen vacatures beschikbaar op dit moment.</p>
+  {% endif %}
+</div>
+
+<style>
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+  }
+
+  .nav-buttons {
+    display: flex;
+    gap: 15px;
+  }
+
+  .nav-buttons a {
+    padding: 8px 15px;
+    text-decoration: none;
+    background-color: #1d7cf2;
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .nav-buttons a:hover {
+    background-color: #155fb8;
+  }
+
+  .vacancy-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .label {
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #333;
+  }
+
+  .value {
+    margin-top: 5px;
+    color: #666;
+    padding: 8px;
+    background-color: white;
+    border-radius: 4px;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+    color: #1d7cf2;
+  }
+
+  h3 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+</style>
+{% endblock %}

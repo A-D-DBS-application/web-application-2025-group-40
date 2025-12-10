@@ -520,19 +520,14 @@ def vacatures_student():
     if current_user.role != 'student':
         flash('Alleen studenten kunnen deze pagina bekijken.', 'danger')
         return redirect(url_for('index'))
-    # Get the first available job and show it
-    job = JobListing.query.first()
-    if job:
-        # Transform JobListing to match vacature_student.html expectations
+    # Get all available jobs with like status
+    jobs = JobListing.query.all()
+    jobs_with_liked = []
+    for job in jobs:
         job.company_name = job.employer.name if job.employer else "Onbekend"
-        # determine if current student already liked this job
-        liked = False
-        if current_user.is_authenticated and hasattr(current_user, 'id'):
-            liked = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first() is not None
-        return render_template('vacature_student.html', job=job, liked=liked)
-    else:
-        # If no jobs available, show a message
-        return render_template('vacature_student.html', job=None, liked=False)
+        liked = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first() is not None
+        jobs_with_liked.append({'job': job, 'liked': liked})
+    return render_template('vacatures_list.html', jobs=jobs_with_liked)
 
 
 # -----------------------
