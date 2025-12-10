@@ -47,7 +47,7 @@ login_manager.login_view = 'login_student'
 
 class AppUser(UserMixin, db.Model):
     __tablename__ = 'app_user'
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     role = db.Column(db.String(20), nullable=False)  # 'student' of 'recruiter'
     password_hash = db.Column(db.Text, nullable=False)
@@ -67,8 +67,8 @@ class AppUser(UserMixin, db.Model):
 
 class Student(db.Model):
     __tablename__ = 'student'
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.BigInteger, db.ForeignKey('app_user.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
     first_name = db.Column(db.String(60))
     last_name = db.Column(db.String(60))
 
@@ -77,9 +77,9 @@ class Student(db.Model):
 
 class RecruiterUser(db.Model):
     __tablename__ = 'recruiter_user'
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    employer_id = db.Column(db.BigInteger, db.ForeignKey('employer.id'), nullable=True)
-    user_id = db.Column(db.BigInteger, db.ForeignKey('app_user.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    employer_id = db.Column(db.Integer, db.ForeignKey('employer.id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
     user = db.relationship('AppUser', back_populates='recruiter')
@@ -88,7 +88,7 @@ class RecruiterUser(db.Model):
 
 class Employer(db.Model):
     __tablename__ = 'employer'
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(120), nullable=False)
     location = db.Column(db.String(120))
     description = db.Column(db.Text)
@@ -102,8 +102,8 @@ class Employer(db.Model):
 
 class JobListing(db.Model):
     __tablename__ = 'job_listing'
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    employer_id = db.Column(db.BigInteger, db.ForeignKey('employer.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    employer_id = db.Column(db.Integer, db.ForeignKey('employer.id'), nullable=False)
     title = db.Column(db.String(140), nullable=False)
     description = db.Column(db.Text)
     location = db.Column(db.String(120))
@@ -118,9 +118,9 @@ class JobListing(db.Model):
 
 class Match(db.Model):
     __tablename__ = 'match'
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.BigInteger, db.ForeignKey('app_user.id'), nullable=False)
-    job_id = db.Column(db.BigInteger, db.ForeignKey('job_listing.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    job_id = db.Column(db.Integer, db.ForeignKey('job_listing.id'), nullable=False)
     matched_at = db.Column(db.DateTime, default=datetime.utcnow)
     notification_sent = db.Column(db.Boolean, default=False)
     notification_sent_at = db.Column(db.DateTime, nullable=True)
@@ -132,9 +132,9 @@ class Match(db.Model):
 
 class Dislike(db.Model):
     __tablename__ = 'dislike'
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.BigInteger, db.ForeignKey('app_user.id'), nullable=False)
-    job_id = db.Column(db.BigInteger, db.ForeignKey('job_listing.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    job_id = db.Column(db.Integer, db.ForeignKey('job_listing.id'), nullable=False)
     disliked_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('AppUser', backref='dislikes')
@@ -143,9 +143,9 @@ class Dislike(db.Model):
 
 class JobListingSector(db.Model):
     __tablename__ = 'job_listing_sector'
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    job_id = db.Column(db.BigInteger, db.ForeignKey('job_listing.id'), nullable=False)
-    sector_id = db.Column(db.BigInteger, db.ForeignKey('sector.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('job_listing.id'), nullable=False)
+    sector_id = db.Column(db.Integer, db.ForeignKey('sector.id'), nullable=False)
 
     job = db.relationship('JobListing', back_populates='sectors')
     sector = db.relationship('Sector', back_populates='job_links')
@@ -153,7 +153,7 @@ class JobListingSector(db.Model):
 
 class Sector(db.Model):
     __tablename__ = 'sector'
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
 
     job_links = db.relationship('JobListingSector', back_populates='sector')
