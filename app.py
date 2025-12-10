@@ -252,10 +252,12 @@ def vacature_opslaan():
     job_title = request.form.get('jobTitle')
     location = request.form.get('location')
     description = request.form.get('description')
-    # Ensure there's a default employer (matches bedrijf_home default)
-    employer = Employer.query.filter_by(name='ACME BV').first()
+    company_name = request.form.get('companyName', 'ACME BV')  # Get company name from form, fallback to ACME BV
+    
+    # Find or create employer with the provided company name
+    employer = Employer.query.filter_by(name=company_name).first()
     if not employer:
-        employer = Employer(name='ACME BV')
+        employer = Employer(name=company_name, location=location)
         db.session.add(employer)
         db.session.commit()
 
