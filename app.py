@@ -345,7 +345,8 @@ def login():
 def logout():
     logout_user()
     flash("Uitgelogd.", "info")
-    return redirect(url_for('login'))
+    # After logout, send user back to the initial homepage
+    return redirect(url_for('index'))
 
 
 # Student swipe dashboard
