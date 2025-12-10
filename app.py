@@ -323,6 +323,9 @@ def vacature_opslaan():
 
 @app.route('/bedrijf')
 def bedrijf_home():
+    # Redirect to the recruiter dashboard — HomePage_bedrijf.html removed
+    return redirect(url_for('recruiter_dashboard_view'))
+
     # Show company home, prefer the employer tied to the logged-in recruiter
     vacatures = []
     bedrijf_naam = "ACME BV"
