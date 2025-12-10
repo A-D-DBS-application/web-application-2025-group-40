@@ -82,20 +82,17 @@
             {% for job in jobs %}
               <li id="job-{{ job.id }}" class="p-4 border rounded-lg">
                 <div class="flex items-center justify-between gap-4">
-                  <div class="flex items-center gap-3">
-                    <button onclick="viewLikes({{ job.id }})" title="Bekijk likes" class="text-gray-600 hover:text-swipr p-2 rounded-md">
-                      <!-- users icon (two people) -->
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M13 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path fill-rule="evenodd" d="M2 13a4 4 0 014-4h8a4 4 0 014 4v1H2v-1z" clip-rule="evenodd" />
-                      </svg>
-                    </button>
-                    <div>
-                      <h3 class="font-semibold text-gray-800">{{ job.title }}</h3>
-                      <p class="text-sm text-gray-500">{{ job.location }}</p>
-                    </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-800">{{ job.title }}</h3>
+                    <p class="text-sm text-gray-500">{{ job.location }}</p>
                   </div>
                   <div class="flex items-center gap-2">
+                    <button onclick="viewLikes({{ job.id }})" title="Matches" class="text-swipr hover:text-swipr_blue p-2 rounded-md">
+                      <!-- users/matches icon -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M16 11a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    </button>
                     <button onclick="confirmDelete({{ job.id }})" title="Verwijderen" class="text-red-500 hover:text-red-700 p-2 rounded-md">
                       <!-- vuilbak icoon -->
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
