@@ -473,6 +473,7 @@ def student_dashboard_view():
     return render_template('student_dashboard.html', jobs=jobs)
 
 
+
 # Backwards-compatibility route: redirect /recruiter -> /recruiter_dashboard
 @app.route('/recruiter')
 @login_required
