@@ -49,6 +49,9 @@
           <h2 class="text-2xl font-bold text-swipr">Bedrijfsprofiel</h2>
           <p class="text-gray-600 text-sm">Werk uw bedrijfsgegevens en accountgegevens bij.</p>
         </div>
+        <div class="text-right text-xs text-gray-500">
+          <div id="savedAt">Laatst opgeslagen: —</div>
+        </div>
       </div>
 
       <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -86,11 +89,54 @@
         <div class="flex items-center justify-between mt-2 md:col-span-2">
           <div class="text-sm text-gray-500">Wachtwoord leeg laten betekent geen wijziging.</div>
           <div class="flex items-center gap-3">
-            <button type="submit" class="px-5 py-2 bg-swipr text-white rounded-md">Opslaan</button>
+            <button type="button" id="resetBtn" class="px-4 py-2 border rounded-md btn-ghost">Reset</button>
+            <button type="submit" id="saveBtn" class="px-5 py-2 bg-swipr text-white rounded-md">Gegevens opslaan</button>
           </div>
         </div>
       </form>
+
+      <div id="toast" class="fixed right-6 bottom-6 bg-white border shadow-lg px-4 py-3 rounded-md hidden">
+        <div class="text-sm text-gray-800">Gegevens opgeslagen ✅</div>
+      </div>
     </section>
   </main>
 </div>
 {% endblock %}
+
+<script>
+  (function(){
+    const form = document.querySelector('form');
+    const resetBtn = document.getElementById('resetBtn');
+    const toast = document.getElementById('toast');
+    const savedAt = document.getElementById('savedAt');
+
+    function showToast(message = 'Gegevens opgeslagen ✅'){
+      toast.textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(()=> toast.classList.add('hidden'), 2200);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      try {
+        const res = await fetch(window.location.pathname, {
+          method: 'POST',
+          body: fd,
+          credentials: 'same-origin'
+        });
+        if (!res.ok) throw new Error('Netwerkfout');
+        const now = new Date();
+        savedAt.textContent = 'Laatst opgeslagen: ' + now.toLocaleString();
+        showToast();
+      } catch (err){
+        alert('Opslaan mislukt: ' + err.message);
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      if (!confirm('Weet je zeker dat je de wijzigingen wilt resetten?')) return;
+      window.location.reload();
+    });
+  })();
+</script>
