@@ -1,107 +1,89 @@
 {% extends "base.html" %}
 
-{% block title %}Vacatures - Swipr{% endblock %}
+{% block title %}Vacatures — Swipr{% endblock %}
+
+{% block extra_head %}
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            swipr: '#007BFF'
+          }
+        }
+      }
+    }
+  </script>
+{% endblock %}
 
 {% block content %}
-<div class="navbar">
-  <div><strong>Swipr – Vacatures</strong></div>
-  <div class="nav-buttons">
-    <a href="/student_dashboard">Mijn Profiel</a>
-    <a href="/match_page">Matches</a>
-    <a href="/logout">Uitloggen</a>
-  </div>
-</div>
+<div class="bg-gray-50 min-h-screen antialiased">
 
-<div class="vacancy-container">
-  <h1>Beschikbare Vacatures</h1>
-  
-  {% if jobs %}
-    {% for item in jobs %}
-      <div style="border: 1px solid #e0e0e0; padding: 20px; margin-bottom: 20px; border-radius: 8px; background-color: #f9f9f9;">
-        <h3>{{ item.job.title }}</h3>
-        
-        <span class="label">Bedrijf</span>
-        <div class="value">{{ item.job.company_name }}</div>
-        
-        <span class="label">Locatie</span>
-        <div class="value">{{ item.job.location }}</div>
-        
-        <span class="label">Beschrijving</span>
-        <div class="value">{{ item.job.description }}</div>
-        
-        <div style="margin-top: 15px; display: flex; gap: 10px;">
-          <form action="/jobs/{{ item.job.id }}/like" method="POST" style="display:inline;">
-            <button type="submit" class="px-4 py-2 bg-swipr text-white rounded-md">👍 Like</button>
-          </form>
-          <form action="/jobs/{{ item.job.id }}/dislike" method="POST" style="display:inline;">
-            <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md">👎 Dislike</button>
-          </form>
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
+          <p class="text-xs text-gray-500">Beschikbare vacatures</p>
         </div>
       </div>
-    {% endfor %}
-  {% else %}
-    <p>Geen vacatures beschikbaar op dit moment.</p>
-  {% endif %}
+
+      <nav class="hidden sm:flex items-center gap-4 text-sm">
+        <a href="/student_dashboard" class="text-gray-600 hover:text-swipr">Mijn Profiel</a>
+        <a href="/match_page" class="text-gray-600 hover:text-swipr">Matches</a>
+        <a href="/logout" class="px-3 py-1 rounded-md text-sm border">Uitloggen</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto mt-10 p-6">
+    <h2 class="text-2xl font-bold text-swipr mb-6">Beschikbare Vacatures</h2>
+    
+    {% if jobs %}
+      {% for item in jobs %}
+        <section class="bg-white p-6 rounded-xl shadow-md mb-6">
+          <h3 class="text-xl font-bold text-swipr mb-4">{{ item.job.title }}</h3>
+          
+          <div class="space-y-3">
+            <div>
+              <span class="text-sm font-medium text-gray-700">Bedrijf</span>
+              <div class="mt-1 p-3 bg-gray-50 rounded-md text-gray-900">{{ item.job.company_name }}</div>
+            </div>
+            
+            <div>
+              <span class="text-sm font-medium text-gray-700">Locatie</span>
+              <div class="mt-1 p-3 bg-gray-50 rounded-md text-gray-900">{{ item.job.location }}</div>
+            </div>
+            
+            <div>
+              <span class="text-sm font-medium text-gray-700">Beschrijving</span>
+              <div class="mt-1 p-3 bg-gray-50 rounded-md text-gray-900">{{ item.job.description }}</div>
+            </div>
+            
+            <div class="flex gap-3 mt-4">
+              <form action="/jobs/{{ item.job.id }}/like" method="POST" style="display:inline;">
+                <button type="submit" class="px-6 py-3 bg-swipr text-white rounded-md hover:bg-[#0056B3] transition-colors">👍 Like</button>
+              </form>
+              <form action="/jobs/{{ item.job.id }}/dislike" method="POST" style="display:inline;">
+                <button type="submit" class="px-6 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors">👎 Dislike</button>
+              </form>
+            </div>
+          </div>
+        </section>
+      {% endfor %}
+    {% else %}
+      <section class="bg-white p-6 rounded-xl shadow-md">
+        <p class="text-gray-600">Geen vacatures beschikbaar op dit moment.</p>
+      </section>
+    {% endif %}
+
+  </main>
 </div>
-
-<style>
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background-color: #f5f5f5;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 20px;
-  }
-
-  .nav-buttons {
-    display: flex;
-    gap: 15px;
-  }
-
-  .nav-buttons a {
-    padding: 8px 15px;
-    text-decoration: none;
-    background-color: #1d7cf2;
-    color: white;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-
-  .nav-buttons a:hover {
-    background-color: #155fb8;
-  }
-
-  .vacancy-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-
-  .label {
-    display: block;
-    font-weight: bold;
-    margin-top: 10px;
-    color: #333;
-  }
-
-  .value {
-    margin-top: 5px;
-    color: #666;
-    padding: 8px;
-    background-color: white;
-    border-radius: 4px;
-  }
-
-  h1 {
-    margin-bottom: 20px;
-    color: #1d7cf2;
-  }
-
-  h3 {
-    margin-bottom: 10px;
-    color: #333;
-  }
-</style>
 {% endblock %}

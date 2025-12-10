@@ -1,102 +1,70 @@
 {% extends "base.html" %}
 
-{% block title %}Jouw Matches{% endblock %}
+{% block title %}Jouw Matches — Swipr{% endblock %}
+
+{% block extra_head %}
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            swipr: '#007BFF'
+          }
+        }
+      }
+    }
+  </script>
+{% endblock %}
 
 {% block content %}
-<div class="navbar">
-  <div><strong>Swipr – Matches</strong></div>
-  <div class="nav-buttons">
-    <a href="/vacatures_student">Vacatures</a>
-    <a href="/student_dashboard">Mijn Profiel</a>
-    <a href="/logout">Uitloggen</a>
-  </div>
-</div>
+<div class="bg-gray-50 min-h-screen antialiased">
 
-<div class="match-page">
-  <h1>Mijn Matches</h1>
-
-  {% if matches %}
-    {% for item in matches %}
-      <div class="match-card">
-        <div class="partner">Match met {{ item.job.company_name }}</div>
-        <div class="job-title">{{ item.job.title }}</div>
-        <div class="meta">
-          📍 Locatie: {{ item.job.location or '-' }} <br>
-          ⏰ Gematcht op: {{ item.match.matched_at.strftime("%Y-%m-%d %H:%M") if item.match.matched_at else '-' }} <br>
-          ℹ️ Beschrijving: {{ item.job.description[:100] }}{% if item.job.description|length > 100 %}...{% endif %} <br>
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
+          <p class="text-xs text-gray-500">Mijn matches</p>
         </div>
       </div>
-    {% endfor %}
-  {% else %}
-    <p>Je hebt nog geen matches. Begin met vacatures te bekijken!</p>
-  {% endif %}
+
+      <nav class="hidden sm:flex items-center gap-4 text-sm">
+        <a href="/vacatures_student" class="text-gray-600 hover:text-swipr">Vacatures</a>
+        <a href="/student_dashboard" class="text-gray-600 hover:text-swipr">Mijn Profiel</a>
+        <a href="/logout" class="px-3 py-1 rounded-md text-sm border">Uitloggen</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto mt-10 p-6">
+    <h2 class="text-2xl font-bold text-swipr mb-6">Mijn Matches</h2>
+
+    {% if matches %}
+      {% for item in matches %}
+        <section class="bg-white p-6 rounded-xl shadow-md mb-6">
+          <div class="text-xs text-gray-500 mb-2">Match met {{ item.job.company_name }}</div>
+          <h3 class="text-xl font-bold text-swipr mb-4">{{ item.job.title }}</h3>
+          
+          <div class="space-y-2 text-sm text-gray-700">
+            <div>📍 <span class="font-medium">Locatie:</span> {{ item.job.location or '-' }}</div>
+            <div>⏰ <span class="font-medium">Gematcht op:</span> {{ item.match.matched_at.strftime("%Y-%m-%d %H:%M") if item.match.matched_at else '-' }}</div>
+            <div>ℹ️ <span class="font-medium">Beschrijving:</span> {{ item.job.description[:100] }}{% if item.job.description|length > 100 %}...{% endif %}</div>
+          </div>
+        </section>
+      {% endfor %}
+    {% else %}
+      <section class="bg-white p-6 rounded-xl shadow-md">
+        <p class="text-gray-600">Je hebt nog geen matches. Begin met vacatures te bekijken!</p>
+      </section>
+    {% endif %}
+
+  </main>
 </div>
-
-<style>
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background-color: #f5f5f5;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 20px;
-  }
-
-  .nav-buttons {
-    display: flex;
-    gap: 15px;
-  }
-
-  .nav-buttons a {
-    padding: 8px 15px;
-    text-decoration: none;
-    background-color: #1d7cf2;
-    color: white;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-
-  .nav-buttons a:hover {
-    background-color: #155fb8;
-  }
-
-  .match-page {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-
-  .match-card {
-    border: 1px solid #e0e0e0;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-  }
-
-  .partner {
-    font-size: 12px;
-    color: #888;
-    margin-bottom: 10px;
-  }
-
-  .job-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #1d7cf2;
-  }
-
-  .meta {
-    font-size: 14px;
-    color: #666;
-    line-height: 1.6;
-  }
-
-  h1 {
-    color: #1d7cf2;
-    margin-bottom: 20px;
-  }
-</style>
 {% endblock %}

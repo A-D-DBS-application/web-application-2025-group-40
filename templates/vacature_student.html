@@ -1,44 +1,88 @@
 {% extends "base.html" %}
 
-{% block title %}Student – Vacature{% endblock %}
+{% block title %}Vacature — Swipr{% endblock %}
+
+{% block extra_head %}
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            swipr: '#007BFF'
+          }
+        }
+      }
+    }
+  </script>
+{% endblock %}
 
 {% block content %}
-<div class="navbar">
-  <div><strong>Swipr – Vacature</strong></div>
-  <div class="nav-buttons">
-    <a href="/student_dashboard">Mijn Profiel</a>
-    <a href="/match_page">Matches</a>
-    <a href="/logout">Uitloggen</a>
-  </div>
-</div>
+<div class="bg-gray-50 min-h-screen antialiased">
 
-{% if job %}
-<div class="vacancy-container">
-  <h2>{{ job.title }}</h2>
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
+          <p class="text-xs text-gray-500">Vacature detail</p>
+        </div>
+      </div>
 
-  <span class="label">Bedrijf</span>
-  <div class="value">{{ job.company_name }}</div>
+      <nav class="hidden sm:flex items-center gap-4 text-sm">
+        <a href="/vacatures_student" class="text-gray-600 hover:text-swipr">Vacatures</a>
+        <a href="/student_dashboard" class="text-gray-600 hover:text-swipr">Mijn Profiel</a>
+        <a href="/match_page" class="text-gray-600 hover:text-swipr">Matches</a>
+        <a href="/logout" class="px-3 py-1 rounded-md text-sm border">Uitloggen</a>
+      </nav>
+    </div>
+  </header>
 
-  <span class="label">Locatie</span>
-  <div class="value">{{ job.location }}</div>
+    {% if job %}
+    <section class="bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-2xl font-bold text-swipr mb-4">{{ job.title }}</h2>
 
-  <span class="label">Beschrijving</span>
-  <div class="value">{{ job.description }}</div>
-  <div style="margin-top:12px; display:flex; gap:10px;">
-    {% if current_user.is_authenticated and current_user.role == 'student' %}
-      <form action="/jobs/{{ job.id }}/like" method="POST" style="display:inline;">
-        <button type="submit" class="px-4 py-2 bg-swipr text-white rounded-md">👍 Like</button>
-      </form>
-      <form action="/jobs/{{ job.id }}/dislike" method="POST" style="display:inline;">
-        <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md">👎 Dislike</button>
-      </form>
+      <div class="space-y-4">
+        <div>
+          <span class="text-sm font-medium text-gray-700">Bedrijf</span>
+          <div class="mt-1 p-3 bg-gray-50 rounded-md text-gray-900">{{ job.company_name }}</div>
+        </div>
+
+        <div>
+          <span class="text-sm font-medium text-gray-700">Locatie</span>
+          <div class="mt-1 p-3 bg-gray-50 rounded-md text-gray-900">{{ job.location }}</div>
+        </div>
+
+        <div>
+          <span class="text-sm font-medium text-gray-700">Beschrijving</span>
+          <div class="mt-1 p-3 bg-gray-50 rounded-md text-gray-900">{{ job.description }}</div>
+        </div>
+
+        {% if current_user.is_authenticated and current_user.role == 'student' %}
+        <div class="flex gap-3 mt-6">
+          <form action="/jobs/{{ job.id }}/like" method="POST" style="display:inline;">
+            <button type="submit" class="px-6 py-3 bg-swipr text-white rounded-md hover:bg-[#0056B3] transition-colors">👍 Like</button>
+          </form>
+          <form action="/jobs/{{ job.id }}/dislike" method="POST" style="display:inline;">
+            <button type="submit" class="px-6 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors">👎 Dislike</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+    {% else %}
+    <section class="bg-white p-6 rounded-xl shadow-md">
+      <p class="text-gray-600">Geen vacatures beschikbaar op dit moment.</p>
+    </section>
     {% endif %}
-  </div>
+
+  </main>
 </div>
-{% else %}
-<div class="vacancy-container">
-  <p>Geen vacatures beschikbaar op dit moment.</p>
-</div>
-{% endif %}
 {% endblock %}
 
