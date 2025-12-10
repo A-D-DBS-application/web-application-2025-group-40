@@ -18,16 +18,16 @@
 
     <h1 style="font-size: 2rem; margin-bottom: 35px; color: #333;">Kies uw rol</h1>
 
-    <button class="btn bedrijf"
-            style="width: 220px; margin: 15px auto;"
-            onclick="window.location.href='{{ url_for('login_bedrijf') }}'">
-      Bedrijf
-    </button>
-
     <button class="btn student"
             style="width: 220px; margin: 15px auto;"
             onclick="window.location.href='{{ url_for('login_student') }}'">
       Student
+    </button>
+
+    <button class="btn bedrijf"
+            style="width: 220px; margin: 15px auto;"
+            onclick="window.location.href='{{ url_for('login_bedrijf') }}'">
+      Bedrijf
     </button>
 
   </div>
