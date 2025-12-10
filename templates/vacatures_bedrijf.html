@@ -78,65 +78,7 @@
       </form>
     </section>
 
-    <section class="bg-white p-6 rounded-xl shadow-md max-w-3xl mx-auto mt-8">
-      <h2 class="text-2xl font-bold text-swipr mb-4">Mijn Vacatures</h2>
-      <div id="vacaturesList" class="space-y-4">
-        <p class="text-gray-600">Even laden...</p>
-      </div>
-    </section>
-
-    <script>
-      async function loadVacatures() {
-        const res = await fetch('/api/my-jobs', { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-        if (!res.ok) {
-          document.getElementById('vacaturesList').innerHTML = '<p class="text-red-600">Kan vacatures niet laden.</p>';
-          return;
-        }
-        const jobs = await res.json();
-        const list = document.getElementById('vacaturesList');
-        if (!jobs || jobs.length === 0) {
-          list.innerHTML = '<p class="text-gray-600">Je hebt nog geen vacatures geplaatst.</p>';
-          return;
-        }
-
-        list.innerHTML = jobs.map(job => `
-          <div class="border rounded-md p-4 flex justify-between items-start">
-            <div>
-              <h3 class="font-semibold text-lg">${job.title}</h3>
-              <p class="text-sm text-gray-600">${job.location}</p>
-              <p class="text-sm text-gray-700 mt-2">${(job.description || '').substring(0, 200)}${(job.description || '').length > 200 ? '...' : ''}</p>
-            </div>
-            <div class="flex flex-col gap-2">
-              <a href="/jobs/${job.id}" class="px-4 py-2 bg-swipr text-white rounded-md hover:bg-[#E04352]">Bekijk</a>
-              <button onclick="deleteJob(${job.id})" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Verwijderen</button>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      async function deleteJob(jobId) {
-        if (!confirm('Weet je zeker dat je deze vacature wilt verwijderen?')) return;
-        const res = await fetch(`/jobs/${jobId}/delete`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-        if (res.ok) {
-          alert('Vacature verwijderd');
-          loadVacatures();
-        } else {
-          let msg = 'Fout bij verwijdering';
-          try {
-            const body = await res.json();
-            msg = body.error || msg;
-          } catch (e) {
-            try { msg = await res.text(); } catch (_) {}
-          }
-          alert(msg);
-        }
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        loadVacatures();
-      });
-    </script>
-    </section>
+    <!-- 'Mijn Vacatures' container removed per request -->
   </main>
 </div>
 {% endblock %}
