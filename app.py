@@ -284,6 +284,67 @@ def recruiter_dashboard_view():
     return render_template('recruiter_dashboard.html', stats=stats, jobs=jobs)
 
 
+@app.route('/recruiter_profiel', methods=['GET', 'POST'])
+@login_required
+def recruiter_profiel():
+    # Only recruiters may access this page
+    if getattr(current_user, 'role', None) != 'recruiter':
+        abort(403)
+
+    user = current_user
+    rec = getattr(user, 'recruiter', None)
+    employer = rec.employer if rec else None
+
+    if request.method == 'POST':
+        # User fields
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        # Employer/company fields
+        company_name = request.form.get('company_name')
+        location = request.form.get('location')
+        description = request.form.get('description')
+        contact_email = request.form.get('contact_email')
+        is_agency = True if request.form.get('is_agency') == 'on' else False
+
+        # validate unique email
+        if email and email != user.email:
+            if AppUser.query.filter_by(email=email).first():
+                flash('Email is al in gebruik.', 'danger')
+                return redirect(url_for('recruiter_profiel'))
+            user.email = email
+
+        if password:
+            user.set_password(password)
+
+        # ensure employer exists
+        if not employer:
+            # create new employer and link recruiter
+            employer = Employer(name=company_name or 'Onbekend', location=location, description=description, contact_email=contact_email, is_agency=is_agency)
+            db.session.add(employer)
+            db.session.flush()
+            if rec:
+                rec.employer_id = employer.id
+                db.session.add(rec)
+        else:
+            # update employer fields
+            if company_name:
+                employer.name = company_name
+            employer.location = location
+            employer.description = description
+            employer.contact_email = contact_email
+            employer.is_agency = is_agency
+            db.session.add(employer)
+
+        db.session.add(user)
+        db.session.commit()
+        flash('Profiel bijgewerkt.', 'success')
+        return redirect(url_for('recruiter_dashboard_view'))
+
+    # GET
+    return render_template('recruiter_profiel.html', user=user, employer=employer)
+
+
 @app.route('/save_profile', methods=['POST'])
 def save_profile():
     return redirect(url_for('bedrijf_home'))

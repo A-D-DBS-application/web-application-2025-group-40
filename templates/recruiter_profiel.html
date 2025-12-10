@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Profiel — Swipr{% endblock %}
+
+{% block extra_head %}
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            swipr: '#ff4b5c'
+          }
+        }
+      }
+    }
+  </script>
+{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen antialiased">
+
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
+          <p class="text-xs text-gray-500">Recruiter profiel</p>
+        </div>
+      </div>
+
+      <nav class="hidden sm:flex items-center gap-4 text-sm">
+        <a href="/recruiter_dashboard" class="text-gray-600 hover:text-swipr">Dashboard</a>
+        <a href="/" class="px-3 py-1 rounded-md text-sm border hover:bg-swipr hover:text-white transition-colors">Uitloggen</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto mt-10 p-6">
+    <section class="bg-white p-6 rounded-xl shadow-md">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-swipr">Bedrijfsprofiel</h2>
+          <p class="text-gray-600 text-sm">Werk uw bedrijfsgegevens en accountgegevens bij.</p>
+        </div>
+      </div>
+
+      <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label class="flex flex-col md:col-span-2">
+          <span class="text-sm font-medium text-gray-700">Bedrijfsnaam</span>
+          <input name="company_name" type="text" placeholder="Bedrijfsnaam" value="{{ employer.name if employer else '' }}"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+        </label>
+
+        <label class="flex flex-col">
+          <span class="text-sm font-medium text-gray-700">Locatie</span>
+          <input name="location" type="text" placeholder="Locatie" value="{{ employer.location if employer else '' }}"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
+        </label>
+
+        <label class="flex flex-col">
+          <span class="text-sm font-medium text-gray-700">Contact e-mail</span>
+          <input name="contact_email" type="email" placeholder="contact@bedrijf.nl" value="{{ employer.contact_email if employer else '' }}"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
+        </label>
+
+        <label class="flex flex-col md:col-span-2">
+          <span class="text-sm font-medium text-gray-700">Beschrijving</span>
+          <textarea name="description" rows="4" class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr">{{ employer.description if employer else '' }}</textarea>
+        </label>
+
+        <label class="flex items-center gap-3 md:col-span-2">
+          <input type="checkbox" name="is_agency" id="is_agency" {% if employer and employer.is_agency %}checked{% endif %} />
+          <span class="text-sm text-gray-700">Is agency</span>
+        </label>
+
+        <hr class="md:col-span-2" />
+
+        <label class="flex flex-col md:col-span-2">
+          <span class="text-sm font-medium text-gray-700">Account e-mail</span>
+          <input name="email" type="email" placeholder="jij@example.com" value="{{ user.email or '' }}"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+        </label>
+
+        <label class="flex flex-col md:col-span-1">
+          <span class="text-sm font-medium text-gray-700">Nieuw wachtwoord</span>
+          <input name="password" type="password" placeholder="Nieuw wachtwoord"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
+        </label>
+
+        <div class="flex items-center justify-between mt-2 md:col-span-2">
+          <div class="text-sm text-gray-500">Wachtwoord leeg laten betekent geen wijziging.</div>
+          <div class="flex items-center gap-3">
+            <button type="submit" class="px-5 py-2 bg-swipr text-white rounded-md">Opslaan</button>
+          </div>
+        </div>
+      </form>
+    </section>
+  </main>
+</div>
+{% endblock %}
