@@ -114,6 +114,26 @@
   </main>
 </div>
 <script>
+  // Small non-blocking toast helper
+  function showToast(message, type = 'success', timeout = 2200) {
+    const id = `toast-${Date.now()}`;
+    const node = document.createElement('div');
+    node.id = id;
+    node.className = 'fixed right-6 bottom-6 px-4 py-3 rounded-md shadow-lg';
+    node.style.zIndex = 9999;
+    if (type === 'error') {
+      node.style.backgroundColor = 'white';
+      node.style.border = '1px solid #f87171';
+      node.innerHTML = `<div class="text-sm text-red-600">${message}</div>`;
+    } else {
+      node.style.backgroundColor = 'white';
+      node.style.border = '1px solid #e5e7eb';
+      node.innerHTML = `<div class="text-sm text-gray-800">${message}</div>`;
+    }
+    document.body.appendChild(node);
+    setTimeout(() => { const n = document.getElementById(id); if (n) n.remove(); }, timeout);
+  }
+
   // Make delete undoable for 5 seconds: hide immediately, allow undo, then call server to delete
   const pendingDeletes = {};
   async function confirmDelete(jobId) {
@@ -163,7 +183,7 @@
           if (counter && counterWas !== null) counter.textContent = counterWas;
           let msg = 'Fout bij verwijderen';
           try { const body = await res.json(); msg = body.error || msg; } catch(e){ try { msg = await res.text(); } catch(_){} }
-          alert(msg);
+          showToast(msg, 'error');
         } else {
           // deletion succeeded on server, remove toast
         }
@@ -177,7 +197,7 @@
           if (list) list.appendChild(clone);
         }
         if (counter && counterWas !== null) counter.textContent = counterWas;
-        alert('Fout bij verwijderen (netwerkfout)');
+        showToast('Fout bij verwijderen (netwerkfout)', 'error');
       } finally {
         const t = document.getElementById(toastId);
         if (t) t.remove();
@@ -215,7 +235,7 @@
       const res = await fetch(`/jobs/${jobId}/likes`, { credentials: 'same-origin' });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        alert(body.error || 'Kan likes niet ophalen');
+        showToast(body.error || 'Kan likes niet ophalen', 'error');
         return;
       }
       const data = await res.json();
@@ -240,7 +260,7 @@
       document.body.appendChild(modal);
       document.getElementById('closeLikes').addEventListener('click', () => modal.remove());
     } catch (err) {
-      alert('Fout bij ophalen likes');
+        showToast('Fout bij ophalen likes', 'error');
       console.error(err);
     }
   }
