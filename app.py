@@ -113,6 +113,7 @@ class Employer(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(120), nullable=False)
     location = db.Column(db.String(120))
+    btw_number = db.Column(db.String(60))
     description = db.Column(db.Text)
     contact_email = db.Column(db.String(120))
     is_agency = db.Column(db.Boolean, default=False)
@@ -305,6 +306,7 @@ def recruiter_profiel():
         location = request.form.get('location')
         description = request.form.get('description')
         contact_email = request.form.get('contact_email')
+        btw_number = request.form.get('btw_number')
         is_agency = True if request.form.get('is_agency') == 'on' else False
 
         # validate unique email
@@ -320,7 +322,7 @@ def recruiter_profiel():
         # ensure employer exists
         if not employer:
             # create new employer and link recruiter
-            employer = Employer(name=company_name or 'Onbekend', location=location, description=description, contact_email=contact_email, is_agency=is_agency)
+            employer = Employer(name=company_name or 'Onbekend', location=location, description=description, contact_email=contact_email, is_agency=is_agency, btw_number=btw_number)
             db.session.add(employer)
             db.session.flush()
             if rec:
@@ -333,6 +335,7 @@ def recruiter_profiel():
             employer.location = location
             employer.description = description
             employer.contact_email = contact_email
+            employer.btw_number = btw_number
             employer.is_agency = is_agency
             db.session.add(employer)
 

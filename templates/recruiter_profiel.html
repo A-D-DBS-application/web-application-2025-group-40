@@ -70,6 +70,12 @@
                  class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
         </label>
 
+        <label class="flex flex-col">
+          <span class="text-sm font-medium text-gray-700">BTW-nummer</span>
+          <input name="btw_number" type="text" placeholder="NL123456789B01" value="{{ employer.btw_number if employer else '' }}"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
+        </label>
+
         <label class="flex flex-col md:col-span-2">
           <span class="text-sm font-medium text-gray-700">Beschrijving</span>
           <textarea name="description" rows="4" class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr">{{ employer.description if employer else '' }}</textarea>
