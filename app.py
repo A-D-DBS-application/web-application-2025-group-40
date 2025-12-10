@@ -698,6 +698,31 @@ def dislike_job(job_id):
     return redirect('/vacatures_student')
 
 
+@app.route('/jobs/<int:job_id>/delete', methods=['POST'])
+@login_required
+def delete_job(job_id):
+    # Only recruiters that own the job's employer may delete the job
+    if getattr(current_user, 'role', None) != 'recruiter':
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+    job = JobListing.query.get(job_id)
+    if not job:
+        return jsonify({'error': 'Vacature niet gevonden'}), 404
+
+    if not rec or not rec.employer or rec.employer.id != job.employer_id:
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    try:
+        db.session.delete(job)
+        db.session.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        db.session.rollback()
+        app.logger.exception('Fout bij verwijderen vacature')
+        return jsonify({'error': 'Verwijderen mislukt'}), 500
+
+
 # Matches overzicht
 @app.route('/match_page')
 @login_required

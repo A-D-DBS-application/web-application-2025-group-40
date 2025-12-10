@@ -114,43 +114,99 @@
   </main>
 </div>
 <script>
+  // Make delete undoable for 5 seconds: hide immediately, allow undo, then call server to delete
+  const pendingDeletes = {};
   async function confirmDelete(jobId) {
     if (!confirm('Weet je zeker dat je deze vacature wilt verwijderen?')) return;
-    try {
-      const res = await fetch(`/jobs/${jobId}/delete`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-      if (!res.ok) {
-        // probeer JSON, anders plain text
-        let msg = 'Fout bij verwijderen';
-        try {
-          const body = await res.json();
-          msg = body.error || msg;
-        } catch (jsonErr) {
-          try {
-            msg = await res.text();
-          } catch (textErr) {
-            /* fallback */
-          }
-        }
-        alert(msg);
-        return;
-      }
 
-      // verwijder item uit DOM
-      const el = document.getElementById(`job-${jobId}`);
-      if (el) el.remove();
+    const el = document.getElementById(`job-${jobId}`);
+    if (!el) return;
 
-      // update actieve vacatures teller als aanwezig
-      const counter = document.querySelector('.text-2xl.font-bold.text-swipr');
-      if (counter && !isNaN(parseInt(counter.textContent))) {
-        const val = parseInt(counter.textContent) - 1;
-        counter.textContent = val >= 0 ? val : 0;
-      }
+    // store a clone so we can restore if undone
+    const clone = el.cloneNode(true);
 
-      alert('Vacature verwijderd');
-    } catch (e) {
-      console.error(e);
-      alert('Fout bij verwijderen (netwerkfout)');
+    // hide element immediately
+    el.style.display = 'none';
+
+    // decrement counter
+    const counter = document.querySelector('.text-2xl.font-bold.text-swipr');
+    let counterWas = null;
+    if (counter && !isNaN(parseInt(counter.textContent))) {
+      counterWas = parseInt(counter.textContent);
+      const val = counterWas - 1;
+      counter.textContent = val >= 0 ? val : 0;
     }
+
+    // create undo toast
+    const toastId = `delete-toast-${jobId}`;
+    let toast = document.getElementById(toastId);
+    if (toast) toast.remove();
+    toast = document.createElement('div');
+    toast.id = toastId;
+    toast.className = 'fixed right-6 bottom-6 bg-white border shadow-lg px-4 py-3 rounded-md';
+    toast.innerHTML = `<div class="flex items-center gap-4"><div class="text-sm text-gray-800">Vacature verwijderd</div><div><button id="undo-${jobId}" class="px-3 py-1 text-sm border rounded-md">Ongedaan</button></div></div>`;
+    document.body.appendChild(toast);
+
+    // start timer to call server after 5s
+    const timeout = setTimeout(async () => {
+      try {
+        const res = await fetch(`/jobs/${jobId}/delete`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        if (!res.ok) {
+          // restore on failure
+          if (el && el.parentNode) {
+            el.style.display = '';
+          } else if (clone) {
+            const list = document.querySelector('ul.space-y-3');
+            if (list) list.appendChild(clone);
+          }
+          // restore counter
+          if (counter && counterWas !== null) counter.textContent = counterWas;
+          let msg = 'Fout bij verwijderen';
+          try { const body = await res.json(); msg = body.error || msg; } catch(e){ try { msg = await res.text(); } catch(_){} }
+          alert(msg);
+        } else {
+          // deletion succeeded on server, remove toast
+        }
+      } catch (err) {
+        console.error(err);
+        // restore element on network error
+        if (el && el.parentNode) {
+          el.style.display = '';
+        } else if (clone) {
+          const list = document.querySelector('ul.space-y-3');
+          if (list) list.appendChild(clone);
+        }
+        if (counter && counterWas !== null) counter.textContent = counterWas;
+        alert('Fout bij verwijderen (netwerkfout)');
+      } finally {
+        const t = document.getElementById(toastId);
+        if (t) t.remove();
+        delete pendingDeletes[jobId];
+      }
+    }, 5000);
+
+    pendingDeletes[jobId] = { timeout, clone };
+
+    // undo handler
+    document.getElementById(`undo-${jobId}`).addEventListener('click', () => {
+      const pd = pendingDeletes[jobId];
+      if (pd) {
+        clearTimeout(pd.timeout);
+        // restore DOM
+        if (el && el.parentNode) {
+          el.style.display = '';
+        } else if (pd.clone) {
+          const list = document.querySelector('ul.space-y-3');
+          if (list) list.appendChild(pd.clone);
+        }
+        // restore counter
+        if (counter && counterWas !== null) counter.textContent = counterWas;
+        // remove toast
+        const t = document.getElementById(toastId);
+        if (t) t.remove();
+        delete pendingDeletes[jobId];
+      }
+    });
   }
 </script>
 <script>
