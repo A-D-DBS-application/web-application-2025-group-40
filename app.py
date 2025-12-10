@@ -206,9 +206,21 @@ def login_student():
 
 @app.route('/recruiter_dashboard')
 def recruiter_dashboard_view():
-    # Show vacatures for the default employer (ACME BV)
-    employer = Employer.query.filter_by(name='ACME BV').first()
+    # If a recruiter is logged in, show vacatures for their employer; otherwise fallback to ACME BV
     jobs = []
+    employer = None
+    try:
+        if current_user.is_authenticated and getattr(current_user, 'role', None) == 'recruiter':
+            rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+            if rec and rec.employer:
+                employer = rec.employer
+    except Exception:
+        employer = None
+
+    if not employer:
+        # fallback to default employer (if exists)
+        employer = Employer.query.filter_by(name='ACME BV').first()
+
     if employer:
         jobs = JobListing.query.filter_by(employer_id=employer.id).all()
 
@@ -276,8 +288,18 @@ def vacature_opslaan():
 
 @app.route('/bedrijf')
 def bedrijf_home():
-    bedrijf_naam = "ACME BV"
+    # Show company home, prefer the employer tied to the logged-in recruiter
     vacatures = []
+    bedrijf_naam = "ACME BV"
+    try:
+        if current_user.is_authenticated and getattr(current_user, 'role', None) == 'recruiter':
+            rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+            if rec and rec.employer:
+                bedrijf_naam = rec.employer.name
+    except Exception:
+        # ignore and fall back to default
+        pass
+
     return render_template('HomePage_bedrijf.html',
                            bedrijf_naam=bedrijf_naam,
                            vacatures=vacatures)
