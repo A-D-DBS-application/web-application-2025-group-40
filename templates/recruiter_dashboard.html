@@ -82,21 +82,24 @@
             {% for job in jobs %}
               <li id="job-{{ job.id }}" class="p-4 border rounded-lg">
                 <div class="flex items-center justify-between gap-4">
-                  <div>
-                    <h3 class="font-semibold text-gray-800">{{ job.title }}</h3>
-                    <p class="text-sm text-gray-500">{{ job.location }}</p>
+                  <div class="flex items-center gap-3">
+                    <button onclick="viewLikes({{ job.id }})" title="Bekijk likes" class="text-gray-600 hover:text-swipr p-2 rounded-md">
+                      <!-- users icon (two people) -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path fill-rule="evenodd" d="M2 13a4 4 0 014-4h8a4 4 0 014 4v1H2v-1z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                    <div>
+                      <h3 class="font-semibold text-gray-800">{{ job.title }}</h3>
+                      <p class="text-sm text-gray-500">{{ job.location }}</p>
+                    </div>
                   </div>
                   <div class="flex items-center gap-2">
                     <button onclick="confirmDelete({{ job.id }})" title="Verwijderen" class="text-red-500 hover:text-red-700 p-2 rounded-md">
                       <!-- vuilbak icoon -->
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" />
-                      </svg>
-                    </button>
-                    <button onclick="viewLikes({{ job.id }})" title="Bekijk likes" class="text-swipr hover:text-swipr_blue p-2 rounded-md">
-                      <!-- user-heart icon -->
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z" />
                       </svg>
                     </button>
                   </div>
