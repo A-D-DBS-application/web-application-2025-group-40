@@ -454,8 +454,16 @@ def match_page():
                     matches.append(m)
         return render_template('match_page.html', matches=matches)
     else:
+        # For students, get their matches and format them for the template
         matches = current_user.matches
-        return render_template('match_page.html', matches=matches)
+        formatted_matches = []
+        for match in matches:
+            formatted_matches.append({
+                'match': match,
+                'user': current_user,
+                'job': match.job
+            })
+        return render_template('match_page.html', matches=formatted_matches)
 
 
 # Employer profile
