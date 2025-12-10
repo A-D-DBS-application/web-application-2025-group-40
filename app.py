@@ -517,8 +517,15 @@ def vacatures_student():
     if current_user.role != 'student':
         flash('Alleen studenten kunnen deze pagina bekijken.', 'danger')
         return redirect(url_for('index'))
-    jobs = JobListing.query.all()
-    return render_template('vacatures_student.html', jobs=jobs)
+    # Get the first available job and show it
+    job = JobListing.query.first()
+    if job:
+        # Transform JobListing to match vacature_student.html expectations
+        job.company_name = job.employer.name if job.employer else "Onbekend"
+        return render_template('vacature_student.html', job=job)
+    else:
+        # If no jobs available, show a message
+        return render_template('vacature_student.html', job=None)
 
 
 # -----------------------

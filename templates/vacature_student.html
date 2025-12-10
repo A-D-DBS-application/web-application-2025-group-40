@@ -12,6 +12,7 @@
   </div>
 </div>
 
+{% if job %}
 <div class="vacancy-container">
   <h2>{{ job.title }}</h2>
 
@@ -24,5 +25,10 @@
   <span class="label">Beschrijving</span>
   <div class="value">{{ job.description }}</div>
 </div>
+{% else %}
+<div class="vacancy-container">
+  <p>Geen vacatures beschikbaar op dit moment.</p>
+</div>
+{% endif %}
 {% endblock %}
 
