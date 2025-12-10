@@ -115,7 +115,6 @@ class JobListing(db.Model):
     title = db.Column(db.String(140), nullable=False)
     description = db.Column(db.Text)
     location = db.Column(db.String(120))
-    end_date = db.Column(db.Date, nullable=True)
     salary = db.Column(db.Numeric, nullable=True)
     periode = db.Column(db.String(80))
     requirements = db.Column(db.Text)
@@ -251,7 +250,6 @@ def vacature_opslaan():
     job_title = request.form.get('jobTitle')
     location = request.form.get('location')
     description = request.form.get('description')
-    end_date_str = request.form.get('endDate')
     # Ensure there's a default employer (matches bedrijf_home default)
     employer = Employer.query.filter_by(name='ACME BV').first()
     if not employer:
@@ -264,39 +262,11 @@ def vacature_opslaan():
                      title=job_title,
                      description=description,
                      location=location)
-    if end_date_str:
-        try:
-            job.end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-        except Exception:
-            pass
     db.session.add(job)
     db.session.commit()
 
     flash("Vacature succesvol geplaatst ✅")
     # redirect to the public recruiter dashboard which will show posted vacatures
-    return redirect('/recruiter_dashboard')
-
-
-@app.route('/vacature/<int:job_id>/edit')
-def vacature_edit(job_id):
-    job = JobListing.query.get_or_404(job_id)
-    return render_template('vacatures_bedrijf.html', job=job)
-
-
-@app.route('/vacature/<int:job_id>/opslaan', methods=['POST'])
-def vacature_update(job_id):
-    job = JobListing.query.get_or_404(job_id)
-    job.title = request.form.get('jobTitle')
-    job.location = request.form.get('location')
-    job.description = request.form.get('description')
-    end_date_str = request.form.get('endDate')
-    if end_date_str:
-        try:
-            job.end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-        except Exception:
-            job.end_date = None
-    db.session.commit()
-    flash('Vacature bijgewerkt ✅')
     return redirect('/recruiter_dashboard')
 
 

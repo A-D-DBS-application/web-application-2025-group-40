@@ -6,20 +6,19 @@
 <div class="vacature-form-container">
   <h2>Vacature Plaatsen</h2>
 
-  {% set form_action = url_for('vacature_opslaan') if not job else url_for('vacature_update', job_id=job.id) %}
-  <form method="POST" action="{{ form_action }}">
+  <form method="POST" action="{{ url_for('vacature_opslaan') }}">
+    <label for="companyName">Bedrijfsnaam</label>
+    <input type="text" id="companyName" name="companyName" placeholder="Naam van het bedrijf" required />
+
     <label for="jobTitle">Functietitel</label>
-    <input type="text" id="jobTitle" name="jobTitle" placeholder="bv. Kassamedewerker" value="{{ job.title if job else '' }}" required />
+    <input type="text" id="jobTitle" name="jobTitle" placeholder="bv. Kassamedewerker" required />
 
     <label for="location">Locatie</label>
-    <input type="text" id="location" name="location" placeholder="bv. Gent, België" value="{{ job.location if job else '' }}" required />
-
-    <label for="endDate">Einddatum vacature</label>
-    <input type="date" id="endDate" name="endDate" value="{{ job.end_date.isoformat() if job and job.end_date else '' }}" />
+    <input type="text" id="location" name="location" placeholder="bv. Gent, België" required />
 
     <label for="description">Beschrijving</label>
     <textarea id="description" name="description"
-              placeholder="Beschrijf de job, taken, vereisten en aantal uren per week..." required>{{ job.description if job else '' }}</textarea>
+              placeholder="Beschrijf de job, taken, vereisten en aantal uren per week..." required></textarea>
 
     <button type="submit">Vacature plaatsen</button>
   </form>
