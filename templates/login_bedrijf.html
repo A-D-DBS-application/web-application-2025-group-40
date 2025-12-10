@@ -1,23 +1,42 @@
+
 {% extends "base.html" %}
 
-{% block title %}Swipr - Bedrijf Login{% endblock %}
+{% block title %}Bedrijf Login - Swipr{% endblock %}
 
 {% block content %}
-<div class="auth-container">
-  <h2>Bedrijf Login</h2>
-
-  <form method="POST" action="{{ url_for('login_bedrijf') }}">
-    <label for="email">E-mail</label>
-    <input type="email" id="email" name="email" placeholder="Bedrijf e-mail" required>
-
-    <label for="password">Wachtwoord</label>
-    <input type="password" id="password" name="password" placeholder="Wachtwoord" required>
-
-    <button type="submit">Inloggen</button>
+<div class="login-container">
+  <h1>Bedrijf Login</h1>
+  
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash-alert flash-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  
+  <form action="/login_bedrijf" method="POST">
+    <input type="email" name="email" placeholder="E-mail" required>
+    <input type="password" name="password" placeholder="Wachtwoord" required>
+    <button type="submit">Login</button>
   </form>
-
-  <div class="auth-link">
-    <p>Nog geen account? <a href="{{ url_for('registratie_bedrijf') }}">Registreer hier</a></p>
-  </div>
+  <p>Nog geen account? <a href="/registratie_bedrijf">Registreer hier</a></p>
 </div>
+
+<style>
+  .flash-alert {
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  
+  .flash-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+</style>
 {% endblock %}

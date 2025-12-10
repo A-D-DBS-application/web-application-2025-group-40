@@ -228,6 +228,25 @@ def login_route():
     return render_template('login.html')
 
 
+@app.route('/login_bedrijf', methods=['GET', 'POST'])
+def login_bedrijf():
+    """Login voor recruiters/bedrijven —zelfde flow als student login maar controleert rol."""
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user, error = authenticate_user(email, password)
+        if error:
+            return jsonify({'error': error}), 400
+
+        # Zorg dat alleen recruiters/bedrijven via deze route kunnen inloggen
+        if not user or user.role != 'recruiter':
+            return jsonify({'error': 'Geen bedrijf/recruiter account gevonden voor deze inloggegevens.'}), 403
+
+        login_user(user)
+        return jsonify({'success': f'Ingelogd als {user.role}!'}), 200
+    return render_template('login_bedrijf.html')
+
+
 @app.route('/logout')
 @login_required
 def logout_route():
