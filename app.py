@@ -251,7 +251,9 @@ def registratie_bedrijf():
         password     = request.form.get('password')
         contact_name = request.form.get('contactName')
         contact_phone= request.form.get('contactPhone', '')
-        return redirect(url_for('login_bedrijf'))
+        # After company registration, redirect directly to the recruiter dashboard
+        # (assumes either a simple landing dashboard or further authentication elsewhere)
+        return redirect('/recruiter_dashboard')
     return render_template('registratie_bedrijf.html')
 
 
