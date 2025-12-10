@@ -603,10 +603,90 @@ def vacatures_student():
 
 
 # -----------------------
+# SEED DATA
+# -----------------------
+def seed_database():
+    """Create sample data if database is empty"""
+    with app.app_context():
+        db.create_all()
+        
+        # Check if database already has data
+        if JobListing.query.first():
+            return  # Data already exists
+        
+        # Create sample employers
+        employers = [
+            Employer(name='ACME BV', location='Amsterdam', description='A leading tech company'),
+            Employer(name='TechCorp', location='Utrecht', description='Innovation in software'),
+            Employer(name='WebDesign Inc', location='Rotterdam', description='Digital solutions'),
+            Employer(name='DataSystems', location='Groningen', description='Big data & analytics'),
+        ]
+        
+        for emp in employers:
+            db.session.add(emp)
+        db.session.commit()
+        
+        # Create sample job listings
+        jobs_data = [
+            {
+                'employer_id': employers[0].id,
+                'title': 'Python Developer',
+                'description': 'We are looking for an experienced Python developer to join our growing team. Experience with Django and FastAPI required.',
+                'location': 'Amsterdam',
+                'salary': 3500,
+                'periode': '6 months'
+            },
+            {
+                'employer_id': employers[1].id,
+                'title': 'Frontend Developer',
+                'description': 'Looking for a skilled React/Vue developer. Must have experience with modern JavaScript frameworks and responsive design.',
+                'location': 'Utrecht',
+                'salary': 3200,
+                'periode': '4 months'
+            },
+            {
+                'employer_id': employers[2].id,
+                'title': 'Full Stack Developer',
+                'description': 'Develop both backend and frontend solutions. Tech stack includes Node.js, React, and PostgreSQL.',
+                'location': 'Rotterdam',
+                'salary': 3800,
+                'periode': '6 months'
+            },
+            {
+                'employer_id': employers[3].id,
+                'title': 'Data Analyst',
+                'description': 'Analyze large datasets and create insights. Experience with Python, SQL, and visualization tools required.',
+                'location': 'Groningen',
+                'salary': 2800,
+                'periode': '3 months'
+            },
+            {
+                'employer_id': employers[0].id,
+                'title': 'DevOps Engineer',
+                'description': 'Manage cloud infrastructure and CI/CD pipelines. Experience with Docker, Kubernetes, and AWS needed.',
+                'location': 'Amsterdam',
+                'salary': 4000,
+                'periode': '6 months'
+            },
+            {
+                'employer_id': employers[1].id,
+                'title': 'UI/UX Designer',
+                'description': 'Design user-friendly interfaces for web applications. Portfolio and experience with Figma required.',
+                'location': 'Utrecht',
+                'salary': 2900,
+                'periode': '3 months'
+            },
+        ]
+        
+        for job_data in jobs_data:
+            job = JobListing(**job_data)
+            db.session.add(job)
+        db.session.commit()
+
+# -----------------------
 # START
 # -----------------------
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
+    seed_database()
     app.run(debug=True)
 # ...existing code...
