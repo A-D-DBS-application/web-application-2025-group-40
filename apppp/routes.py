@@ -357,7 +357,10 @@ def get_my_jobs():
 def delete_job(job_id):
     job = JobListing.query.get(job_id)
     if not job:
+        app.logger.info('Delete attempt failed: job %s not found (user %s)', job_id, getattr(current_user, 'id', None))
         return jsonify({'error': 'Job bestaat niet'}), 404
+
+    app.logger.info('Delete attempt for job %s (employer_id=%s) by user %s', job_id, job.employer_id, getattr(current_user, 'id', None))
 
     # Controleer of huidige gebruiker recruiter is voor het bedrijf van de vacature
     recruiter_link = RecruiterUser.query.filter_by(
@@ -366,6 +369,7 @@ def delete_job(job_id):
     ).first()
 
     if not recruiter_link:
+        app.logger.info('Delete denied: user %s is not recruiter for employer %s', current_user.id, job.employer_id)
         return jsonify({'error': 'Je hebt geen toestemming om deze vacature te verwijderen'}), 403
 
     try:
@@ -375,6 +379,7 @@ def delete_job(job_id):
 
         db.session.delete(job)
         db.session.commit()
+        app.logger.info('Vacature %s verwijderd door user %s', job_id, current_user.id)
         return jsonify({'message': 'Vacature verwijderd'}), 200
     except Exception as e:
         db.session.rollback()
