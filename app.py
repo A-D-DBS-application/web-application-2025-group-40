@@ -7,7 +7,6 @@ from flask_login import (LoginManager, UserMixin, login_user,
 from werkzeug.security import generate_password_hash, check_password_hash
 from supabase import create_client
 from dotenv import load_dotenv
-from flask_migrate import Migrate
 
 # laad .env
 load_dotenv()
