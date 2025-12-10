@@ -148,6 +148,27 @@
     // hide element immediately
     el.style.display = 'none';
 
+    // call server to deactivate immediately so students no longer see it
+    try {
+      const decRes = await fetch(`/jobs/${jobId}/deactivate`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+      if (!decRes.ok) {
+        // failed to deactivate on server -> restore UI and abort
+        el.style.display = '';
+        if (counter && counterWas !== null) counter.textContent = counterWas;
+        let msg = 'Fout bij verwijderen (deactiveren mislukt)';
+        try { const body = await decRes.json(); msg = body.error || msg; } catch(e){}
+        showToast(msg, 'error');
+        return;
+      }
+    } catch (err) {
+      console.error('Network error while deactivating', err);
+      // restore UI on network error
+      el.style.display = '';
+      if (counter && counterWas !== null) counter.textContent = counterWas;
+      showToast('Netwerkfout bij verwijderen', 'error');
+      return;
+    }
+
     // decrement counter
     const counter = document.querySelector('.text-2xl.font-bold.text-swipr');
     let counterWas = null;
@@ -205,27 +226,43 @@
       }
     }, 5000);
 
-    pendingDeletes[jobId] = { timeout, clone };
+  pendingDeletes[jobId] = { timeout, clone };
 
     // undo handler
-    document.getElementById(`undo-${jobId}`).addEventListener('click', () => {
+    document.getElementById(`undo-${jobId}`).addEventListener('click', async () => {
       const pd = pendingDeletes[jobId];
-      if (pd) {
-        clearTimeout(pd.timeout);
-        // restore DOM
-        if (el && el.parentNode) {
-          el.style.display = '';
-        } else if (pd.clone) {
-          const list = document.querySelector('ul.space-y-3');
-          if (list) list.appendChild(pd.clone);
+      if (!pd) return;
+      clearTimeout(pd.timeout);
+
+      // call restore endpoint on server
+      try {
+        const res = await fetch(`/jobs/${jobId}/restore`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        if (!res.ok) {
+          let msg = 'Fout bij herstellen';
+          try { const body = await res.json(); msg = body.error || msg; } catch(e){}
+          showToast(msg, 'error');
+          // keep hidden since restore failed
+          return;
         }
-        // restore counter
-        if (counter && counterWas !== null) counter.textContent = counterWas;
-        // remove toast
-        const t = document.getElementById(toastId);
-        if (t) t.remove();
-        delete pendingDeletes[jobId];
+      } catch (err) {
+        console.error('Network error while restoring', err);
+        showToast('Netwerkfout bij herstellen', 'error');
+        return;
       }
+
+      // restore DOM
+      if (el && el.parentNode) {
+        el.style.display = '';
+      } else if (pd.clone) {
+        const list = document.querySelector('ul.space-y-3');
+        if (list) list.appendChild(pd.clone);
+      }
+      // restore counter
+      if (counter && counterWas !== null) counter.textContent = counterWas;
+      // remove toast
+      const t = document.getElementById(toastId);
+      if (t) t.remove();
+      delete pendingDeletes[jobId];
     });
   }
 </script>
