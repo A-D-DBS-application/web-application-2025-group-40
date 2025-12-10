@@ -1,6 +1,6 @@
 # ...existing code...
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (LoginManager, UserMixin, login_user,
@@ -204,14 +204,35 @@ def login_student():
 
 @app.route('/recruiter_dashboard')
 def recruiter_dashboard_view():
-    # Create a simple stats object for the dashboard
+    # Show vacatures for the default employer (ACME BV)
+    employer = Employer.query.filter_by(name='ACME BV').first()
+    jobs = []
+    if employer:
+        jobs = JobListing.query.filter_by(employer_id=employer.id).all()
+
+    # compute simple stats
+    active_job_count = len(jobs)
+    total_matches = 0
+    matches_last_7_days = 0
+    cutoff = datetime.utcnow() - timedelta(days=7)
+    for job in jobs:
+        # job.matches is a relationship (may be empty)
+        jm = job.matches or []
+        total_matches += len(jm)
+        for m in jm:
+            if m.matched_at and m.matched_at >= cutoff:
+                matches_last_7_days += 1
+
+    avg_matches_per_job = (total_matches / active_job_count) if active_job_count > 0 else 0
+
     stats = {
-        'active_job_count': 0,
-        'total_matches': 0,
-        'matches_last_7_days': 0,
-        'avg_matches_per_job': 0
+        'active_job_count': active_job_count,
+        'total_matches': total_matches,
+        'matches_last_7_days': matches_last_7_days,
+        'avg_matches_per_job': avg_matches_per_job
     }
-    return render_template('recruiter_dashboard.html', stats=stats)
+
+    return render_template('recruiter_dashboard.html', stats=stats, jobs=jobs)
 
 
 @app.route('/save_profile', methods=['POST'])
@@ -229,8 +250,25 @@ def vacature_opslaan():
     job_title = request.form.get('jobTitle')
     location = request.form.get('location')
     description = request.form.get('description')
+    # Ensure there's a default employer (matches bedrijf_home default)
+    employer = Employer.query.filter_by(name='ACME BV').first()
+    if not employer:
+        employer = Employer(name='ACME BV')
+        db.session.add(employer)
+        db.session.commit()
+
+    # create the job and persist
+    job = JobListing(employer_id=employer.id,
+                     title=job_title,
+                     description=description,
+                     location=location,
+                     created_at=datetime.utcnow())
+    db.session.add(job)
+    db.session.commit()
+
     flash("Vacature succesvol geplaatst ✅")
-    return redirect(url_for('bedrijf_home'))
+    # redirect to the public recruiter dashboard which will show posted vacatures
+    return redirect('/recruiter_dashboard')
 
 
 @app.route('/bedrijf')
