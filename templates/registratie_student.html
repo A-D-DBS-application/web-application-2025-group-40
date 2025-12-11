@@ -3,41 +3,76 @@
 {% block title %}Swipr - Registratie Student{% endblock %}
 
 {% block content %}
-<div class="student-register-body">
-  <div class="form-container student-register">
-    <h2 class="student-register-title">Registratie Student</h2>
+<div class="form-container student-register red-theme">
+  <h2>Registratie Student</h2>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          {% if category == 'danger' %}
-            <script type="text/javascript">
-              alert("{{ message }}");
-            </script>
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+  <form id="registerForm" method="POST" action="{{ url_for('registratie_student') }}">
+    <label for="firstName">Voornaam</label>
+    <input type="text" id="firstName" name="firstName" placeholder="Voornaam" required />
 
-    <form id="registerForm" method="POST" action="/registratie_student">
-      <label for="firstName">Voornaam</label>
-      <input type="text" id="firstName" name="firstName" placeholder="Voornaam" required />
+    <label for="lastName">Achternaam</label>
+    <input type="text" id="lastName" name="lastName" placeholder="Achternaam" required />
 
-      <label for="lastName">Naam</label>
-      <input type="text" id="lastName" name="lastName" placeholder="Achternaam" required />
+    <label for="email">Studenten e-mail</label>
+    <input type="email" id="email" name="email" placeholder="bv. naam@student.ugent.be" required />
+    <div class="error" id="emailError"></div>
 
-      <label for="email">E-mail</label>
-      <input type="email" id="email" name="email" placeholder="bv. naam@student.ugent.be" required />
-      <div class="error" id="emailError"></div>
+    <label for="password">Wachtwoord</label>
+    <input type="password" id="password" name="password" placeholder="Kies een wachtwoord" required />
+    <div class="error" id="passwordError"></div>
 
-      <label for="password">Wachtwoord</label>
-      <input type="password" id="password" name="password" placeholder="Kies een wachtwoord" required />
-      <div class="error" id="passwordError"></div>
-
-      <button type="submit">Registreren</button>
-    </form>
-  </div>
+    <button type="submit" class="register-button red-button">Registreren</button>
+  </form>
 </div>
+
+<style>
+  /* Rood thema */
+  .red-theme {
+    border: 2px solid #b30000;
+    padding: 25px;
+    border-radius: 8px;
+    background-color: #fff5f5;
+  }
+
+  .red-theme h2 {
+    color: #b30000;
+    margin-bottom: 20px;
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  .red-theme label {
+    color: #660000;
+    font-weight: bold;
+  }
+
+  .red-theme input {
+    border: 1px solid #b30000;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    width: 100%;
+  }
+
+  .red-button {
+    background-color: #b30000;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .red-button:hover {
+    background-color: #800000;
+  }
+
+  .error {
+    color: #b30000;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+  }
+</style>
 
 <script>
   const form = document.getElementById('registerForm');
