@@ -118,8 +118,13 @@
 
   function showToast(message = 'Gegevens opgeslagen ✅') {
     toast.textContent = message;
+    // ensure visible
+    toast.style.display = 'block';
     toast.classList.remove('hidden');
-    setTimeout(() => toast.classList.add('hidden'), 2200);
+    setTimeout(() => {
+      toast.style.display = 'none';
+      toast.classList.add('hidden');
+    }, 2200);
   }
 
   function saveData(data) {

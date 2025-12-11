@@ -456,6 +456,9 @@ ul.vacature-list li strong {
 .muted { color:#6b7280; font-size:0.9rem; }
 .small { font-size:0.85rem; }
 
+/* Utility to hide elements (used by JS) */
+.hidden { display: none !important; }
+
 /* Keep existing style names for compatibility where present */
 .container-box { max-width: 1024px; margin: 40px auto; padding: 20px; }
 
