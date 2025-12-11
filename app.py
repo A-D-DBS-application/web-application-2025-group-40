@@ -594,14 +594,56 @@ def logout():
 
 
 # Student swipe dashboard
-@app.route('/student_dashboard')
+@app.route('/student_dashboard', methods=['GET', 'POST'])
 @login_required
 def student_dashboard():
     if current_user.role != 'student':
         abort(403)
+
+    # Handle profile update (including password change) via POST
+    if request.method == 'POST':
+        first_name = request.form.get('firstName', '').strip()
+        last_name = request.form.get('lastName', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        password_confirm = request.form.get('passwordConfirm', '')
+
+        # Basic validation
+        if password and password != password_confirm:
+            return jsonify({'error': 'Wachtwoorden komen niet overeen'}), 400
+
+        # Update AppUser email if changed and not taken
+        if email and email != current_user.email:
+            if AppUser.query.filter_by(email=email).first():
+                return jsonify({'error': 'Email al in gebruik'}), 400
+            current_user.email = email
+
+        # Update password if provided
+        if password:
+            current_user.set_password(password)
+
+        # Update Student profile
+        student = getattr(current_user, 'student', None)
+        if not student:
+            student = Student(user_id=current_user.id, first_name=first_name, last_name=last_name)
+            db.session.add(student)
+        else:
+            student.first_name = first_name
+            student.last_name = last_name
+            db.session.add(student)
+
+        try:
+            db.session.add(current_user)
+            db.session.commit()
+            return jsonify({'success': True}), 200
+        except Exception as e:
+            app.logger.exception('Fout bij opslaan student profiel')
+            db.session.rollback()
+            return jsonify({'error': 'Opslaan mislukt'}), 500
+
+    # GET: render dashboard and pass server-side profile
     matched_job_ids = [m.job_id for m in current_user.matches]
     jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids)).all()
-    # pass student info so the profile form can be pre-filled from server-side data
     student = getattr(current_user, 'student', None)
     return render_template('student_dashboard.html', jobs=jobs, user=current_user, student=student)
 

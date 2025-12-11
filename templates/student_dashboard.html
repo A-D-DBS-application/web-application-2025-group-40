@@ -176,15 +176,38 @@
     if (data.savedAt) savedAt.textContent = 'Laatst opgeslagen: ' + new Date(data.savedAt).toLocaleString();
   }
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const payload = {
-      firstName: firstName.value.trim(),
-      lastName: lastName.value.trim(),
-      email: email.value.trim(),
-      savedAt: new Date().toISOString()
-    };
-    saveData(payload);
+
+    // Build FormData including password fields so server can update credentials
+    const fd = new FormData(form);
+
+    try {
+      const res = await fetch(window.location.pathname, {
+        method: 'POST',
+        body: fd,
+        credentials: 'same-origin'
+      });
+
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const msg = body.error || 'Opslaan mislukt';
+        showToast(msg);
+        return;
+      }
+
+      // also save locally for demo convenience
+      const payload = {
+        firstName: firstName.value.trim(),
+        lastName: lastName.value.trim(),
+        email: email.value.trim(),
+        savedAt: new Date().toISOString()
+      };
+      saveData(payload);
+    } catch (err) {
+      console.error(err);
+      showToast('Netwerkfout bij opslaan');
+    }
   });
 
   resetBtn.addEventListener('click', () => {
