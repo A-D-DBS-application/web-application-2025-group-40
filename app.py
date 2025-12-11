@@ -273,6 +273,12 @@ def recruiter_dashboard_view():
     if employer:
         jobs = JobListing.query.filter_by(employer_id=employer.id).all()
 
+    # Ensure each job has a company_name and client attribute for template rendering
+    for job in jobs:
+        # client may be an optional field on the job (some code paths may set it)
+        job.client = getattr(job, 'client', None)
+        job.company_name = job.employer.name if job.employer else 'Onbekend'
+
     # compute simple stats
     active_job_count = len(jobs)
     total_matches = 0
