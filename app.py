@@ -539,7 +539,7 @@ def registratie_bedrijf():
             db.session.commit()
 
             if supabase_success:
-                flash("Account aangemaakt en gesynced met Supabase.", "success")
+                flash("ccount aangemaakt", "success")
             else:
                 flash("Account aangemaakt (lokaal). Supabase sync is mislukt, probeer later.", "warning")
             return redirect(url_for('login_bedrijf'))
