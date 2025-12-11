@@ -52,26 +52,6 @@
       <p class="text-sm opacity-90">Beheer uw vacatures en matches</p>
     </section>
 
-    {# Company / recruiter contact summary - prefilled with employer data when available #}
-    <section class="bg-white p-4 rounded-xl shadow-sm">
-      <h3 class="text-sm font-semibold text-gray-700 mb-2">Bedrijfsgegevens</h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div class="p-3 border rounded-md">
-          <div class="text-xs text-gray-500">Bedrijf</div>
-          <div class="font-medium text-gray-800">{{ employer.name if employer else 'Onbekend' }}</div>
-        </div>
-        <div class="p-3 border rounded-md">
-          <div class="text-xs text-gray-500">Contact persoon</div>
-          <div class="font-medium text-gray-800">{{ employer.contact_person if employer and employer.contact_person else 'Niet opgegeven' }}</div>
-        </div>
-        <div class="p-3 border rounded-md">
-          <div class="text-xs text-gray-500">BTW-nummer</div>
-          <div class="font-medium text-gray-800">{{ employer.btw_number if employer and employer.btw_number else 'Niet opgegeven' }}</div>
-        </div>
-      </div>
-      <div class="mt-3 text-sm text-gray-500">Wilt u deze gegevens aanpassen? <a href="/recruiter_profiel" class="text-swipr underline">Bewerk profiel</a></div>
-    </section>
-
     <section class="grid grid-cols-1 md:grid-cols-3 gap-3">
       <div class="bg-white rounded-xl shadow-sm p-3">
         <p class="text-xs text-gray-500">Actieve vacatures</p>
