@@ -265,7 +265,7 @@ def register_route():
 
         existing_user = AppUser.query.filter((AppUser.email == email) | (AppUser.username == username)).first()
         if existing_user:
-            return jsonify({'error': 'Dit e-mailadres of username is al gebruikt.'}), 400
+            return jsonify({'error': 'Dit emailadres of username is al gebruikt.'}), 400
 
         new_user = create_user(username=username, email=email, password=password, role=role)
         try:
@@ -289,7 +289,7 @@ def register_company_route():
         company_name = request.form.get('company_name', 'Onbekend')
 
         if AppUser.query.filter((AppUser.email == email) | (AppUser.username == username)).first():
-            return jsonify({'error': 'E-mail of username al in gebruik.'}), 400
+            return jsonify({'error': 'Email of username al in gebruik.'}), 400
 
         try:
             new_employer = Employer(name=company_name)

@@ -144,14 +144,6 @@
   }
 
   function populateForm() {
-    // Prefer server-side profile when available (real user data). Fall back to localStorage for demo-only settings.
-    if (SERVER_PROFILE && Object.keys(SERVER_PROFILE).length > 0) {
-      firstName.value = SERVER_PROFILE.firstName || '';
-      lastName.value = SERVER_PROFILE.lastName || '';
-      email.value = SERVER_PROFILE.email || '';
-      // no savedAt from server; leave as is
-      return;
-    }
     const data = loadData();
     if (!data) return;
     firstName.value = data.firstName || '';
@@ -160,38 +152,15 @@
     if (data.savedAt) savedAt.textContent = 'Laatst opgeslagen: ' + new Date(data.savedAt).toLocaleString();
   }
 
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
-
-    // Build FormData including password fields so server can update credentials
-    const fd = new FormData(form);
-
-    try {
-      const res = await fetch(window.location.pathname, {
-        method: 'POST',
-        body: fd,
-        credentials: 'same-origin'
-      });
-
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        const msg = body.error || 'Opslaan mislukt';
-        showToast(msg);
-        return;
-      }
-
-      // also save locally for demo convenience
-      const payload = {
-        firstName: firstName.value.trim(),
-        lastName: lastName.value.trim(),
-        email: email.value.trim(),
-        savedAt: new Date().toISOString()
-      };
-      saveData(payload);
-    } catch (err) {
-      console.error(err);
-      showToast('Netwerkfout bij opslaan');
-    }
+    const payload = {
+      firstName: firstName.value.trim(),
+      lastName: lastName.value.trim(),
+      email: email.value.trim(),
+      savedAt: new Date().toISOString()
+    };
+    saveData(payload);
   });
 
   resetBtn.addEventListener('click', () => {

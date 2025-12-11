@@ -134,9 +134,6 @@ class JobListing(db.Model):
     salary = db.Column(db.Numeric, nullable=True)
     periode = db.Column(db.String(80))
     requirements = db.Column(db.Text)
-    posted_company_name = db.Column(db.String(200))
-    client = db.Column(db.String(140))
-    is_active = db.Column(db.Boolean, default=True)
 
     employer = db.relationship('Employer', back_populates='job_listings')
     matches = db.relationship('Match', back_populates='job')
@@ -213,7 +210,7 @@ def login_bedrijf():
         password = request.form.get('password')
         user = AppUser.query.filter_by(email=email).first()
         if not user or not user.check_password(password):
-            flash("Foute e-mail of wachtwoord!", "danger")
+            flash("Foute email of wachtwoord!", "danger")
             return redirect(url_for('login_bedrijf'))
         if user.role != 'recruiter':
             flash("Dit account is geen bedrijf/recruiter account.", "danger")
@@ -230,11 +227,17 @@ def login_bedrijf():
 @app.route('/login_student', methods=['GET', 'POST'])
 def login_student():
     if request.method == 'POST':
+        # Ensure the student agreed to the terms and conditions
+        agree = request.form.get('agree_terms')
+        if agree != 'on':
+            flash("Je moet de algemene voorwaarden accepteren.", "danger")
+            return redirect(url_for('login_student'))
+
         email = request.form.get('email')
         password = request.form.get('password')
         user = AppUser.query.filter_by(email=email).first()
         if not user or not user.check_password(password):
-            flash("Foute e-mail of wachtwoord!", "danger")
+            flash("Foute email of wachtwoord!", "danger")
             return redirect(url_for('login_student'))
         if user.role != 'student':
             flash("Dit account is geen student account.", "danger")
@@ -242,6 +245,12 @@ def login_student():
         login_user(user)
         return redirect('/vacatures_student')
     return render_template('login_student.html')
+
+
+@app.route('/terms')
+def terms():
+    """Render the terms and conditions page."""
+    return render_template('terms.html')
 
 
 @app.route('/recruiter_dashboard')
@@ -262,7 +271,7 @@ def recruiter_dashboard_view():
         employer = Employer.query.filter_by(name='ACME BV').first()
 
     if employer:
-        jobs = JobListing.query.filter_by(employer_id=employer.id, is_active=True).all()
+        jobs = JobListing.query.filter_by(employer_id=employer.id).all()
 
     # compute simple stats
     active_job_count = len(jobs)
@@ -297,10 +306,7 @@ def recruiter_profiel():
         abort(403)
 
     user = current_user
-    # Try to obtain the RecruiterUser relationship from the user object; if missing, query explicitly
     rec = getattr(user, 'recruiter', None)
-    if rec is None:
-        rec = RecruiterUser.query.filter_by(user_id=user.id).first()
     employer = rec.employer if rec else None
 
     if request.method == 'POST':
@@ -319,7 +325,7 @@ def recruiter_profiel():
         # validate unique email
         if email and email != user.email:
             if AppUser.query.filter_by(email=email).first():
-                flash('E-mail is al in gebruik.', 'danger')
+                flash('Email is al in gebruik.', 'danger')
                 return redirect(url_for('recruiter_profiel'))
             user.email = email
 
@@ -352,12 +358,6 @@ def recruiter_profiel():
         return redirect(url_for('recruiter_dashboard_view'))
 
     # GET
-    # If there's an employer but no contact_person set, provide a safe UI-only fallback (do not commit)
-    if employer and (not employer.contact_person or employer.contact_person.strip() == ''):
-        # Prefer a readable name if available; fall back to the user's email
-        fallback_name = getattr(user, 'email', '')
-        employer.contact_person = fallback_name
-
     return render_template('recruiter_profiel.html', user=user, employer=employer)
 
 
@@ -367,15 +367,8 @@ def save_profile():
 
 
 @app.route('/vacature/nieuw')
-@login_required
 def vacature_nieuw():
-    # Only recruiters can place vacancies; pass employer info to template so the company name can be fixed
-    employer = None
-    if getattr(current_user, 'role', None) == 'recruiter':
-        rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
-        if rec and rec.employer:
-            employer = rec.employer
-    return render_template('vacatures_bedrijf.html', employer=employer)
+    return render_template('vacatures_bedrijf.html')
 
 
 @app.route('/vacature/opslaan', methods=['POST'])
@@ -383,7 +376,6 @@ def vacature_opslaan():
     job_title = request.form.get('jobTitle')
     location = request.form.get('location')
     description = request.form.get('description')
-    client = request.form.get('client')
     company_name = request.form.get('companyName', 'ACME BV')  # Get company name from form, fallback to ACME BV
     
     # Find or create employer with the provided company name
@@ -397,8 +389,7 @@ def vacature_opslaan():
     job = JobListing(employer_id=employer.id,
                      title=job_title,
                      description=description,
-                     location=location,
-                     client=client)
+                     location=location)
     db.session.add(job)
     db.session.commit()
 
@@ -416,8 +407,6 @@ def job_likes(job_id):
 
     rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
     job = JobListing.query.get(job_id)
-    if not job or not getattr(job, 'is_active', True):
-        return jsonify({'error': 'Vacature niet gevonden'}), 404
     if not job:
         return jsonify({'error': 'Vacature niet gevonden'}), 404
 
@@ -478,7 +467,7 @@ def registratie_bedrijf():
         contact_phone= request.form.get('contactPhone', '')
         # Controleer of e-mail al bestaat lokaal
         if AppUser.query.filter_by(email=email).first():
-            flash("E-mail is al in gebruik.", "danger")
+            flash("Email is al in gebruik.", "danger")
             return redirect(url_for('registratie_bedrijf'))
 
         # Controleer ook in Supabase (indien geconfigureerd)
@@ -486,15 +475,16 @@ def registratie_bedrijf():
             try:
                 existing = supabase.table('app_user').select('id').eq('email', email).execute()
                 if existing and getattr(existing, 'data', None) and len(existing.data) > 0:
-                    flash("E-mail is al in gebruik (Supabase).", "danger")
+                    flash("Email is al in gebruik (Supabase).", "danger")
                     return redirect(url_for('registratie_bedrijf'))
             except Exception:
-                app.logger.exception('Fout bij check Supabase e-mail')
+                app.logger.exception('Fout bij check Supabase email')
 
         try:
-            # 1) Schrijf naar Supabase als beschikbaar
+            # 1) Schrijf naar Supabase als beschikbaar (maar fail niet als het niet werkt)
             sup_emp_id = None
             sup_user_id = None
+            supabase_success = False
             if supabase:
                 try:
                     timestamp = datetime.utcnow().isoformat()
@@ -502,7 +492,6 @@ def registratie_bedrijf():
                     res_emp = supabase.table('employer').insert({
                         'name': company_name,
                         'contact_email': email,
-                        'contact_person': contact_name,
                         'created_at': timestamp
                     }).execute()
                     if getattr(res_emp, 'error', None):
@@ -529,14 +518,14 @@ def registratie_bedrijf():
                     }).execute()
                     if getattr(res_link, 'error', None):
                         raise Exception(f"Supabase recruiter_user insert fout: {res_link.error}")
+                    supabase_success = True
                 except Exception as se:
                     app.logger.exception('Supabase opslaan mislukt: %s', se)
-                    flash('Kon gegevens niet naar Supabase schrijven. Probeer later.', 'danger')
-                    return redirect(url_for('registratie_bedrijf'))
+                    # Log full error but continue with local registration
+                    app.logger.error(f'Supabase error details: {str(se)}')
 
-            # 2) Schrijf lokaal via SQLAlchemy (zodat de app huidige auth blijft gebruiken)
-            # Persist contact person name provided during registration so recruiter profile shows it
-            employer = Employer(name=company_name, contact_email=email, contact_person=contact_name)
+            # 2) Schrijf lokaal via SQLAlchemy (altijd doen, zelfs als Supabase faalt)
+            employer = Employer(name=company_name, contact_email=email)
             db.session.add(employer)
             db.session.flush()
 
@@ -549,7 +538,10 @@ def registratie_bedrijf():
             db.session.add(rec)
             db.session.commit()
 
-            flash("Account aangemaakt. Je kunt nu inloggen.", "success")
+            if supabase_success:
+                flash("Account aangemaakt en gesynced met Supabase.", "success")
+            else:
+                flash("Account aangemaakt (lokaal). Supabase sync is mislukt, probeer later.", "warning")
             return redirect(url_for('login_bedrijf'))
         except Exception as e:
             db.session.rollback()
@@ -569,7 +561,7 @@ def registratie_student():
         last_name = request.form.get('last_name', '')
 
         if AppUser.query.filter_by(email=email).first():
-            flash("E-mail is al in gebruik.", "danger")
+            flash("Email is al in gebruik.", "danger")
             return redirect(url_for('registratie_student'))
 
         user = AppUser(email=email, role='student')
@@ -578,10 +570,10 @@ def registratie_student():
         db.session.flush()
         student = Student(user_id=user.id, first_name=first_name, last_name=last_name)
         db.session.add(student)
-    db.session.commit()
-    # After registration, require explicit login on the student login page
-    flash("Account aangemaakt. Log in om verder te gaan.", "success")
-    return redirect(url_for('login_student'))
+        db.session.commit()
+        login_user(user)
+        flash("Account aangemaakt.", "success")
+        return redirect(url_for('vacatures_student'))
 
     return render_template('registratie_student.html')
 
@@ -615,58 +607,14 @@ def logout():
 
 
 # Student swipe dashboard
-@app.route('/student_dashboard', methods=['GET', 'POST'])
+@app.route('/student_dashboard')
 @login_required
 def student_dashboard():
     if current_user.role != 'student':
         abort(403)
-
-    # Handle profile update (including password change) via POST
-    if request.method == 'POST':
-        first_name = request.form.get('firstName', '').strip()
-        last_name = request.form.get('lastName', '').strip()
-        email = request.form.get('email', '').strip()
-        password = request.form.get('password', '')
-        password_confirm = request.form.get('passwordConfirm', '')
-
-        # Basic validation
-        if password and password != password_confirm:
-            return jsonify({'error': 'Wachtwoorden komen niet overeen'}), 400
-
-        # Update AppUser email if changed and not taken
-        if email and email != current_user.email:
-            if AppUser.query.filter_by(email=email).first():
-                return jsonify({'error': 'E-mail al in gebruik'}), 400
-            current_user.email = email
-
-        # Update password if provided
-        if password:
-            current_user.set_password(password)
-
-        # Update Student profile
-        student = getattr(current_user, 'student', None)
-        if not student:
-            student = Student(user_id=current_user.id, first_name=first_name, last_name=last_name)
-            db.session.add(student)
-        else:
-            student.first_name = first_name
-            student.last_name = last_name
-            db.session.add(student)
-
-        try:
-            db.session.add(current_user)
-            db.session.commit()
-            return jsonify({'success': True}), 200
-        except Exception as e:
-            app.logger.exception('Fout bij opslaan student profiel')
-            db.session.rollback()
-            return jsonify({'error': 'Opslaan mislukt'}), 500
-
-    # GET: render dashboard and pass server-side profile
     matched_job_ids = [m.job_id for m in current_user.matches]
     jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids)).all()
-    student = getattr(current_user, 'student', None)
-    return render_template('student_dashboard.html', jobs=jobs, user=current_user, student=student)
+    return render_template('student_dashboard.html', jobs=jobs)
 
 
 
@@ -679,14 +627,8 @@ def student_dashboard_view():
     This does not enforce the role==student check so recruiters can be redirected here.
     """
     matched_job_ids = [m.job_id for m in current_user.matches] if getattr(current_user, 'matches', None) else []
-    # only include active jobs for students
-    if matched_job_ids:
-        jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids), JobListing.is_active == True).all()
-    else:
-        jobs = JobListing.query.filter(JobListing.is_active == True).all()
-    # allow viewing as recruiter (no role check) but still provide student info if present
-    student = getattr(current_user, 'student', None)
-    return render_template('student_dashboard.html', jobs=jobs, user=current_user, student=student)
+    jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids)).all() if matched_job_ids else JobListing.query.all()
+    return render_template('student_dashboard.html', jobs=jobs)
 
 
 
@@ -734,9 +676,7 @@ def create_job():
 @app.route('/jobs/<int:job_id>')
 @login_required
 def job_detail(job_id):
-    job = JobListing.query.get(job_id)
-    if not job or not getattr(job, 'is_active', True):
-        abort(404)
+    job = JobListing.query.get_or_404(job_id)
     # reuse vacancy detail template for students
     job.company_name = job.employer.name if job.employer else "Onbekend"
     liked = False
@@ -751,9 +691,7 @@ def job_detail(job_id):
 def like_job(job_id):
     if current_user.role != 'student':
         abort(403)
-    job = JobListing.query.get(job_id)
-    if not job or not getattr(job, 'is_active', True):
-        abort(404)
+    job = JobListing.query.get_or_404(job_id)
     existing = Match.query.filter_by(user_id=current_user.id, job_id=job.id).first()
     if existing:
         return redirect('/vacatures_student')
@@ -768,9 +706,6 @@ def like_job(job_id):
 def dislike_job(job_id):
     if current_user.role != 'student':
         abort(403)
-    job = JobListing.query.get(job_id)
-    if not job or not getattr(job, 'is_active', True):
-        abort(404)
     # Check if already disliked
     existing_dislike = Dislike.query.filter_by(user_id=current_user.id, job_id=job_id).first()
     if not existing_dislike:
@@ -796,11 +731,6 @@ def delete_job(job_id):
         return jsonify({'error': 'Toegang geweigerd'}), 403
 
     try:
-        # permanent deletion endpoint (called after undo window)
-        # remove dependent rows first to avoid orphans
-        Match.query.filter_by(job_id=job.id).delete()
-        Dislike.query.filter_by(job_id=job.id).delete()
-        JobListingSector.query.filter_by(job_id=job.id).delete()
         db.session.delete(job)
         db.session.commit()
         return jsonify({'success': True}), 200
@@ -810,89 +740,27 @@ def delete_job(job_id):
         return jsonify({'error': 'Verwijderen mislukt'}), 500
 
 
-@app.route('/jobs/<int:job_id>/deactivate', methods=['POST'])
-@login_required
-def deactivate_job(job_id):
-    # Mark job as inactive immediately so students don't see it
-    if getattr(current_user, 'role', None) != 'recruiter':
-        return jsonify({'error': 'Toegang geweigerd'}), 403
-
-    rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
-    job = JobListing.query.get(job_id)
-    if not job:
-        return jsonify({'error': 'Vacature niet gevonden'}), 404
-
-    if not rec or not rec.employer or rec.employer.id != job.employer_id:
-        return jsonify({'error': 'Toegang geweigerd'}), 403
-
-    try:
-        job.is_active = False
-        db.session.add(job)
-        db.session.commit()
-        return jsonify({'success': True}), 200
-    except Exception:
-        db.session.rollback()
-        return jsonify({'error': 'Deactiveren mislukt'}), 500
-
-
-@app.route('/jobs/<int:job_id>/restore', methods=['POST'])
-@login_required
-def restore_job(job_id):
-    # Restore a deactivated job (used by undo)
-    if getattr(current_user, 'role', None) != 'recruiter':
-        return jsonify({'error': 'Toegang geweigerd'}), 403
-
-    rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
-    job = JobListing.query.get(job_id)
-    if not job:
-        return jsonify({'error': 'Vacature niet gevonden'}), 404
-
-    if not rec or not rec.employer or rec.employer.id != job.employer_id:
-        return jsonify({'error': 'Toegang geweigerd'}), 403
-
-    try:
-        job.is_active = True
-        db.session.add(job)
-        db.session.commit()
-        return jsonify({'success': True}), 200
-    except Exception:
-        db.session.rollback()
-        return jsonify({'error': 'Herstel mislukt'}), 500
-
-
 # Matches overzicht
 @app.route('/match_page')
 @login_required
 def match_page():
     if current_user.role == 'recruiter':
         rec = current_user.recruiter
-        formatted = []
+        matches = []
         if rec and rec.employer:
             for job in rec.employer.job_listings:
                 for m in job.matches:
-                    # ensure company name available on job for template
-                    j = m.job
-                    try:
-                        j.company_name = j.posted_company_name or (j.employer.name if j.employer else 'Onbekend')
-                    except Exception:
-                        j.company_name = getattr(j, 'posted_company_name', None) or 'Onbekend'
-                    formatted.append({'match': m, 'job': j})
-        return render_template('match_page.html', matches=formatted)
+                    matches.append(m)
+        return render_template('match_page.html', matches=matches)
     else:
         # For students, get their matches and format them for the template
         matches = current_user.matches
         formatted_matches = []
         for match in matches:
-            j = match.job
-            # attach a company_name attribute for template convenience
-            try:
-                j.company_name = j.posted_company_name or (j.employer.name if j.employer else 'Onbekend')
-            except Exception:
-                j.company_name = getattr(j, 'posted_company_name', None) or 'Onbekend'
             formatted_matches.append({
                 'match': match,
                 'user': current_user,
-                'job': j
+                'job': match.job
             })
         return render_template('match_page.html', matches=formatted_matches)
 

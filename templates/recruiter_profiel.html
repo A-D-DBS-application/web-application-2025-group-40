@@ -58,9 +58,10 @@
           <input name="company_name" type="text" placeholder="Bedrijfsnaam" value="{{ employer.name if employer else '' }}" class="form-input" required />
         </label>
 
-        <label class="form-label">
-          <span>Contact Persoon</span>
-          <input name="contact_person" type="text" placeholder="Voornaam Achternaam" value="{{ employer.contact_person if employer and employer.contact_person else user.email if user else '' }}" class="form-input" />
+        <label class="flex flex-col">
+          <span class="text-sm font-medium text-gray-700">Contact Persoon</span>
+          <input name="contact_person" type="text" placeholder="Voornaam Achternaam" value="{{ employer.contact_person if employer and employer.contact_person else user.email if user else '' }}"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
         </label>
 
         <label class="form-label">
