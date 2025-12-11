@@ -56,6 +56,8 @@ class Employer(db.Model):
     name = db.Column(db.String(255), nullable=False)
     location = db.Column(db.String(255))
     description = db.Column(db.Text)
+    location = db.Column(db.String(255))
+    salary = db.Column(db.Numeric)    
     contact_email = db.Column(db.String(255))
     is_agency = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
