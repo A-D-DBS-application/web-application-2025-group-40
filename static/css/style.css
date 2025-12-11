@@ -263,6 +263,21 @@ ul.vacature-list li strong {
   text-decoration: underline;
 }
 
+/* ===== Login bedrijf overrides (red theme) ===== */
+.login-container.bedrijf-login h1 {
+  color: #ff4b5c;
+}
+.login-container.bedrijf-login button {
+  background-color: #ff4b5c;
+}
+.login-container.bedrijf-login button:hover {
+  background-color: #e04352;
+}
+.login-container.bedrijf-login .register-link {
+  color: #ff4b5c;
+}
+
+
 /* ===== Match page ===== */
 
 .match-page {
