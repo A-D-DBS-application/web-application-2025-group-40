@@ -3,34 +3,41 @@
 {% block title %}Swipr - Registratie Bedrijf{% endblock %}
 
 {% block content %}
-<div class="form-container">
-  <h2>Registratie Bedrijf</h2>
+<div class="app-body">
+  <main class="main-container" style="max-width:680px; margin:2.5rem auto;">
+    <section class="panel">
+      <h2>Registratie Bedrijf</h2>
 
-  <form id="registerForm" method="POST" action="{{ url_for('registratie_bedrijf') }}">
-    <label for="companyName">Bedrijfsnaam</label>
-    <input type="text" id="companyName" name="companyName" placeholder="Naam van het bedrijf" required />
+      <form id="registerForm" method="POST" action="{{ url_for('registratie_bedrijf') }}" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+        <label class="form-label" style="grid-column:1 / -1">Bedrijfsnaam
+          <input class="form-input" type="text" id="companyName" name="companyName" placeholder="Naam van het bedrijf" required />
+        </label>
 
-    <label for="vatNumber">BTW-nummer</label>
-    <input type="text" id="vatNumber" name="vatNumber" placeholder="BE0123456789" required />
-    <div class="error" id="vatError"></div>
+        <label class="form-label">BTW-nummer
+          <input class="form-input" type="text" id="vatNumber" name="vatNumber" placeholder="BE0123456789" required />
+          <div class="error" id="vatError"></div>
+        </label>
 
-    <label for="email">Zakelijke e-mail</label>
-    <input type="email" id="email" name="email" placeholder="bv. info@bedrijf.be" required />
-    <div class="error" id="emailError"></div>
+        <label class="form-label">Zakelijke e-mail
+          <input class="form-input" type="email" id="email" name="email" placeholder="bv. info@bedrijf.be" required />
+          <div class="error" id="emailError"></div>
+        </label>
 
-    <label for="password">Wachtwoord</label>
-    <input type="password" id="password" name="password" placeholder="Kies een wachtwoord" required />
+        <label class="form-label">Wachtwoord
+          <input class="form-input" type="password" id="password" name="password" placeholder="Kies een wachtwoord" required />
+        </label>
 
-    <label>Contactpersoon</label>
-    <div class="form-row">
-      <input type="text" id="contactName" name="contactName" placeholder="Voornaam Achternaam" required />
-      <input type="tel" id="contactPhone" name="contactPhone" placeholder="+32 4xx xx xx xx" />
-    </div>
+        <label class="form-label" style="grid-column:1 / -1">Contactpersoon
+          <div style="display:flex; gap:0.5rem;"><input class="form-input" type="text" id="contactName" name="contactName" placeholder="Voornaam Achternaam" required /><input class="form-input" type="tel" id="contactPhone" name="contactPhone" placeholder="+32 4xx xx xx xx" /></div>
+        </label>
 
-    <button type="submit" class="register-button">Registreren</button>
-  </form>
+        <div style="grid-column:1 / -1; display:flex; justify-content:flex-end;">
+          <button class="btn-primary" type="submit">Registreren</button>
+        </div>
+      </form>
+    </section>
+  </main>
 </div>
-
 
 <script>
   const form = document.getElementById('registerForm');
@@ -44,47 +51,23 @@
 
   vatInput.addEventListener('input', () => {
     const v = vatInput.value.trim();
-    if (vatPattern.test(v)) {
-      vatError.textContent = "";
-      vatInput.setCustomValidity("");
-    }
+    if (vatPattern.test(v)) { vatError.textContent = ""; vatInput.setCustomValidity(""); }
   });
   emailInput.addEventListener('input', () => {
     const v = emailInput.value.toLowerCase().trim();
     const bad = forbiddenDomains.some(domain => v.endsWith("@" + domain));
-    if (!bad) {
-      emailError.textContent = "";
-      emailInput.setCustomValidity("");
-    }
+    if (!bad) { emailError.textContent = ""; emailInput.setCustomValidity(""); }
   });
 
   form.addEventListener('submit', function (e) {
     let valid = true;
-
     const vatValue = vatInput.value.trim();
-    if (!vatPattern.test(vatValue)) {
-      vatError.textContent = "BTW-nummer moet beginnen met 'BE' gevolgd door 10 cijfers.";
-      vatInput.setCustomValidity("Ongeldig BTW-nummer");
-      valid = false;
-    } else {
-      vatError.textContent = "";
-      vatInput.setCustomValidity("");
-    }
-
+    if (!vatPattern.test(vatValue)) { vatError.textContent = "BTW-nummer moet beginnen met 'BE' gevolgd door 10 cijfers."; vatInput.setCustomValidity("Ongeldig BTW-nummer"); valid = false; }
+    else { vatError.textContent = ""; vatInput.setCustomValidity(""); }
     const emailValue = emailInput.value.toLowerCase().trim();
     const isForbidden = forbiddenDomains.some(domain => emailValue.endsWith("@" + domain));
-    if (isForbidden) {
-      emailError.textContent = "Gebruik een professioneel bedrijfsdomein, geen gratis e-mailprovider.";
-      emailInput.setCustomValidity("Ongeldig e-mailadres");
-      valid = false;
-    } else {
-      emailError.textContent = "";
-      emailInput.setCustomValidity("");
-    }
-
-    if (!valid) {
-      e.preventDefault();
-    }
+    if (isForbidden) { emailError.textContent = "Gebruik een professioneel bedrijfsdomein, geen gratis e-mailprovider."; emailInput.setCustomValidity("Ongeldig e-mailadres"); valid = false; } else { emailError.textContent = ""; emailInput.setCustomValidity(""); }
+    if (!valid) e.preventDefault();
   });
 </script>
 {% endblock %}

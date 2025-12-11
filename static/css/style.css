@@ -398,6 +398,67 @@ ul.vacature-list li strong {
 
 .student-register-body {
   background: #f0f8ff; /* lichtblauwe achtergrond */
+
+/* ===== Shared semantic layout classes (to avoid repeating layout in templates) ===== */
+
+/* App-level wrappers */
+.app-body {
+  background-color: #f7fafc; /* light gray */
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.site-header {
+  background: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  padding: 16px 0;
+}
+
+.header-inner {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-row { display:flex; gap:12px; align-items:center; }
+.brand-title { font-size:1.125rem; font-weight:600; color:#ff4b5c; }
+.brand-sub { font-size:0.75rem; color:#6b7280; }
+
+.nav-links { display:flex; gap:12px; align-items:center; }
+.nav-link { color:#4b5563; text-decoration:none; padding:6px 10px; border-radius:6px; }
+.nav-link:hover { background:#fff1f2; color:#ff4b5c; }
+
+.main-container { max-width: 900px; margin: 2.5rem auto; padding: 1.25rem; }
+.panel { background:white; border-radius:12px; padding:1.25rem; box-shadow:0 6px 20px rgba(2,6,23,0.06); }
+
+.section-title { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; }
+.section-title h2 { margin:0; color:#ff4b5c; font-size:1.25rem; }
+
+.form-grid { display:grid; grid-template-columns:repeat(1, 1fr); gap:1rem; }
+@media(min-width:768px){ .form-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.form-label { display:flex; flex-direction:column; }
+.form-label span { font-weight:600; color:#374151; font-size:0.9rem; }
+.form-input { margin-top:8px; padding:12px; border:1px solid #e5e7eb; border-radius:8px; }
+
+.full-width { grid-column: 1 / -1; }
+
+.btn-ghost { padding:8px 12px; border:1px solid #d1d5db; background:transparent; border-radius:8px; }
+.btn-primary { padding:10px 14px; background:#ff4b5c; color:white; border-radius:8px; border:none; }
+
+.toast { position:fixed; right:18px; bottom:18px; background:white; border:1px solid #e6eef2; padding:10px 14px; box-shadow:0 6px 18px rgba(2,6,23,0.08); border-radius:8px; }
+
+/* Small helpers used across templates */
+.muted { color:#6b7280; font-size:0.9rem; }
+.small { font-size:0.85rem; }
+
+/* Keep existing style names for compatibility where present */
+.container-box { max-width: 1024px; margin: 40px auto; padding: 20px; }
+
 }
 
 .student-register-title {

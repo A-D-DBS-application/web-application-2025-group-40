@@ -3,34 +3,28 @@
 {% block title %}Kies uw rol — Swipr{% endblock %}
 
 {% block content %}
-<div class="role-wrapper">
-  <div class="role-card">
-
-    <div class="logo">
-      <div class="logo-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+<div class="app-body">
+  <main class="main-container" style="max-width:520px; margin:4rem auto; text-align:center;">
+    <section class="panel">
+      <div style="display:flex; align-items:center; gap:12px; justify-content:center; margin-bottom:1rem;">
+        <div class="logo-icon" style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:#007BFF; color:white; border-radius:8px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div style="text-align:left;">
+          <div class="brand-title" style="color:#007BFF">Swipr</div>
+        </div>
       </div>
-      <div class="logo-text">Swipr</div>
-    </div>
 
-    <h1 style="font-size: 2rem; margin-bottom: 35px; color: #333;">Kies uw rol</h1>
+      <h1 style="font-size:1.75rem; margin-bottom:0.75rem;">Kies uw rol</h1>
 
-    <button class="btn student"
-            style="width: 220px; margin: 15px auto;"
-            onclick="window.location.href='{{ url_for('login_student') }}'">
-      Student
-    </button>
-
-    <button class="btn bedrijf"
-            style="width: 220px; margin: 15px auto; display: block;"
-            onclick="window.location.href='{{ url_for('login_bedrijf') }}'">
-      Bedrijf
-    </button>
-
-
-  </div>
+      <div style="display:flex; flex-direction:column; gap:0.75rem; align-items:center; margin-top:1rem;">
+        <a class="btn-primary" style="width:220px; display:inline-block; text-align:center;" href="{{ url_for('login_student') }}">Student</a>
+        <a class="btn-ghost" style="width:220px; display:inline-block; text-align:center;" href="{{ url_for('login_bedrijf') }}">Bedrijf</a>
+      </div>
+    </section>
+  </main>
 </div>
 {% endblock %}

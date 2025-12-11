@@ -18,91 +18,78 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-gray-50 min-h-screen antialiased">
+<div class="app-body">
 
-  <header class="bg-white shadow-sm">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-row">
+        <div class="logo-icon" style="background:#007BFF; width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:white;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
         <div>
-          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
-          <p class="text-xs text-gray-500">Student dashboard</p>
+          <div class="brand-title" style="color:#007BFF">Swipr</div>
+          <div class="brand-sub">Student dashboard</div>
         </div>
       </div>
 
-      <nav class="hidden sm:flex items-center gap-4 text-sm">
-  <a href="/student_dashboard" class="text-gray-600 hover:text-swipr">Mijn Profiel</a>
-        <a href="/match_page" class="text-gray-600 hover:text-swipr">Matches</a>
-        <a href="/vacatures_student" class="text-gray-600 hover:text-swipr">Vacatures</a>
-        <a href="/logout" class="px-3 py-1 rounded-md text-sm border">Uitloggen</a>
+      <nav class="nav-links">
+        <a href="/student_dashboard" class="nav-link">Mijn Profiel</a>
+        <a href="/match_page" class="nav-link">Matches</a>
+        <a href="/vacatures_student" class="nav-link">Vacatures</a>
+        <a href="/logout" class="nav-link">Uitloggen</a>
       </nav>
     </div>
   </header>
 
-  <main class="max-w-3xl mx-auto mt-10 p-6">
-    <section class="bg-white p-6 rounded-xl shadow-md">
-      <div class="flex items-center justify-between mb-4">
+  <main class="main-container">
+    <section class="panel">
+      <div class="section-title">
         <div>
-          <h2 class="text-2xl font-bold text-swipr">Student profiel</h2>
-          <p class="text-gray-600 text-sm">
-            Werk je gegevens bij zodat werkgevers je correct kunnen benaderen.
-          </p>
+          <h2>Student profiel</h2>
+          <p class="muted small">Werk je gegevens bij zodat werkgevers je correct kunnen benaderen.</p>
         </div>
-        <div class="text-right text-xs text-gray-500">
-          <div id="savedAt">Laatst opgeslagen: —</div>
-        </div>
+        <div class="muted small" id="savedAt">Laatst opgeslagen: —</div>
       </div>
 
-      <form id="profileForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label class="flex flex-col">
-          <span class="text-sm font-medium text-gray-700">Voornaam</span>
-          <input id="firstName" name="firstName" type="text" placeholder="Voornaam"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+      <form id="profileForm" class="form-grid">
+        <label class="form-label">
+          <span>Voornaam</span>
+          <input id="firstName" name="firstName" type="text" placeholder="Voornaam" class="form-input" required />
         </label>
 
-        <label class="flex flex-col">
-          <span class="text-sm font-medium text-gray-700">Achternaam</span>
-          <input id="lastName" name="lastName" type="text" placeholder="Achternaam"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+        <label class="form-label">
+          <span>Achternaam</span>
+          <input id="lastName" name="lastName" type="text" placeholder="Achternaam" class="form-input" required />
         </label>
 
-        <label class="flex flex-col md:col-span-2">
-          <span class="text-sm font-medium text-gray-700">E-mail</span>
-          <input id="email" name="email" type="email" placeholder="jij@example.com"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+        <label class="form-label full-width">
+          <span>E-mail</span>
+          <input id="email" name="email" type="email" placeholder="jij@example.com" class="form-input" required />
         </label>
 
-        <label class="flex flex-col md:col-span-2">
-          <span class="text-sm font-medium text-gray-700">Nieuw wachtwoord</span>
-          <input id="password" name="password" type="password" placeholder="Nieuw wachtwoord"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
+        <label class="form-label full-width">
+          <span>Nieuw wachtwoord</span>
+          <input id="password" name="password" type="password" placeholder="Nieuw wachtwoord" class="form-input" />
         </label>
 
-
-        <div class="flex items-center justify-between mt-2 md:col-span-2">
-          <div class="text-sm text-gray-500">
-            Je gegevens worden lokaal opgeslagen in je browser (demo).
-          </div>
-          <div class="flex items-center gap-3">
-            <button type="button" id="resetBtn" class="px-4 py-2 border rounded-md btn-ghost">Reset</button>
-            <button type="submit" class="px-5 py-2 bg-swipr text-white rounded-md">Gegevens opslaan</button>
+        <div class="full-width" style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:8px;">
+          <div class="muted small">Je gegevens worden lokaal opgeslagen in je browser (demo).</div>
+          <div style="display:flex; gap:10px;">
+            <button type="button" id="resetBtn" class="btn-ghost">Reset</button>
+            <button type="submit" class="btn-primary">Gegevens opslaan</button>
           </div>
         </div>
       </form>
 
-      <div id="toast" class="fixed right-6 bottom-6 bg-white border shadow-lg px-4 py-3 rounded-md hidden">
-        <div class="text-sm text-gray-800">Gegevens opgeslagen ✅</div>
-      </div>
+      <div id="toast" class="toast" style="display:none;"></div>
     </section>
 
-    <section class="mt-6 text-sm text-gray-600">
-      <h3 class="font-medium mb-2">Tips</h3>
-      <ul class="list-disc ml-5 space-y-1">
+    <section style="margin-top:1.5rem; color:#6b7280; font-size:0.9rem;">
+      <h3 style="font-weight:600; margin-bottom:0.5rem;">Tips</h3>
+      <ul style="margin-left:1rem; list-style:disc;">
         <li>Gebruik een professionele e-mail zodat werkgevers je serieus nemen.</li>
         <li>Houd je profiel up-to-date voor relevante vacatures.</li>
       </ul>
@@ -110,13 +97,15 @@
   </main>
 </div>
 
+<script type="application/json" id="server-profile">{{ {
+  'firstName': student.first_name|default(''),
+  'lastName': student.last_name|default(''),
+  'email': user.email|default('')
+} | tojson }}</script>
+
 <script>
   // server-provided profile (if any) - prefer this over localStorage to show correct user info
-  {% if student or user %}
-  const SERVER_PROFILE = {{ {'firstName': (student.first_name if student else ''), 'lastName': (student.last_name if student else ''), 'email': (user.email if user else '')} | tojson }};
-  {% else %}
-  const SERVER_PROFILE = {};
-  {% endif %}
+  const SERVER_PROFILE = JSON.parse(document.getElementById('server-profile').textContent || '{}');
   const form = document.getElementById('profileForm');
   const firstName = document.getElementById('firstName');
   const lastName = document.getElementById('lastName');
