@@ -128,6 +128,8 @@ class JobListing(db.Model):
     __tablename__ = 'job_listing'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     employer_id = db.Column(db.Integer, db.ForeignKey('employer.id'), nullable=False)
+    client = db.Column(db.String(140), nullable=True)
+    is_active = db.Column(db.Boolean, default=True)
     title = db.Column(db.String(140), nullable=False)
     description = db.Column(db.Text)
     location = db.Column(db.String(120))
@@ -271,7 +273,14 @@ def recruiter_dashboard_view():
         employer = Employer.query.filter_by(name='ACME BV').first()
 
     if employer:
-        jobs = JobListing.query.filter_by(employer_id=employer.id).all()
+        # show only active jobs by default in the recruiter dashboard
+        jobs = JobListing.query.filter_by(employer_id=employer.id, is_active=True).all()
+
+    # Ensure each job has a company_name and client attribute for template rendering
+    for job in jobs:
+        # client may be an optional field on the job (some code paths may set it)
+        job.client = getattr(job, 'client', None)
+        job.company_name = job.employer.name if job.employer else 'Onbekend'
 
     # compute simple stats
     active_job_count = len(jobs)
@@ -368,7 +377,18 @@ def save_profile():
 
 @app.route('/vacature/nieuw')
 def vacature_nieuw():
-    return render_template('vacatures_bedrijf.html')
+    # If a recruiter is logged in, provide their linked employer so the
+    # template can show a fixed (read-only) company name.
+    employer = None
+    try:
+        if current_user.is_authenticated and getattr(current_user, 'role', None) == 'recruiter':
+            rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+            if rec and rec.employer:
+                employer = rec.employer
+    except Exception:
+        employer = None
+
+    return render_template('vacatures_bedrijf.html', employer=employer)
 
 
 @app.route('/vacature/opslaan', methods=['POST'])
@@ -376,17 +396,29 @@ def vacature_opslaan():
     job_title = request.form.get('jobTitle')
     location = request.form.get('location')
     description = request.form.get('description')
-    company_name = request.form.get('companyName', 'ACME BV')  # Get company name from form, fallback to ACME BV
+    client = request.form.get('client')
     
-    # Find or create employer with the provided company name
-    employer = Employer.query.filter_by(name=company_name).first()
+    # Prefer an explicit employer_id (hidden input set for logged-in recruiters).
+    employer = None
+    employer_id = request.form.get('employer_id')
+    if employer_id:
+        try:
+            employer = Employer.query.get(int(employer_id))
+        except Exception:
+            employer = None
+
     if not employer:
-        employer = Employer(name=company_name, location=location)
-        db.session.add(employer)
-        db.session.commit()
+        company_name = request.form.get('companyName', 'ACME BV')  # Get company name from form, fallback to ACME BV
+        # Find or create employer with the provided company name
+        employer = Employer.query.filter_by(name=company_name).first()
+        if not employer:
+            employer = Employer(name=company_name, location=location)
+            db.session.add(employer)
+            db.session.commit()
 
     # create the job and persist
     job = JobListing(employer_id=employer.id,
+                     client=client,
                      title=job_title,
                      description=description,
                      location=location)
@@ -653,6 +685,7 @@ def create_job():
         return redirect(url_for('recruiter_dashboard'))
     if request.method == 'POST':
         title = request.form.get('title')
+        client = request.form.get('client')
         location = request.form.get('location')
         salary = request.form.get('salary') or None
         periode = request.form.get('periode')
@@ -660,6 +693,7 @@ def create_job():
         requirements = request.form.get('requirements')
         job = JobListing(
             employer_id=rec.employer.id,
+            client=client,
             title=title,
             location=location,
             salary=salary,
@@ -733,6 +767,11 @@ def delete_job(job_id):
         return jsonify({'error': 'Toegang geweigerd'}), 403
 
     try:
+        # Remove related entities first to avoid FK/orphan issues and to ensure
+        # students will no longer see matches/dislikes for this job.
+        Match.query.filter_by(job_id=job.id).delete()
+        Dislike.query.filter_by(job_id=job.id).delete()
+        JobListingSector.query.filter_by(job_id=job.id).delete()
         db.session.delete(job)
         db.session.commit()
         return jsonify({'success': True}), 200
@@ -765,6 +804,59 @@ def match_page():
                 'job': match.job
             })
         return render_template('match_page.html', matches=formatted_matches)
+
+
+# Soft-deactivate a job so students no longer see it (undoable)
+@app.route('/jobs/<int:job_id>/deactivate', methods=['POST'])
+@login_required
+def deactivate_job(job_id):
+    # Only recruiters that own the job's employer may deactivate the job
+    if getattr(current_user, 'role', None) != 'recruiter':
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+    job = JobListing.query.get(job_id)
+    if not job:
+        return jsonify({'error': 'Vacature niet gevonden'}), 404
+
+    if not rec or not rec.employer or rec.employer.id != job.employer_id:
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    try:
+        job.is_active = False
+        db.session.add(job)
+        db.session.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        db.session.rollback()
+        app.logger.exception('Fout bij deactiveren vacature')
+        return jsonify({'error': 'Deactiveren mislukt'}), 500
+
+
+# Restore a previously deactivated job (undo)
+@app.route('/jobs/<int:job_id>/restore', methods=['POST'])
+@login_required
+def restore_job(job_id):
+    if getattr(current_user, 'role', None) != 'recruiter':
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+    job = JobListing.query.get(job_id)
+    if not job:
+        return jsonify({'error': 'Vacature niet gevonden'}), 404
+
+    if not rec or not rec.employer or rec.employer.id != job.employer_id:
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    try:
+        job.is_active = True
+        db.session.add(job)
+        db.session.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        db.session.rollback()
+        app.logger.exception('Fout bij herstellen vacature')
+        return jsonify({'error': 'Herstellen mislukt'}), 500
 
 
 # Employer profile
@@ -853,8 +945,8 @@ def vacatures_student():
     except Exception:
         stopwords = STOPWORDS
 
-    # Get all jobs not liked or disliked by the student
-    jobs = JobListing.query.all()
+    # Get all active jobs not liked or disliked by the student
+    jobs = JobListing.query.filter_by(is_active=True).all()
     liked_matches = Match.query.filter_by(user_id=current_user.id).all()
     liked_job_ids = [m.job_id for m in liked_matches]
     disliked_job_ids = [d.job_id for d in Dislike.query.filter_by(user_id=current_user.id).all()]

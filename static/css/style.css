@@ -220,9 +220,9 @@ ul.vacature-list li strong {
   margin: 80px auto;
 }
 
-/* Make login card use company red by default */
+/* Make login card use student blue */
 .login-container h1 {
-  color: #ff4b5c;
+  color: #007bff;
   margin-bottom: 30px;
 }
 
@@ -241,7 +241,7 @@ ul.vacature-list li strong {
   margin-top: 20px;
   border: none;
   border-radius: 8px;
-  background-color: #ff4b5c; /* company red */
+  background-color: #007bff; /* student blue */
   color: white;
   font-size: 1.1rem;
   cursor: pointer;
@@ -249,13 +249,13 @@ ul.vacature-list li strong {
 }
 
 .login-container button:hover {
-  background-color: #e04352;
+  background-color: #0056b3;
 }
 
 .login-container .register-link {
   margin-top: 15px;
   display: block;
-  color: #ff4b5c;
+  color: #007bff;
   text-decoration: none;
 }
 
@@ -550,6 +550,73 @@ ul.vacature-list li strong {
 
 .btn-ghost:hover {
   transform: translateY(-2px);
+}
+
+/* ===== Student registratie (blauw thema) ===== */
+
+.student-form-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+  border: 4px solid #007bff;
+  padding: 28px;
+}
+
+.student-form-container h2 {
+  text-align: center;
+  color: #007bff;
+}
+
+.student-form-container label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+  color: #0056b3;
+}
+
+.student-form-container input {
+  width: 95%;
+  padding: 12px 14px;
+  margin-top: 8px;
+  border: 2px solid #cfe2ff;
+  border-radius: 8px;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.student-form-container input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.12);
+}
+
+.student-form-container .register-button {
+  display: block;
+  width: 100%;
+  padding: 14px 18px;
+  margin-top: 18px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.18);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.student-form-container .register-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 123, 255, 0.22);
+}
+
+.student-form-container .error {
+  color: #0056b3;
+  font-size: 0.9em;
+  margin-top: 4px;
 }/* ---- Fix: toon checkbox en terms-row ---- */
 .terms-row {
   margin: 10px 0;
