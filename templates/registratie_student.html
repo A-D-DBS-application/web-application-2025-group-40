@@ -3,7 +3,7 @@
 {% block title %}Swipr - Registratie Student{% endblock %}
 
 {% block content %}
-<div class="form-container student-register red-theme">
+<div class="form-container">
   <h2>Registratie Student</h2>
 
   <form id="registerForm" method="POST" action="{{ url_for('registratie_student') }}">
@@ -21,58 +21,9 @@
     <input type="password" id="password" name="password" placeholder="Kies een wachtwoord" required />
     <div class="error" id="passwordError"></div>
 
-    <button type="submit" class="register-button red-button">Registreren</button>
+    <button type="submit" class="register-button">Registreren</button>
   </form>
 </div>
-
-<style>
-  /* Rood thema */
-  .red-theme {
-    border: 2px solid #b30000;
-    padding: 25px;
-    border-radius: 8px;
-    background-color: #fff5f5;
-  }
-
-  .red-theme h2 {
-    color: #b30000;
-    margin-bottom: 20px;
-    font-family: "Segoe UI", sans-serif;
-  }
-
-  .red-theme label {
-    color: #660000;
-    font-weight: bold;
-  }
-
-  .red-theme input {
-    border: 1px solid #b30000;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    width: 100%;
-  }
-
-  .red-button {
-    background-color: #b30000;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-
-  .red-button:hover {
-    background-color: #800000;
-  }
-
-  .error {
-    color: #b30000;
-    font-size: 0.9em;
-    margin-bottom: 10px;
-  }
-</style>
 
 <script>
   const form = document.getElementById('registerForm');
