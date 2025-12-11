@@ -286,7 +286,8 @@ def recruiter_dashboard_view():
         'avg_matches_per_job': avg_matches_per_job
     }
 
-    return render_template('recruiter_dashboard.html', stats=stats, jobs=jobs)
+    # pass employer to template so dashboard can show recruiter/company contact details
+    return render_template('recruiter_dashboard.html', stats=stats, jobs=jobs, employer=employer)
 
 
 @app.route('/recruiter_profiel', methods=['GET', 'POST'])
