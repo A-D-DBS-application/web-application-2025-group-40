@@ -50,7 +50,7 @@
   <!-- Vacature Sectie -->
   {% if job %}
     <section class="bg-white p-6 rounded-xl shadow-md max-w-5xl mx-auto mt-6">
-  <h2 class="text-2xl font-bold text-swipr mb-4">{{ job.title }}{% if job.client %} - {{ job.client }}{% endif %}</h2>
+  <h2 class="text-2xl font-bold text-swipr mb-4">{{ job.title }}{% if job.client %} - {{ job.client }}{% elif job.company_name %} - {{ job.company_name }}{% endif %}</h2>
 
       <div class="space-y-4">
         <!-- Client (show client name if available, otherwise fall back to company name) -->
