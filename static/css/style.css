@@ -220,9 +220,9 @@ ul.vacature-list li strong {
   margin: 80px auto;
 }
 
-/* Make login card use company red by default */
+/* Make login card use student blue */
 .login-container h1 {
-  color: #ff4b5c;
+  color: #007bff;
   margin-bottom: 30px;
 }
 
@@ -241,7 +241,7 @@ ul.vacature-list li strong {
   margin-top: 20px;
   border: none;
   border-radius: 8px;
-  background-color: #ff4b5c; /* company red */
+  background-color: #007bff; /* student blue */
   color: white;
   font-size: 1.1rem;
   cursor: pointer;
@@ -249,13 +249,13 @@ ul.vacature-list li strong {
 }
 
 .login-container button:hover {
-  background-color: #e04352;
+  background-color: #0056b3;
 }
 
 .login-container .register-link {
   margin-top: 15px;
   display: block;
-  color: #ff4b5c;
+  color: #007bff;
   text-decoration: none;
 }
 
