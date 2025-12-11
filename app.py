@@ -129,6 +129,7 @@ class JobListing(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     employer_id = db.Column(db.Integer, db.ForeignKey('employer.id'), nullable=False)
     client = db.Column(db.String(140), nullable=True)
+    is_active = db.Column(db.Boolean, default=True)
     title = db.Column(db.String(140), nullable=False)
     description = db.Column(db.Text)
     location = db.Column(db.String(120))
@@ -272,7 +273,8 @@ def recruiter_dashboard_view():
         employer = Employer.query.filter_by(name='ACME BV').first()
 
     if employer:
-        jobs = JobListing.query.filter_by(employer_id=employer.id).all()
+        # show only active jobs by default in the recruiter dashboard
+        jobs = JobListing.query.filter_by(employer_id=employer.id, is_active=True).all()
 
     # Ensure each job has a company_name and client attribute for template rendering
     for job in jobs:
@@ -799,6 +801,59 @@ def match_page():
         return render_template('match_page.html', matches=formatted_matches)
 
 
+# Soft-deactivate a job so students no longer see it (undoable)
+@app.route('/jobs/<int:job_id>/deactivate', methods=['POST'])
+@login_required
+def deactivate_job(job_id):
+    # Only recruiters that own the job's employer may deactivate the job
+    if getattr(current_user, 'role', None) != 'recruiter':
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+    job = JobListing.query.get(job_id)
+    if not job:
+        return jsonify({'error': 'Vacature niet gevonden'}), 404
+
+    if not rec or not rec.employer or rec.employer.id != job.employer_id:
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    try:
+        job.is_active = False
+        db.session.add(job)
+        db.session.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        db.session.rollback()
+        app.logger.exception('Fout bij deactiveren vacature')
+        return jsonify({'error': 'Deactiveren mislukt'}), 500
+
+
+# Restore a previously deactivated job (undo)
+@app.route('/jobs/<int:job_id>/restore', methods=['POST'])
+@login_required
+def restore_job(job_id):
+    if getattr(current_user, 'role', None) != 'recruiter':
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+    job = JobListing.query.get(job_id)
+    if not job:
+        return jsonify({'error': 'Vacature niet gevonden'}), 404
+
+    if not rec or not rec.employer or rec.employer.id != job.employer_id:
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    try:
+        job.is_active = True
+        db.session.add(job)
+        db.session.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        db.session.rollback()
+        app.logger.exception('Fout bij herstellen vacature')
+        return jsonify({'error': 'Herstellen mislukt'}), 500
+
+
 # Employer profile
 @app.route('/employer/<int:employer_id>')
 @login_required
@@ -885,8 +940,8 @@ def vacatures_student():
     except Exception:
         stopwords = STOPWORDS
 
-    # Get all jobs not liked or disliked by the student
-    jobs = JobListing.query.all()
+    # Get all active jobs not liked or disliked by the student
+    jobs = JobListing.query.filter_by(is_active=True).all()
     liked_matches = Match.query.filter_by(user_id=current_user.id).all()
     liked_job_ids = [m.job_id for m in liked_matches]
     disliked_job_ids = [d.job_id for d in Dislike.query.filter_by(user_id=current_user.id).all()]
