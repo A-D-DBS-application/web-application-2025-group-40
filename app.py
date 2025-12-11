@@ -502,6 +502,7 @@ def registratie_bedrijf():
                     res_emp = supabase.table('employer').insert({
                         'name': company_name,
                         'contact_email': email,
+                        'contact_person': contact_name,
                         'created_at': timestamp
                     }).execute()
                     if getattr(res_emp, 'error', None):
@@ -534,7 +535,8 @@ def registratie_bedrijf():
                     return redirect(url_for('registratie_bedrijf'))
 
             # 2) Schrijf lokaal via SQLAlchemy (zodat de app huidige auth blijft gebruiken)
-            employer = Employer(name=company_name, contact_email=email)
+            # Persist contact person name provided during registration so recruiter profile shows it
+            employer = Employer(name=company_name, contact_email=email, contact_person=contact_name)
             db.session.add(employer)
             db.session.flush()
 
