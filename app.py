@@ -614,7 +614,8 @@ def student_dashboard():
         abort(403)
     matched_job_ids = [m.job_id for m in current_user.matches]
     jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids)).all()
-    return render_template('student_dashboard.html', jobs=jobs)
+    student = getattr(current_user, 'student', None)
+    return render_template('student_dashboard.html', jobs=jobs, student=student, user=current_user)
 
 
 
@@ -628,7 +629,8 @@ def student_dashboard_view():
     """
     matched_job_ids = [m.job_id for m in current_user.matches] if getattr(current_user, 'matches', None) else []
     jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids)).all() if matched_job_ids else JobListing.query.all()
-    return render_template('student_dashboard.html', jobs=jobs)
+    student = getattr(current_user, 'student', None)
+    return render_template('student_dashboard.html', jobs=jobs, student=student, user=current_user)
 
 
 
