@@ -227,6 +227,12 @@ def login_bedrijf():
 @app.route('/login_student', methods=['GET', 'POST'])
 def login_student():
     if request.method == 'POST':
+        # Ensure the student agreed to the terms and conditions
+        agree = request.form.get('agree_terms')
+        if agree != 'on':
+            flash("Je moet de algemene voorwaarden accepteren.", "danger")
+            return redirect(url_for('login_student'))
+
         email = request.form.get('email')
         password = request.form.get('password')
         user = AppUser.query.filter_by(email=email).first()
@@ -239,6 +245,12 @@ def login_student():
         login_user(user)
         return redirect('/vacatures_student')
     return render_template('login_student.html')
+
+
+@app.route('/terms')
+def terms():
+    """Render the terms and conditions page."""
+    return render_template('terms.html')
 
 
 @app.route('/recruiter_dashboard')

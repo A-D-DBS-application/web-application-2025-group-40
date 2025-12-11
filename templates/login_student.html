@@ -16,10 +16,16 @@
     {% endif %}
   {% endwith %}
   
-  <form action="/login_student" method="POST">
+  <form id="student-login-form" action="/login_student" method="POST">
     <input type="email" name="email" placeholder="E-mail" required>
     <input type="password" name="password" placeholder="Wachtwoord" required>
-    <button type="submit">Login</button>
+
+    <div class="terms-row" style="margin:10px 0;">
+      <input type="checkbox" id="agree_terms" name="agree_terms" />
+      <label for="agree_terms" class="terms-label">Ik ga akkoord met de <a href="/terms" target="_blank">algemene voorwaarden</a></label>
+    </div>
+
+    <button id="login-submit" type="submit" disabled>Login</button>
   </form>
   <p>Nog geen account? <a href="/registratie_student">Registreer hier</a></p>
 </div>
@@ -43,5 +49,43 @@
     color: #155724;
     border: 1px solid #c3e6cb;
   }
+
+  /* small styling for the login form */
+  .login-container input[type="email"],
+  .login-container input[type="password"] {
+    display:block;
+    width:100%;
+    padding:8px;
+    margin:6px 0;
+  }
+
+  /* Ensure the checkbox and label sit inline */
+  .terms-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .terms-label {
+    margin: 0;
+  }
+
+  #login-submit[disabled] {
+    opacity:0.6;
+    cursor:not-allowed;
+  }
 </style>
+
+<script>
+  // Simple client-side enable/disable so users can't submit without checking
+  (function(){
+    const cb = document.getElementById('agree_terms');
+    const btn = document.getElementById('login-submit');
+    if (!cb || !btn) return;
+    const toggle = () => { btn.disabled = !cb.checked; };
+    cb.addEventListener('change', toggle);
+    // initialize
+    toggle();
+  })();
+</script>
 {% endblock %}
