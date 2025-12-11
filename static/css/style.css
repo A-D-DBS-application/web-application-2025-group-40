@@ -1,220 +1,553 @@
-{% extends "base.html" %}
+/* ===== Basis ===== */
 
-{% block title %}Student Dashboard — Swipr{% endblock %}
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  color: #333;
+}
 
-{% block extra_head %}
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            swipr: '#007BFF'
-          }
-        }
-      }
-    }
-  </script>
-{% endblock %}
+/* Handige generieke container */
+.container-box {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
-{% block content %}
-<div class="bg-gray-50 min-h-screen antialiased">
+/* Globale knop-stijl */
+.button,
+.btn,
+button {
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s ease;
+}
 
-  <header class="bg-white shadow-sm">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div>
-          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
-          <p class="text-xs text-gray-500">Student dashboard</p>
-        </div>
-      </div>
+/* Rood accent (bedrijf) */
+.button,
+.btn.bedrijf {
+  background-color: #ff4b5c;
+  color: #fff;
+}
 
-      <nav class="hidden sm:flex items-center gap-4 text-sm">
-  <a href="/student_dashboard" class="text-gray-600 hover:text-swipr">Mijn Profiel</a>
-        <a href="/match_page" class="text-gray-600 hover:text-swipr">Matches</a>
-        <a href="/vacatures_student" class="text-gray-600 hover:text-swipr">Vacatures</a>
-        <a href="/logout" class="px-3 py-1 rounded-md text-sm border">Uitloggen</a>
-      </nav>
-    </div>
-  </header>
+.button:hover,
+.btn.bedrijf:hover {
+  background-color: #e04352;
+}
 
-  <main class="max-w-3xl mx-auto mt-10 p-6">
-    <section class="bg-white p-6 rounded-xl shadow-md">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h2 class="text-2xl font-bold text-swipr">Student profiel</h2>
-          <p class="text-gray-600 text-sm">
-            Werk je gegevens bij zodat werkgevers je correct kunnen benaderen.
-          </p>
-        </div>
-        <div class="text-right text-xs text-gray-500">
-          <div id="savedAt">Laatst opgeslagen: —</div>
-        </div>
-      </div>
+/* Blauw accent (student) */
+.btn.student {
+  background-color: #007bff;
+  color: #fff;
+}
 
-      <form id="profileForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label class="flex flex-col">
-          <span class="text-sm font-medium text-gray-700">Voornaam</span>
-          <input id="firstName" name="firstName" type="text" placeholder="Voornaam"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
-        </label>
+.btn.student:hover {
+  background-color: #0056b3;
+}
 
-        <label class="flex flex-col">
-          <span class="text-sm font-medium text-gray-700">Achternaam</span>
-          <input id="lastName" name="lastName" type="text" placeholder="Achternaam"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
-        </label>
+/* Flash-berichten */
+.flash-success {
+  background:#d4edda;
+  color:#155724;
+  padding:10px;
+  border-radius:5px;
+  margin-bottom:15px;
+}
 
-        <label class="flex flex-col md:col-span-2">
-          <span class="text-sm font-medium text-gray-700">E-mail</span>
-          <input id="email" name="email" type="email" placeholder="jij@example.com"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
-        </label>
+/* Footer */
+.site-footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #f2f2f2;
+  margin-top: 40px;
+  font-size: 14px;
+  color: #666;
+}
 
-        <label class="flex flex-col md:col-span-2">
-          <span class="text-sm font-medium text-gray-700">Nieuw wachtwoord</span>
-          <input id="password" name="password" type="password" placeholder="Nieuw wachtwoord"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
-        </label>
+/* ===== Homepage bedrijf ===== */
+
+header.swipr-header {
+  background-color: #ff4b5c;
+  color: white;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+header.swipr-header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+header.swipr-header p {
+  margin: 5px 0 0;
+  font-size: 16px;
+}
+
+main.page-content {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+h2.section-title {
+  color: #ff4b5c;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #ff4b5c;
+  padding-bottom: 5px;
+}
+
+ul.vacature-list {
+  list-style: none;
+  padding: 0;
+}
+
+ul.vacature-list li {
+  background: #fafafa;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+ul.vacature-list li strong {
+  font-size: 18px;
+  color: #222;
+}
+
+/* ===== Index (rol kiezen) ===== */
+
+.role-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+.role-card {
+  text-align: center;
+  background: white;
+  padding: 40px 60px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  margin-bottom: 20px;
+}
+
+.logo-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 14px;
+  background-color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px auto;
+}
+
+.logo-text {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 35px;
+  letter-spacing: 1px;
+}
+
+/* ===== Login bedrijf ===== */
+
+.auth-container {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.auth-container h2 {
+  text-align: center;
+  color: #333;
+}
+
+.auth-container input {
+  width: 95%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.auth-container button {
+  width: 100%;
+  padding: 10px;
+  background: #ff4b5c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.auth-container button:hover {
+  background: #e04352;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* ===== Login student ===== */
+
+.login-container {
+  background-color: white;
+  padding: 50px 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  width: 350px;
+  text-align: center;
+  margin: 80px auto;
+}
+
+/* Make login card use company red by default */
+.login-container h1 {
+  color: #ff4b5c;
+  margin-bottom: 30px;
+}
+
+.login-container input {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ff4b5c; /* company red */
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-container button:hover {
+  background-color: #e04352;
+}
+
+.login-container .register-link {
+  margin-top: 15px;
+  display: block;
+  color: #ff4b5c;
+  text-decoration: none;
+}
+
+.login-container .register-link:hover {
+  text-decoration: underline;
+}
+
+/* ===== Match page ===== */
+
+.match-page {
+  padding: 2rem;
+}
+
+.match-page h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.match-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 1.5rem;
+  border-left: 6px solid #4CAF50;
+}
+
+.match-card .partner {
+  font-weight: bold;
+  color: #4CAF50;
+  font-size: 1.1rem;
+}
+
+.match-card .student-email {
+  color: #333;
+  font-size: 1rem;
+  margin-bottom: .5rem;
+}
+
+.match-card .job-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.match-card .meta {
+  color: #777;
+  margin-top: .5rem;
+  font-size: .9rem;
+}
+
+/* ===== Registratie bedrijf ===== */
+
+.form-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+  /* prominent red border to create the big red frame */
+  border: 4px solid #ff4b5c;
+  padding: 28px;
+}
+
+.form-container h2 {
+  text-align: center;
+  color: #ff4b5c;
+}
+
+.form-container label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+}
+
+.form-container input {
+  width: 95%;
+  padding: 12px 14px;
+  margin-top: 8px;
+  border: 2px solid #ffd6d9; /* soft red by default */
+  border-radius: 8px;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.form-container label {
+  color: #b30020; /* darker red for labels */
+}
+
+.form-container input:focus {
+  outline: none;
+  border-color: #ff4b5c;
+  box-shadow: 0 6px 18px rgba(224,67,82,0.12);
+}
+
+.form-container .register-button {
+  display: block;
+  width: 100%;
+  padding: 14px 18px;
+  margin-top: 18px;
+  background-color: #ff4b5c;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(224,67,82,0.18);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.form-container .register-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(224,67,82,0.22);
+}
+
+.form-container .small-note {
+  text-align: center;
+  margin-top: 10px;
+  color: #6b0012;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.form-row input {
+  flex: 1;
+}
+
+.error {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+/* ===== Registratie student ===== */
+
+.student-register-body {
+  background: #f0f8ff; /* lichtblauwe achtergrond */
+}
+
+.student-register-title {
+  text-align: center;
+  color: #007bff;              /* blauw accent */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* modern, strak lettertype */
+  font-size: 2rem;             /* iets groter voor nadruk */
+  font-weight: 600;            /* semi-bold voor balans */
+  margin-bottom: 25px;
+  letter-spacing: 0.5px;       /* subtiele spatiëring */
+}
+
+.student-register input {
+  border: 1px solid #007bff; /* standaard blauwe rand */
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.student-register input:focus {
+  outline: none;
+  border-color: #0056b3; /* donkerder blauw bij focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.student-register button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  background-color: #007bff; /* knop blauw */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.student-register button:hover {
+  background-color: #0056b3; /* donkerder blauw bij hover */
+}
 
 
-        <div class="flex items-center justify-between mt-2 md:col-span-2">
-          <div class="text-sm text-gray-500">
-            Je gegevens worden lokaal opgeslagen in je browser (demo).
-          </div>
-          <div class="flex items-center gap-3">
-            <button type="button" id="resetBtn" class="px-4 py-2 border rounded-md btn-ghost">Reset</button>
-            <button type="submit" class="px-5 py-2 bg-swipr text-white rounded-md">Gegevens opslaan</button>
-          </div>
-        </div>
-      </form>
 
-      <div id="toast" class="fixed right-6 bottom-6 bg-white border shadow-lg px-4 py-3 rounded-md hidden">
-        <div class="text-sm text-gray-800">Gegevens opgeslagen ✅</div>
-      </div>
-    </section>
 
-    <section class="mt-6 text-sm text-gray-600">
-      <h3 class="font-medium mb-2">Tips</h3>
-      <ul class="list-disc ml-5 space-y-1">
-        <li>Gebruik een professionele e-mail zodat werkgevers je serieus nemen.</li>
-        <li>Houd je profiel up-to-date voor relevante vacatures.</li>
-      </ul>
-    </section>
-  </main>
-</div>
+/* ===== Vacature student ===== */
 
-<script>
-  // server-provided profile (if any) - prefer this over localStorage to show correct user info
-  {% if student or user %}
-  const SERVER_PROFILE = {{ {'firstName': (student.first_name if student else ''), 'lastName': (student.last_name if student else ''), 'email': (user.email if user else '')} | tojson }};
-  {% else %}
-  const SERVER_PROFILE = {};
-  {% endif %}
-  const form = document.getElementById('profileForm');
-  const firstName = document.getElementById('firstName');
-  const lastName = document.getElementById('lastName');
-  const email = document.getElementById('email');
-  const toast = document.getElementById('toast');
-  const savedAt = document.getElementById('savedAt');
-  const resetBtn = document.getElementById('resetBtn');
+.navbar {
+  background-color: #007bff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
 
-  const STORAGE_KEY = 'swipr_student_profile_v1';
+.nav-buttons a {
+  color: white;
+  text-decoration: none;
+  margin-left: 15px;
+  font-weight: bold;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 5px;
+}
 
-  function showToast(message = 'Gegevens opgeslagen ✅') {
-    toast.textContent = message;
-    toast.classList.remove('hidden');
-    setTimeout(() => toast.classList.add('hidden'), 2200);
-  }
+.nav-buttons a:hover {
+  background: rgba(255,255,255,0.35);
+}
 
-  function saveData(data) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      const now = new Date();
-      savedAt.textContent = 'Laatst opgeslagen: ' + now.toLocaleString();
-      showToast();
-    } catch (e) {
-      alert('Kan niet opslaan in localStorage');
-    }
-  }
+.vacancy-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 80, 160, 0.2);
+}
 
-  function loadData() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return null;
-      return JSON.parse(raw);
-    } catch (e) {
-      return null;
-    }
-  }
+.vacancy-container h2 {
+  color: #007bff;
+  margin-bottom: 10px;
+}
 
-  function populateForm() {
-    // Prefer server-side profile when available (real user data). Fall back to localStorage for demo-only settings.
-    if (SERVER_PROFILE && Object.keys(SERVER_PROFILE).length > 0) {
-      firstName.value = SERVER_PROFILE.firstName || '';
-      lastName.value = SERVER_PROFILE.lastName || '';
-      email.value = SERVER_PROFILE.email || '';
-      // no savedAt from server; leave as is
-      return;
-    }
-    const data = loadData();
-    if (!data) return;
-    firstName.value = data.firstName || '';
-    lastName.value = data.lastName || '';
-    email.value = data.email || '';
-    if (data.savedAt) savedAt.textContent = 'Laatst opgeslagen: ' + new Date(data.savedAt).toLocaleString();
-  }
+.label {
+  font-weight: bold;
+  margin-top: 15px;
+  color: #007bff;
+  display: block;
+}
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+.value {
+  margin-top: 5px;
+  font-size: 1.1em;
+}
 
-    // Build FormData including password fields so server can update credentials
-    const fd = new FormData(form);
+/* ===== Vacature plaatsen (bedrijf) ===== */
 
-    try {
-      const res = await fetch(window.location.pathname, {
-        method: 'POST',
-        body: fd,
-        credentials: 'same-origin'
-      });
+.vacature-form-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(255,0,0,0.2);
+}
 
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        const msg = body.error || 'Opslaan mislukt';
-        showToast(msg);
-        return;
-      }
+.vacature-form-container h2 {
+  text-align: center;
+  color: #FF4B5C;
+}
 
-      // also save locally for demo convenience
-      const payload = {
-        firstName: firstName.value.trim(),
-        lastName: lastName.value.trim(),
-        email: email.value.trim(),
-        savedAt: new Date().toISOString()
-      };
-      saveData(payload);
-    } catch (err) {
-      console.error(err);
-      showToast('Netwerkfout bij opslaan');
-    }
-  });
+.vacature-form-container label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+  color: #FF4B5C;
+}
 
-  resetBtn.addEventListener('click', () => {
-    if (!confirm('Weet je zeker dat je je opgeslagen gegevens wilt verwijderen?')) return;
-    localStorage.removeItem(STORAGE_KEY);
-    firstName.value = '';
-    lastName.value = '';
-    email.value = '';
-    savedAt.textContent = 'Laatst opgeslagen: —';
-    showToast('Opgeslagen gegevens verwijderd');
-  });
+.vacature-form-container input,
+.vacature-form-container textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #FF4B5C;
+  border-radius: 4px;
+}
 
-  populateForm();
-</script>
-{% endblock %}
+.vacature-form-container textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.vacature-form-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  background: #FF4B5C;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.vacature-form-container button:hover {
+  background: #E05342;
+}
+
+/* ===== Kleine extra voor Tailwind dashboards ===== */
+
+.btn-ghost:hover {
+  transform: translateY(-2px);
+}

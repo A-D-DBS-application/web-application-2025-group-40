@@ -83,7 +83,7 @@
               <li id="job-{{ job.id }}" class="p-4 border rounded-lg">
                 <div class="flex items-center justify-between gap-4">
                   <div>
-                    <h3 class="font-semibold text-gray-800">{{ job.title }}</h3>
+                    <h3 class="font-semibold text-gray-800">{{ job.title }}{% if job.client %} - {{ job.client }}{% endif %}</h3>
                     <p class="text-sm text-gray-500">{{ job.location }}</p>
                   </div>
                   <div class="flex items-center gap-2">
@@ -116,7 +116,7 @@
 <script>
   // Small non-blocking toast helper
   function showToast(message, type = 'success', timeout = 2200) {
-    const id = `toast-${Date.now()}`;
+    const id = toast-${Date.now()};
     const node = document.createElement('div');
     node.id = id;
     node.className = 'fixed right-6 bottom-6 px-4 py-3 rounded-md shadow-lg';
@@ -124,14 +124,14 @@
     if (type === 'error') {
       node.style.backgroundColor = 'white';
       node.style.border = '1px solid #f87171';
-      node.innerHTML = `<div class="text-sm text-red-600">${message}</div>`;
+      node.innerHTML = <div class="text-sm text-red-600">${message}</div>;
     } else {
       node.style.backgroundColor = 'white';
       node.style.border = '1px solid #e5e7eb';
-      node.innerHTML = `<div class="text-sm text-gray-800">${message}</div>`;
+      node.innerHTML = <div class="text-sm text-gray-800">${message}</div>;
     }
     document.body.appendChild(node);
-    setTimeout(() => { const n = document.getElementById(id); if (n) n.remove(); }, timeout);
+    setTimeout(() => { const n = document.getElementById(id); if 👎 n.remove(); }, timeout);
   }
 
   // Make delete undoable for 5 seconds: hide immediately, allow undo, then call server to delete
@@ -139,7 +139,7 @@
   async function confirmDelete(jobId) {
     if (!confirm('Weet je zeker dat je deze vacature wilt verwijderen?')) return;
 
-    const el = document.getElementById(`job-${jobId}`);
+    const el = document.getElementById(job-${jobId});
     if (!el) return;
 
     // store a clone so we can restore if undone
@@ -147,6 +147,27 @@
 
     // hide element immediately
     el.style.display = 'none';
+
+    // call server to deactivate immediately so students no longer see it
+    try {
+      const decRes = await fetch(/jobs/${jobId}/deactivate, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+      if (!decRes.ok) {
+        // failed to deactivate on server -> restore UI and abort
+        el.style.display = '';
+        if (counter && counterWas !== null) counter.textContent = counterWas;
+        let msg = 'Fout bij verwijderen (deactiveren mislukt)';
+        try { const body = await decRes.json(); msg = body.error || msg; } catch(e){}
+        showToast(msg, 'error');
+        return;
+      }
+    } catch (err) {
+      console.error('Network error while deactivating', err);
+      // restore UI on network error
+      el.style.display = '';
+      if (counter && counterWas !== null) counter.textContent = counterWas;
+      showToast('Netwerkfout bij verwijderen', 'error');
+      return;
+    }
 
     // decrement counter
     const counter = document.querySelector('.text-2xl.font-bold.text-swipr');
@@ -158,19 +179,19 @@
     }
 
     // create undo toast
-    const toastId = `delete-toast-${jobId}`;
+    const toastId = delete-toast-${jobId};
     let toast = document.getElementById(toastId);
     if (toast) toast.remove();
     toast = document.createElement('div');
     toast.id = toastId;
     toast.className = 'fixed right-6 bottom-6 bg-white border shadow-lg px-4 py-3 rounded-md';
-    toast.innerHTML = `<div class="flex items-center gap-4"><div class="text-sm text-gray-800">Vacature verwijderd</div><div><button id="undo-${jobId}" class="px-3 py-1 text-sm border rounded-md">Ongedaan</button></div></div>`;
+    toast.innerHTML = <div class="flex items-center gap-4"><div class="text-sm text-gray-800">Vacature verwijderd</div><div><button id="undo-${jobId}" class="px-3 py-1 text-sm border rounded-md">Ongedaan</button></div></div>;
     document.body.appendChild(toast);
 
     // start timer to call server after 5s
     const timeout = setTimeout(async () => {
       try {
-        const res = await fetch(`/jobs/${jobId}/delete`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        const res = await fetch(/jobs/${jobId}/delete, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
         if (!res.ok) {
           // restore on failure
           if (el && el.parentNode) {
@@ -205,34 +226,50 @@
       }
     }, 5000);
 
-    pendingDeletes[jobId] = { timeout, clone };
+  pendingDeletes[jobId] = { timeout, clone };
 
     // undo handler
-    document.getElementById(`undo-${jobId}`).addEventListener('click', () => {
+    document.getElementById(undo-${jobId}).addEventListener('click', async () => {
       const pd = pendingDeletes[jobId];
-      if (pd) {
-        clearTimeout(pd.timeout);
-        // restore DOM
-        if (el && el.parentNode) {
-          el.style.display = '';
-        } else if (pd.clone) {
-          const list = document.querySelector('ul.space-y-3');
-          if (list) list.appendChild(pd.clone);
+      if (!pd) return;
+      clearTimeout(pd.timeout);
+
+      // call restore endpoint on server
+      try {
+        const res = await fetch(/jobs/${jobId}/restore, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        if (!res.ok) {
+          let msg = 'Fout bij herstellen';
+          try { const body = await res.json(); msg = body.error || msg; } catch(e){}
+          showToast(msg, 'error');
+          // keep hidden since restore failed
+          return;
         }
-        // restore counter
-        if (counter && counterWas !== null) counter.textContent = counterWas;
-        // remove toast
-        const t = document.getElementById(toastId);
-        if (t) t.remove();
-        delete pendingDeletes[jobId];
+      } catch (err) {
+        console.error('Network error while restoring', err);
+        showToast('Netwerkfout bij herstellen', 'error');
+        return;
       }
+
+      // restore DOM
+      if (el && el.parentNode) {
+        el.style.display = '';
+      } else if (pd.clone) {
+        const list = document.querySelector('ul.space-y-3');
+        if (list) list.appendChild(pd.clone);
+      }
+      // restore counter
+      if (counter && counterWas !== null) counter.textContent = counterWas;
+      // remove toast
+      const t = document.getElementById(toastId);
+      if (t) t.remove();
+      delete pendingDeletes[jobId];
     });
   }
 </script>
 <script>
   async function viewLikes(jobId) {
     try {
-      const res = await fetch(`/jobs/${jobId}/likes`, { credentials: 'same-origin' });
+      const res = await fetch(/jobs/${jobId}/likes, { credentials: 'same-origin' });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         showToast(body.error || 'Kan likes niet ophalen', 'error');
@@ -240,13 +277,13 @@
       }
       const data = await res.json();
       // build modal content
-      let html = `<div class="p-4"><h3 class=\"font-semibold mb-2\">Likes voor: ${data.title}</h3>`;
+      let html = <div class="p-4"><h3 class=\"font-semibold mb-2\">Likes voor: ${data.title}</h3>;
       if (!data.likes || data.likes.length === 0) {
         html += '<div class="text-sm text-gray-600">Geen likes</div>';
       } else {
         html += '<ul class="divide-y">';
         data.likes.forEach(l => {
-          html += `<li class=\"py-2\"><div class=\"text-sm font-medium\">${l.name || l.email}</div><div class=\"text-xs text-gray-500\">${l.email}</div></li>`;
+          html += <li class=\"py-2\"><div class=\"text-sm font-medium\">${l.name || l.email}</div><div class=\"text-xs text-gray-500\">${l.email}</div></li>;
         });
         html += '</ul>';
       }
@@ -256,7 +293,7 @@
       let modal = document.createElement('div');
       modal.id = 'likesModal';
       modal.className = 'fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center';
-      modal.innerHTML = `<div class=\"bg-white rounded-md shadow-lg max-w-md w-full\">${html}</div>`;
+      modal.innerHTML = <div class=\"bg-white rounded-md shadow-lg max-w-md w-full\">${html}</div>;
       document.body.appendChild(modal);
       document.getElementById('closeLikes').addEventListener('click', () => modal.remove());
     } catch (err) {
@@ -266,4 +303,3 @@
   }
 </script>
 {% endblock %}
-

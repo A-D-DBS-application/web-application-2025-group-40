@@ -47,10 +47,24 @@
       <h2 class="text-2xl font-bold text-swipr mb-4">Vacature Plaatsen</h2>
 
       <form method="POST" action="/vacature/opslaan" class="space-y-4">
-        <div>
-          <label for="companyName" class="block text-sm font-medium text-gray-700">Bedrijfsnaam</label>
-          <input type="text" id="companyName" name="companyName" placeholder="Naam van het bedrijf" 
-                 class="mt-2 w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+        <div class="flex items-start gap-4">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700">Bedrijfsnaam</label>
+            {% if employer %}
+              <!-- Fixed company name for recruiters; include hidden input so it is submitted -->
+              <div class="mt-2 p-3 border rounded-md bg-gray-100 text-gray-800 font-medium">{{ employer.name }}</div>
+              <input type="hidden" id="companyName" name="companyName" value="{{ employer.name }}" />
+            {% else %}
+              <input type="text" id="companyName" name="companyName" placeholder="Naam van het bedrijf" 
+                     class="mt-2 w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+            {% endif %}
+          </div>
+
+          <div class="w-1/3">
+            <label for="client" class="block text-sm font-medium text-gray-700">Client</label>
+            <input type="text" id="client" name="client" placeholder="bv. Euroshop"
+                   class="mt-2 w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
+          </div>
         </div>
 
         <div>
