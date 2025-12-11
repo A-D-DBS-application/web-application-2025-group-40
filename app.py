@@ -281,6 +281,12 @@ def recruiter_dashboard_view():
         # client may be an optional field on the job (some code paths may set it)
         job.client = getattr(job, 'client', None)
         job.company_name = job.employer.name if job.employer else 'Onbekend'
+        # compute a lightweight match_count to allow sorting in the UI
+        jm = job.matches or []
+        job.match_count = len(jm)
+
+    # sort jobs by descending match count so highest-matching vacatures appear first
+    jobs = sorted(jobs, key=lambda j: getattr(j, 'match_count', 0), reverse=True)
 
     # compute simple stats
     active_job_count = len(jobs)
