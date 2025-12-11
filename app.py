@@ -481,9 +481,10 @@ def registratie_bedrijf():
                 app.logger.exception('Fout bij check Supabase email')
 
         try:
-            # 1) Schrijf naar Supabase als beschikbaar
+            # 1) Schrijf naar Supabase als beschikbaar (maar fail niet als het niet werkt)
             sup_emp_id = None
             sup_user_id = None
+            supabase_success = False
             if supabase:
                 try:
                     timestamp = datetime.utcnow().isoformat()
@@ -517,12 +518,13 @@ def registratie_bedrijf():
                     }).execute()
                     if getattr(res_link, 'error', None):
                         raise Exception(f"Supabase recruiter_user insert fout: {res_link.error}")
+                    supabase_success = True
                 except Exception as se:
                     app.logger.exception('Supabase opslaan mislukt: %s', se)
-                    flash('Kon gegevens niet naar Supabase schrijven. Probeer later.', 'danger')
-                    return redirect(url_for('registratie_bedrijf'))
+                    # Log full error but continue with local registration
+                    app.logger.error(f'Supabase error details: {str(se)}')
 
-            # 2) Schrijf lokaal via SQLAlchemy (zodat de app huidige auth blijft gebruiken)
+            # 2) Schrijf lokaal via SQLAlchemy (altijd doen, zelfs als Supabase faalt)
             employer = Employer(name=company_name, contact_email=email)
             db.session.add(employer)
             db.session.flush()
@@ -536,7 +538,10 @@ def registratie_bedrijf():
             db.session.add(rec)
             db.session.commit()
 
-            flash("Account aangemaakt. Je kunt nu inloggen.", "success")
+            if supabase_success:
+                flash("Account aangemaakt en gesynced met Supabase.", "success")
+            else:
+                flash("Account aangemaakt (lokaal). Supabase sync is mislukt, probeer later.", "warning")
             return redirect(url_for('login_bedrijf'))
         except Exception as e:
             db.session.rollback()
