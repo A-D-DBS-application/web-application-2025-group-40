@@ -550,4 +550,31 @@ ul.vacature-list li strong {
 
 .btn-ghost:hover {
   transform: translateY(-2px);
+}/* ---- Fix: toon checkbox en terms-row ---- */
+.terms-row {
+  margin: 10px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.terms-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  -webkit-appearance: checkbox;
+  appearance: checkbox;
+  vertical-align: middle;
+}
+
+.terms-row .terms-label {
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+#login-submit[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

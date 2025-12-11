@@ -19,7 +19,13 @@
   <form action="/login_student" method="POST">
     <input type="email" name="email" placeholder="E-mail" required>
     <input type="password" name="password" placeholder="Wachtwoord" required>
-    <button type="submit">Login</button>
+    
+    <div class="terms-row">
+      <input type="checkbox" id="agree_terms" name="agree_terms" required>
+      <label for="agree_terms" class="terms-label">Ik ga akkoord met de <a href="/terms" target="_blank">algemene voorwaarden</a></label>
+    </div>
+    
+    <button type="submit" id="login-submit">Login</button>
   </form>
   <p>Nog geen account? <a href="/registratie_student">Registreer hier</a></p>
 </div>
