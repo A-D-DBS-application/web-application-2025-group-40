@@ -116,6 +116,12 @@
 </div>
 
 <script>
+  // server-provided profile (if any) - prefer this over localStorage to show correct user info
+  {% if student or user %}
+  const SERVER_PROFILE = {{ {'firstName': (student.first_name if student else ''), 'lastName': (student.last_name if student else ''), 'email': (user.email if user else '')} | tojson }};
+  {% else %}
+  const SERVER_PROFILE = {};
+  {% endif %}
   const form = document.getElementById('profileForm');
   const firstName = document.getElementById('firstName');
   const lastName = document.getElementById('lastName');
@@ -154,6 +160,14 @@
   }
 
   function populateForm() {
+    // Prefer server-side profile when available (real user data). Fall back to localStorage for demo-only settings.
+    if (SERVER_PROFILE && Object.keys(SERVER_PROFILE).length > 0) {
+      firstName.value = SERVER_PROFILE.firstName || '';
+      lastName.value = SERVER_PROFILE.lastName || '';
+      email.value = SERVER_PROFILE.email || '';
+      // no savedAt from server; leave as is
+      return;
+    }
     const data = loadData();
     if (!data) return;
     firstName.value = data.firstName || '';

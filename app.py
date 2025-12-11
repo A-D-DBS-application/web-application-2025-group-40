@@ -601,7 +601,9 @@ def student_dashboard():
         abort(403)
     matched_job_ids = [m.job_id for m in current_user.matches]
     jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids)).all()
-    return render_template('student_dashboard.html', jobs=jobs)
+    # pass student info so the profile form can be pre-filled from server-side data
+    student = getattr(current_user, 'student', None)
+    return render_template('student_dashboard.html', jobs=jobs, user=current_user, student=student)
 
 
 
@@ -619,7 +621,9 @@ def student_dashboard_view():
         jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids), JobListing.is_active == True).all()
     else:
         jobs = JobListing.query.filter(JobListing.is_active == True).all()
-    return render_template('student_dashboard.html', jobs=jobs)
+    # allow viewing as recruiter (no role check) but still provide student info if present
+    student = getattr(current_user, 'student', None)
+    return render_template('student_dashboard.html', jobs=jobs, user=current_user, student=student)
 
 
 
