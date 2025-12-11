@@ -49,7 +49,7 @@
     {% if matches %}
       {% for item in matches %}
         <section class="bg-white p-6 rounded-xl shadow-md mb-6">
-          <div class="text-xs text-gray-500 mb-2">Match met {{ item.job.client or item.job.company_name or 'Onbekend' }}</div>
+          <div class="text-xs text-gray-500 mb-2">Match</div>
           <h3 class="text-xl font-bold text-swipr mb-4">{{ item.job.title }}{% if item.job.client %} - {{ item.job.client }}{% endif %}</h3>
           
           <div class="space-y-2 text-sm text-gray-700">
