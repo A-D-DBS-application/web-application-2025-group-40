@@ -368,7 +368,18 @@ def save_profile():
 
 @app.route('/vacature/nieuw')
 def vacature_nieuw():
-    return render_template('vacatures_bedrijf.html')
+    # If a recruiter is logged in, provide their linked employer so the
+    # template can show a fixed (read-only) company name.
+    employer = None
+    try:
+        if current_user.is_authenticated and getattr(current_user, 'role', None) == 'recruiter':
+            rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+            if rec and rec.employer:
+                employer = rec.employer
+    except Exception:
+        employer = None
+
+    return render_template('vacatures_bedrijf.html', employer=employer)
 
 
 @app.route('/vacature/opslaan', methods=['POST'])
@@ -376,14 +387,24 @@ def vacature_opslaan():
     job_title = request.form.get('jobTitle')
     location = request.form.get('location')
     description = request.form.get('description')
-    company_name = request.form.get('companyName', 'ACME BV')  # Get company name from form, fallback to ACME BV
     
-    # Find or create employer with the provided company name
-    employer = Employer.query.filter_by(name=company_name).first()
+    # Prefer an explicit employer_id (hidden input set for logged-in recruiters).
+    employer = None
+    employer_id = request.form.get('employer_id')
+    if employer_id:
+        try:
+            employer = Employer.query.get(int(employer_id))
+        except Exception:
+            employer = None
+
     if not employer:
-        employer = Employer(name=company_name, location=location)
-        db.session.add(employer)
-        db.session.commit()
+        company_name = request.form.get('companyName', 'ACME BV')  # Get company name from form, fallback to ACME BV
+        # Find or create employer with the provided company name
+        employer = Employer.query.filter_by(name=company_name).first()
+        if not employer:
+            employer = Employer(name=company_name, location=location)
+            db.session.add(employer)
+            db.session.commit()
 
     # create the job and persist
     job = JobListing(employer_id=employer.id,

@@ -53,6 +53,8 @@
             {% if employer %}
               <!-- Fixed company name for recruiters; include hidden input so it is submitted -->
               <div class="mt-2 p-3 border rounded-md bg-gray-100 text-gray-800 font-medium">{{ employer.name }}</div>
+              <!-- include employer id (preferred) and keep companyName for backward compatibility -->
+              <input type="hidden" id="employer_id" name="employer_id" value="{{ employer.id }}" />
               <input type="hidden" id="companyName" name="companyName" value="{{ employer.name }}" />
             {% else %}
               <input type="text" id="companyName" name="companyName" placeholder="Naam van het bedrijf" 
