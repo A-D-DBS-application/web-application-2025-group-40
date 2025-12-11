@@ -135,6 +135,7 @@ class JobListing(db.Model):
     periode = db.Column(db.String(80))
     requirements = db.Column(db.Text)
     posted_company_name = db.Column(db.String(200))
+    client = db.Column(db.String(140))
     is_active = db.Column(db.Boolean, default=True)
 
     employer = db.relationship('Employer', back_populates='job_listings')
@@ -373,6 +374,7 @@ def vacature_opslaan():
     job_title = request.form.get('jobTitle')
     location = request.form.get('location')
     description = request.form.get('description')
+    client = request.form.get('client')
     company_name = request.form.get('companyName', 'ACME BV')  # Get company name from form, fallback to ACME BV
     
     # Find or create employer with the provided company name
@@ -386,7 +388,8 @@ def vacature_opslaan():
     job = JobListing(employer_id=employer.id,
                      title=job_title,
                      description=description,
-                     location=location)
+                     location=location,
+                     client=client)
     db.session.add(job)
     db.session.commit()
 
