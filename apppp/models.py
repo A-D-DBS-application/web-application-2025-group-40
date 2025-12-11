@@ -94,7 +94,9 @@ class JobListing(db.Model):
     employer_id = db.Column(db.BigInteger, db.ForeignKey('employer.id'))
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
-    location = db.Column(db.String(255))  
+    location = db.Column(db.String(255))
+    salary = db.Column(db.Numeric)
+    periode = db.Column(DATERANGE)
     requirements = db.Column(ARRAY(db.Text))
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
 
