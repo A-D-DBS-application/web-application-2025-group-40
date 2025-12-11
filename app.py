@@ -799,21 +799,33 @@ def restore_job(job_id):
 def match_page():
     if current_user.role == 'recruiter':
         rec = current_user.recruiter
-        matches = []
+        formatted = []
         if rec and rec.employer:
             for job in rec.employer.job_listings:
                 for m in job.matches:
-                    matches.append(m)
-        return render_template('match_page.html', matches=matches)
+                    # ensure company name available on job for template
+                    j = m.job
+                    try:
+                        j.company_name = j.posted_company_name or (j.employer.name if j.employer else 'Onbekend')
+                    except Exception:
+                        j.company_name = getattr(j, 'posted_company_name', None) or 'Onbekend'
+                    formatted.append({'match': m, 'job': j})
+        return render_template('match_page.html', matches=formatted)
     else:
         # For students, get their matches and format them for the template
         matches = current_user.matches
         formatted_matches = []
         for match in matches:
+            j = match.job
+            # attach a company_name attribute for template convenience
+            try:
+                j.company_name = j.posted_company_name or (j.employer.name if j.employer else 'Onbekend')
+            except Exception:
+                j.company_name = getattr(j, 'posted_company_name', None) or 'Onbekend'
             formatted_matches.append({
                 'match': match,
                 'user': current_user,
-                'job': match.job
+                'job': j
             })
         return render_template('match_page.html', matches=formatted_matches)
 
