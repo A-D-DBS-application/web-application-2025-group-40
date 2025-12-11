@@ -135,6 +135,7 @@ class JobListing(db.Model):
     periode = db.Column(db.String(80))
     requirements = db.Column(db.Text)
     posted_company_name = db.Column(db.String(200))
+    client = db.Column(db.String(140))
     is_active = db.Column(db.Boolean, default=True)
 
     employer = db.relationship('Employer', back_populates='job_listings')
@@ -357,8 +358,15 @@ def save_profile():
 
 
 @app.route('/vacature/nieuw')
+@login_required
 def vacature_nieuw():
-    return render_template('vacatures_bedrijf.html')
+    # Only recruiters can place vacancies; pass employer info to template so the company name can be fixed
+    employer = None
+    if getattr(current_user, 'role', None) == 'recruiter':
+        rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+        if rec and rec.employer:
+            employer = rec.employer
+    return render_template('vacatures_bedrijf.html', employer=employer)
 
 
 @app.route('/vacature/opslaan', methods=['POST'])
@@ -366,6 +374,7 @@ def vacature_opslaan():
     job_title = request.form.get('jobTitle')
     location = request.form.get('location')
     description = request.form.get('description')
+    client = request.form.get('client')
     company_name = request.form.get('companyName', 'ACME BV')  # Get company name from form, fallback to ACME BV
     
     # Find or create employer with the provided company name
@@ -379,7 +388,8 @@ def vacature_opslaan():
     job = JobListing(employer_id=employer.id,
                      title=job_title,
                      description=description,
-                     location=location)
+                     location=location,
+                     client=client)
     db.session.add(job)
     db.session.commit()
 
@@ -557,10 +567,10 @@ def registratie_student():
         db.session.flush()
         student = Student(user_id=user.id, first_name=first_name, last_name=last_name)
         db.session.add(student)
-        db.session.commit()
-        login_user(user)
-        flash("Account aangemaakt.", "success")
-        return redirect(url_for('vacatures_student'))
+    db.session.commit()
+    # After registration, require explicit login on the student login page
+    flash("Account aangemaakt. Log in om verder te gaan.", "success")
+    return redirect(url_for('login_student'))
 
     return render_template('registratie_student.html')
 
