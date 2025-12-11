@@ -18,77 +18,85 @@
 {% endblock %}
 
 {% block content %}
-<div class="app-body">
+<div class="bg-gray-50 min-h-screen antialiased">
 
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand-row">
-        <div class="logo-icon" style="background:#ff4b5c; width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:white;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
             <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </div>
         <div>
-          <div class="brand-title">Swipr</div>
-          <div class="brand-sub">Recruiter profiel</div>
+          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
+          <p class="text-xs text-gray-500">Recruiter profiel</p>
         </div>
       </div>
 
-      <nav class="nav-links">
-        <a href="/recruiter_dashboard" class="nav-link">Dashboard</a>
-        <a href="/" class="nav-link">Uitloggen</a>
+      <nav class="hidden sm:flex items-center gap-4 text-sm">
+        <a href="/recruiter_dashboard" class="text-gray-600 hover:text-swipr">Dashboard</a>
+        <a href="/" class="px-3 py-1 rounded-md text-sm border hover:bg-swipr hover:text-white transition-colors">Uitloggen</a>
       </nav>
     </div>
   </header>
 
-  <main class="main-container">
-    <section class="panel">
-      <div class="section-title">
+  <main class="max-w-3xl mx-auto mt-10 p-6">
+    <section class="bg-white p-6 rounded-xl shadow-md">
+      <div class="flex items-center justify-between mb-4">
         <div>
-          <h2>Bedrijfsprofiel</h2>
-          <p class="muted small">Werk uw bedrijfsgegevens en accountgegevens bij.</p>
+          <h2 class="text-2xl font-bold text-swipr">Bedrijfsprofiel</h2>
+          <p class="text-gray-600 text-sm">Werk uw bedrijfsgegevens en accountgegevens bij.</p>
         </div>
-        <div class="muted small" id="savedAt">Laatst opgeslagen: —</div>
+        <div class="text-right text-xs text-gray-500">
+          <div id="savedAt">Laatst opgeslagen: —</div>
+        </div>
       </div>
 
-      <form method="POST" class="form-grid">
-        <label class="form-label full-width">
-          <span>Bedrijfsnaam</span>
-          <input name="company_name" type="text" placeholder="Bedrijfsnaam" value="{{ employer.name if employer else '' }}" class="form-input" required />
+      <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label class="flex flex-col md:col-span-2">
+          <span class="text-sm font-medium text-gray-700">Bedrijfsnaam</span>
+          <input name="company_name" type="text" placeholder="Bedrijfsnaam" value="{{ employer.name if employer else '' }}"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
         </label>
 
-        <label class="form-label">
-          <span>Contact Persoon</span>
-          <input name="contact_person" type="text" placeholder="Voornaam Achternaam" value="{{ employer.contact_person if employer and employer.contact_person else user.email if user else '' }}" class="form-input" />
+        <label class="flex flex-col">
+          <span class="text-sm font-medium text-gray-700">Contact Persoon</span>
+          <input name="contact_person" type="text" placeholder="Voornaam Achternaam" value="{{ employer.contact_person if employer and employer.contact_person else user.email if user else '' }}"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
         </label>
 
-        <label class="form-label">
-          <span>Contact e-mail</span>
-          <input name="contact_email" type="email" placeholder="info@bedrijf.be" value="{{ employer.contact_email if employer else '' }}" class="form-input" />
+        <label class="flex flex-col">
+          <span class="text-sm font-medium text-gray-700">Contact e-mail</span>
+          <input name="contact_email" type="email" placeholder="info@bedrijf.be" value="{{ employer.contact_email if employer else '' }}"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
         </label>
 
-        <label class="form-label full-width">
-          <span>BTW-nummer</span>
-          <input name="btw_number" type="text" placeholder="BE123456789B01" value="{{ employer.btw_number if employer else '' }}" class="form-input" />
+        <label class="flex flex-col md:col-span-2">
+          <span class="text-sm font-medium text-gray-700">BTW-nummer</span>
+          <input name="btw_number" type="text" placeholder="BE123456789B01" value="{{ employer.btw_number if employer else '' }}"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
         </label>
         <!-- Nieuw wachtwoord directly under BTW-nummer as requested -->
-        <label class="form-label full-width">
-          <span>Nieuw wachtwoord</span>
-          <input name="password" type="password" placeholder="Nieuw wachtwoord" class="form-input" />
+        <label class="flex flex-col md:col-span-2">
+          <span class="text-sm font-medium text-gray-700">Nieuw wachtwoord</span>
+          <input name="password" type="password" placeholder="Nieuw wachtwoord"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
         </label>
 
 
-        <div class="full-width" style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:8px;">
-          <div class="muted small">Wachtwoord leeg laten betekent geen wijziging.</div>
-          <div style="display:flex; gap:10px;">
-            <button type="button" id="resetBtn" class="btn-ghost">Reset</button>
-            <button type="submit" id="saveBtn" class="btn-primary">Gegevens opslaan</button>
+        <div class="flex items-center justify-between mt-2 md:col-span-2">
+          <div class="text-sm text-gray-500">Wachtwoord leeg laten betekent geen wijziging.</div>
+          <div class="flex items-center gap-3">
+            <button type="button" id="resetBtn" class="px-4 py-2 border rounded-md btn-ghost">Reset</button>
+            <button type="submit" id="saveBtn" class="px-5 py-2 bg-swipr text-white rounded-md">Gegevens opslaan</button>
           </div>
         </div>
       </form>
-      <div id="toast" class="toast" style="display:none;">
-        <div class="small">Gegevens opgeslagen ✅</div>
+
+      <div id="toast" class="fixed right-6 bottom-6 bg-white border shadow-lg px-4 py-3 rounded-md hidden">
+        <div class="text-sm text-gray-800">Gegevens opgeslagen ✅</div>
       </div>
     </section>
   </main>
