@@ -19,82 +19,94 @@
 {% endblock %}
 
 {% block content %}
-<div class="app-body">
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand-row">
-        <div class="logo-icon" style="background:#ff4b5c; width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:white;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+<div class="bg-gray-50 min-h-screen antialiased">
+
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
         </div>
         <div>
-          <div class="brand-title" style="color:#ff4b5c">Swipr</div>
-          <div class="brand-sub">Recruiter dashboard</div>
+          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
+          <p class="text-xs text-gray-500">Recruiter dashboard</p>
         </div>
       </div>
 
-      <nav class="nav-links">
-        <a href="/recruiter_profiel" class="nav-link">Mijn Profiel</a>
-        <a href="/" class="nav-link">Uitloggen</a>
+      <nav class="hidden sm:flex items-center gap-4 text-sm">
+        <a href="/recruiter_profiel" class="text-gray-600 hover:text-swipr">Mijn Profiel</a>
+        <a href="/" class="px-3 py-1 rounded-md text-sm border hover:bg-swipr hover:text-white transition-colors">
+          Uitloggen
+        </a>
       </nav>
     </div>
   </header>
 
-  <main class="main-container">
+  <main class="max-w-5xl mx-auto mt-8 p-4 space-y-8">
 
-    <section class="panel" style="background:#ff4b5c; color:white;">
-      <h2>Welkom bij Swipr</h2>
-      <p class="muted small">Beheer uw vacatures en matches</p>
+    <section class="bg-swipr text-white rounded-xl shadow-sm p-6">
+      <h2 class="text-xl font-semibold">Welkom bij Swipr</h2>
+      <p class="text-sm opacity-90">Beheer uw vacatures en matches</p>
     </section>
 
-    <section style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:12px;">
-      <div class="panel">
-        <div class="muted small">Actieve vacatures</div>
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="bg-white rounded-xl shadow-sm p-3">
+        <p class="text-xs text-gray-500">Actieve vacatures</p>
         <p class="text-2xl font-bold text-swipr">{{ stats.active_job_count }}</p>
       </div>
-      <div class="panel">
-        <div class="muted small">Totaal matches</div>
+      <div class="bg-white rounded-xl shadow-sm p-3">
+        <p class="text-xs text-gray-500">Totaal matches</p>
         <p class="text-2xl font-bold text-swipr">{{ stats.total_matches }}</p>
       </div>
-      <div class="panel">
-        <div class="muted small">Recente Matches (laatste 7 dagen)</div>
+      <div class="bg-white rounded-xl shadow-sm p-3">
+        <p class="text-xs text-gray-500">Recente Matches (laatste 7 dagen)</p>
         <p class="text-2xl font-bold text-swipr">{{ stats.matches_last_7_days }}</p>
       </div>
     </section>
 
-    <section class="panel">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <h2 style="margin:0; font-weight:700;">Mijn vacatures</h2>
-        <a href="/vacature/nieuw" class="btn-primary">+ Nieuwe vacature</a>
+    <section class="bg-white p-6 rounded-xl shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-800">Mijn vacatures</h2>
+        <a href="/vacature/nieuw"
+           class="px-3 py-2 text-sm rounded-md bg-swipr text-white">
+          + Nieuwe vacature
+        </a>
       </div>
-
-      <div>
+      <!-- vacaturelijst -->
+      <div class="space-y-4">
         {% if jobs and jobs|length > 0 %}
-          <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px;">
+          <ul class="space-y-3">
             {% for job in jobs %}
               <li id="job-{{ job.id }}" class="p-4 border rounded-lg">
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                <div class="flex items-center justify-between gap-4">
                   <div>
-                    <h3 style="font-weight:600; color:#111;">{{ job.title }}{% if job.client %} - {{ job.client }}{% endif %}</h3>
-                    <p class="muted small">{{ job.location }}</p>
+                    <h3 class="font-semibold text-gray-800">{{ job.title }}{% if job.client %} - {{ job.client }}{% endif %}</h3>
+                    <p class="text-sm text-gray-500">{{ job.location }}</p>
                   </div>
-                  <div style="display:flex; gap:8px; align-items:center;">
-                    <button data-job-id="{{ job.id }}" title="Matches" class="btn-ghost js-view-likes">
+                  <div class="flex items-center gap-2">
+                    <button onclick="viewLikes({{ job.id }})" title="Matches" class="px-3 py-1 border rounded-md text-sm text-swipr hover:bg-swipr hover:text-white transition-colors">
                       {% set cnt = job.matches|length %}
                       {{ cnt }} {% if cnt == 1 %}Match{% else %}Matches{% endif %}
                     </button>
-                    <button data-job-id="{{ job.id }}" title="Verwijderen" class="text-red-500 js-confirm-delete">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" /></svg>
+                    <button onclick="confirmDelete({{ job.id }})" title="Verwijderen" class="text-red-500 hover:text-red-700 p-2 rounded-md">
+                      <!-- vuilbak icoon -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" />
+                      </svg>
                     </button>
                   </div>
                 </div>
                 {% if job.description %}
-                  <p class="muted small" style="margin-top:8px;">{{ job.description }}</p>
+                  <p class="mt-2 text-sm text-gray-700">{{ job.description }}</p>
                 {% endif %}
               </li>
             {% endfor %}
           </ul>
         {% else %}
-          <p class="muted">Geen vacatures geplaatst.</p>
+          <p class="text-sm text-gray-500">Geen vacatures geplaatst.</p>
         {% endif %}
       </div>
     </section>
@@ -290,22 +302,5 @@
     }
   }
 </script>
-  <script>
-    // Attach event listeners to elements rendered with data-job-id to avoid inline onclick with Jinja
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.js-view-likes').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = btn.dataset.jobId;
-          if (id) viewLikes(id);
-        });
-      });
-      document.querySelectorAll('.js-confirm-delete').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = btn.dataset.jobId;
-          if (id) confirmDelete(id);
-        });
-      });
-    });
-  </script>
 {% endblock %}
 
