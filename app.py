@@ -607,12 +607,11 @@ def registratie_student():
         db.session.add(user)
         db.session.flush()
         student = Student(user_id=user.id, first_name=first_name, last_name=last_name)
-    db.session.add(student)
-    db.session.commit()
-    # Do not auto-login students after registration; redirect them to the
-    # student login page so they explicitly authenticate.
-    flash("Account aangemaakt. Log in om verder te gaan.", "success")
-    return redirect(url_for('login_student'))
+        db.session.add(student)
+        db.session.commit()
+        login_user(user)
+        flash("Account aangemaakt.", "success")
+        return redirect(url_for('vacatures_student'))
 
     return render_template('registratie_student.html')
 
