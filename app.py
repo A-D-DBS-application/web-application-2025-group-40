@@ -213,7 +213,7 @@ def login_bedrijf():
         password = request.form.get('password')
         user = AppUser.query.filter_by(email=email).first()
         if not user or not user.check_password(password):
-            flash("Foute email of wachtwoord!", "danger")
+            flash("Foute e-mail of wachtwoord!", "danger")
             return redirect(url_for('login_bedrijf'))
         if user.role != 'recruiter':
             flash("Dit account is geen bedrijf/recruiter account.", "danger")
@@ -234,7 +234,7 @@ def login_student():
         password = request.form.get('password')
         user = AppUser.query.filter_by(email=email).first()
         if not user or not user.check_password(password):
-            flash("Foute email of wachtwoord!", "danger")
+            flash("Foute e-mail of wachtwoord!", "danger")
             return redirect(url_for('login_student'))
         if user.role != 'student':
             flash("Dit account is geen student account.", "danger")
@@ -319,7 +319,7 @@ def recruiter_profiel():
         # validate unique email
         if email and email != user.email:
             if AppUser.query.filter_by(email=email).first():
-                flash('Email is al in gebruik.', 'danger')
+                flash('E-mail is al in gebruik.', 'danger')
                 return redirect(url_for('recruiter_profiel'))
             user.email = email
 
@@ -478,7 +478,7 @@ def registratie_bedrijf():
         contact_phone= request.form.get('contactPhone', '')
         # Controleer of e-mail al bestaat lokaal
         if AppUser.query.filter_by(email=email).first():
-            flash("Email is al in gebruik.", "danger")
+            flash("E-mail is al in gebruik.", "danger")
             return redirect(url_for('registratie_bedrijf'))
 
         # Controleer ook in Supabase (indien geconfigureerd)
@@ -486,10 +486,10 @@ def registratie_bedrijf():
             try:
                 existing = supabase.table('app_user').select('id').eq('email', email).execute()
                 if existing and getattr(existing, 'data', None) and len(existing.data) > 0:
-                    flash("Email is al in gebruik (Supabase).", "danger")
+                    flash("E-mail is al in gebruik (Supabase).", "danger")
                     return redirect(url_for('registratie_bedrijf'))
             except Exception:
-                app.logger.exception('Fout bij check Supabase email')
+                app.logger.exception('Fout bij check Supabase e-mail')
 
         try:
             # 1) Schrijf naar Supabase als beschikbaar
@@ -569,7 +569,7 @@ def registratie_student():
         last_name = request.form.get('last_name', '')
 
         if AppUser.query.filter_by(email=email).first():
-            flash("Email is al in gebruik.", "danger")
+            flash("E-mail is al in gebruik.", "danger")
             return redirect(url_for('registratie_student'))
 
         user = AppUser(email=email, role='student')
@@ -636,7 +636,7 @@ def student_dashboard():
         # Update AppUser email if changed and not taken
         if email and email != current_user.email:
             if AppUser.query.filter_by(email=email).first():
-                return jsonify({'error': 'Email al in gebruik'}), 400
+                return jsonify({'error': 'E-mail al in gebruik'}), 400
             current_user.email = email
 
         # Update password if provided
