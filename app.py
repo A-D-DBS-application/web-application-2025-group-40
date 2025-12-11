@@ -357,8 +357,15 @@ def save_profile():
 
 
 @app.route('/vacature/nieuw')
+@login_required
 def vacature_nieuw():
-    return render_template('vacatures_bedrijf.html')
+    # Only recruiters can place vacancies; pass employer info to template so the company name can be fixed
+    employer = None
+    if getattr(current_user, 'role', None) == 'recruiter':
+        rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+        if rec and rec.employer:
+            employer = rec.employer
+    return render_template('vacatures_bedrijf.html', employer=employer)
 
 
 @app.route('/vacature/opslaan', methods=['POST'])
