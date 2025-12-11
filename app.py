@@ -128,6 +128,7 @@ class JobListing(db.Model):
     __tablename__ = 'job_listing'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     employer_id = db.Column(db.Integer, db.ForeignKey('employer.id'), nullable=False)
+    client = db.Column(db.String(140), nullable=True)
     title = db.Column(db.String(140), nullable=False)
     description = db.Column(db.Text)
     location = db.Column(db.String(120))
@@ -393,6 +394,7 @@ def vacature_opslaan():
     job_title = request.form.get('jobTitle')
     location = request.form.get('location')
     description = request.form.get('description')
+    client = request.form.get('client')
     
     # Prefer an explicit employer_id (hidden input set for logged-in recruiters).
     employer = None
@@ -414,6 +416,7 @@ def vacature_opslaan():
 
     # create the job and persist
     job = JobListing(employer_id=employer.id,
+                     client=client,
                      title=job_title,
                      description=description,
                      location=location)
@@ -680,6 +683,7 @@ def create_job():
         return redirect(url_for('recruiter_dashboard'))
     if request.method == 'POST':
         title = request.form.get('title')
+        client = request.form.get('client')
         location = request.form.get('location')
         salary = request.form.get('salary') or None
         periode = request.form.get('periode')
@@ -687,6 +691,7 @@ def create_job():
         requirements = request.form.get('requirements')
         job = JobListing(
             employer_id=rec.employer.id,
+            client=client,
             title=title,
             location=location,
             salary=salary,
