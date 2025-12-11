@@ -286,8 +286,7 @@ def recruiter_dashboard_view():
         'avg_matches_per_job': avg_matches_per_job
     }
 
-    # pass employer to template so dashboard can show recruiter/company contact details
-    return render_template('recruiter_dashboard.html', stats=stats, jobs=jobs, employer=employer)
+    return render_template('recruiter_dashboard.html', stats=stats, jobs=jobs)
 
 
 @app.route('/recruiter_profiel', methods=['GET', 'POST'])
@@ -298,7 +297,10 @@ def recruiter_profiel():
         abort(403)
 
     user = current_user
+    # Try to obtain the RecruiterUser relationship from the user object; if missing, query explicitly
     rec = getattr(user, 'recruiter', None)
+    if rec is None:
+        rec = RecruiterUser.query.filter_by(user_id=user.id).first()
     employer = rec.employer if rec else None
 
     if request.method == 'POST':
@@ -350,6 +352,12 @@ def recruiter_profiel():
         return redirect(url_for('recruiter_dashboard_view'))
 
     # GET
+    # If there's an employer but no contact_person set, provide a safe UI-only fallback (do not commit)
+    if employer and (not employer.contact_person or employer.contact_person.strip() == ''):
+        # Prefer a readable name if available; fall back to the user's email
+        fallback_name = getattr(user, 'email', '')
+        employer.contact_person = fallback_name
+
     return render_template('recruiter_profiel.html', user=user, employer=employer)
 
 

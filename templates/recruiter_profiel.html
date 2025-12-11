@@ -63,7 +63,7 @@
 
         <label class="flex flex-col">
           <span class="text-sm font-medium text-gray-700">Contact Persoon</span>
-          <input name="contact_person" type="text" placeholder="Voornaam Achternaam" value="{{ employer.contact_person if employer else '' }}"
+          <input name="contact_person" type="text" placeholder="Voornaam Achternaam" value="{{ employer.contact_person if employer and employer.contact_person else user.email if user else '' }}"
                  class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
         </label>
 
