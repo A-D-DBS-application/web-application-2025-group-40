@@ -422,15 +422,19 @@ ul.vacature-list li strong {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .brand-row { display:flex; gap:12px; align-items:center; }
-.brand-title { font-size:1.125rem; font-weight:600; color:#ff4b5c; }
+/* Use student/blue variant for the header brand on student pages */
+.site-header .brand-title { font-size:1.125rem; font-weight:600; color:#007BFF; }
+.brand-title { font-size:1.125rem; font-weight:600; }
 .brand-sub { font-size:0.75rem; color:#6b7280; }
 
-.nav-links { display:flex; gap:12px; align-items:center; }
+.nav-links { display:flex; gap:12px; align-items:center; margin-left: auto; }
 .nav-link { color:#4b5563; text-decoration:none; padding:6px 10px; border-radius:6px; }
-.nav-link:hover { background:#fff1f2; color:#ff4b5c; }
+.nav-link:hover { background:#eef2ff; color:#007BFF; }
 
 .main-container { max-width: 900px; margin: 2.5rem auto; padding: 1.25rem; }
 .panel { background:white; border-radius:12px; padding:1.25rem; box-shadow:0 6px 20px rgba(2,6,23,0.06); }
@@ -443,7 +447,7 @@ ul.vacature-list li strong {
 
 .form-label { display:flex; flex-direction:column; }
 .form-label span { font-weight:600; color:#374151; font-size:0.9rem; }
-.form-input { margin-top:8px; padding:12px; border:1px solid #e5e7eb; border-radius:8px; }
+.form-input { margin-top:8px; padding:12px; border:1px solid #e5e7eb; border-radius:8px; display:block; width:100%; box-sizing:border-box; }
 
 .full-width { grid-column: 1 / -1; }
 
@@ -461,8 +465,6 @@ ul.vacature-list li strong {
 
 /* Keep existing style names for compatibility where present */
 .container-box { max-width: 1024px; margin: 40px auto; padding: 20px; }
-
-}
 
 .student-register-title {
   text-align: center;
