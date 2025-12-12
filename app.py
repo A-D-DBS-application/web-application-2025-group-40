@@ -553,15 +553,8 @@ def registratie_bedrijf():
             flash("Email is al in gebruik.", "danger")
             return redirect(url_for('registratie_bedrijf'))
 
-        # Controleer ook in Supabase (indien geconfigureerd)
-        if supabase:
-            try:
-                existing = supabase.table('app_user').select('id').eq('email', email).execute()
-                if existing and getattr(existing, 'data', None) and len(existing.data) > 0:
-                    flash("Email is al in gebruik (Supabase).", "danger")
-                    return redirect(url_for('registratie_bedrijf'))
-            except Exception:
-                app.logger.exception('Fout bij check Supabase email')
+        # Optional remote check was previously done against Supabase here.
+        # We rely on the local SQLAlchemy check above as the canonical source of truth.
 
         try:
             # 1) Schrijf naar Supabase als beschikbaar (maar fail niet als het niet werkt)
@@ -951,13 +944,14 @@ def init_demo():
 
 @app.route("/test-supabase")
 def test_supabase():
-    if not supabase:
-        return "Supabase niet geconfigureerd."
+    # Replace Supabase sample call with a local ORM check so we don't depend on remote client.
     try:
-        response = supabase.table("app_user").select("*").limit(1).execute()
-        return f"Connected to Supabase! Sample data: {response.data}"
+        user = AppUser.query.first()
+        if user:
+            return f"Connected to DB! Sample user: {user.email}"
+        return "Connected to DB but no users found."
     except Exception as e:
-        return f"Supabase connection failed: {str(e)}"
+        return f"DB query failed: {str(e)}"
 
 
 
