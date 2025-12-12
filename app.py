@@ -196,6 +196,37 @@ def load_user(user_id):
         return None
 
 
+# ---------- Helper utilities for recruiter/employer lookup ----------
+def get_current_recruiter():
+    """Return the RecruiterUser for the currently logged-in recruiter, or None."""
+    try:
+        if not (current_user.is_authenticated and getattr(current_user, 'role', None) == 'recruiter'):
+            return None
+        return RecruiterUser.query.filter_by(user_id=current_user.id).first()
+    except Exception:
+        return None
+
+
+def get_employer_for_current_user():
+    """Return Employer linked to current_user if recruiter, else None."""
+    rec = get_current_recruiter()
+    return rec.employer if rec and getattr(rec, 'employer', None) else None
+
+
+def recruiter_owns_job(job):
+    """Return True when the current user is a recruiter and owns the job's employer."""
+    rec = get_current_recruiter()
+    return bool(rec and rec.employer and job and rec.employer.id == job.employer_id)
+
+
+def populate_jobs_display_fields(jobs):
+    """Attach convenience attributes used by templates: client, company_name, match_count."""
+    for job in jobs:
+        job.client = getattr(job, 'client', None)
+        job.company_name = job.employer.name if job.employer else 'Onbekend'
+        job.match_count = len(job.matches or [])
+
+
 # -----------------------
 # ROUTES (eenvoudig)
 # -----------------------
@@ -260,13 +291,8 @@ def recruiter_dashboard_view():
     # If a recruiter is logged in, show vacatures for their employer; otherwise fallback to ACME BV
     jobs = []
     employer = None
-    try:
-        if current_user.is_authenticated and getattr(current_user, 'role', None) == 'recruiter':
-            rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
-            if rec and rec.employer:
-                employer = rec.employer
-    except Exception:
-        employer = None
+    # Prefer the employer linked to the logged-in recruiter (if any)
+    employer = get_employer_for_current_user()
 
     if not employer:
         # fallback to default employer (if exists)
@@ -383,17 +409,8 @@ def save_profile():
 
 @app.route('/vacature/nieuw')
 def vacature_nieuw():
-    # If a recruiter is logged in, provide their linked employer so the
-    # template can show a fixed (read-only) company name.
-    employer = None
-    try:
-        if current_user.is_authenticated and getattr(current_user, 'role', None) == 'recruiter':
-            rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
-            if rec and rec.employer:
-                employer = rec.employer
-    except Exception:
-        employer = None
-
+    # Provide employer (if recruiter); template will show fixed company name when present
+    employer = get_employer_for_current_user()
     return render_template('vacatures_bedrijf.html', employer=employer)
 
 
@@ -443,13 +460,13 @@ def job_likes(job_id):
     if getattr(current_user, 'role', None) != 'recruiter':
         return jsonify({'error': 'Toegang geweigerd'}), 403
 
-    rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+    rec = get_current_recruiter()
     job = JobListing.query.get(job_id)
     if not job:
         return jsonify({'error': 'Vacature niet gevonden'}), 404
 
     # ensure recruiter belongs to the employer that posted the job
-    if not rec or not rec.employer or rec.employer.id != job.employer_id:
+    if not recruiter_owns_job(job):
         return jsonify({'error': 'Toegang geweigerd'}), 403
 
     # Find users who liked (Match) this job
@@ -480,14 +497,9 @@ def bedrijf_home():
     # Show company home, prefer the employer tied to the logged-in recruiter
     vacatures = []
     bedrijf_naam = "ACME BV"
-    try:
-        if current_user.is_authenticated and getattr(current_user, 'role', None) == 'recruiter':
-            rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
-            if rec and rec.employer:
-                bedrijf_naam = rec.employer.name
-    except Exception:
-        # ignore and fall back to default
-        pass
+    rec = get_current_recruiter()
+    if rec and getattr(rec, 'employer', None):
+        bedrijf_naam = rec.employer.name
 
     return render_template('HomePage_bedrijf.html',
                            bedrijf_naam=bedrijf_naam,
@@ -764,12 +776,12 @@ def delete_job(job_id):
     if getattr(current_user, 'role', None) != 'recruiter':
         return jsonify({'error': 'Toegang geweigerd'}), 403
 
-    rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+    rec = get_current_recruiter()
     job = JobListing.query.get(job_id)
     if not job:
         return jsonify({'error': 'Vacature niet gevonden'}), 404
 
-    if not rec or not rec.employer or rec.employer.id != job.employer_id:
+    if not recruiter_owns_job(job):
         return jsonify({'error': 'Toegang geweigerd'}), 403
 
     try:
@@ -820,12 +832,12 @@ def deactivate_job(job_id):
     if getattr(current_user, 'role', None) != 'recruiter':
         return jsonify({'error': 'Toegang geweigerd'}), 403
 
-    rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+    rec = get_current_recruiter()
     job = JobListing.query.get(job_id)
     if not job:
         return jsonify({'error': 'Vacature niet gevonden'}), 404
 
-    if not rec or not rec.employer or rec.employer.id != job.employer_id:
+    if not recruiter_owns_job(job):
         return jsonify({'error': 'Toegang geweigerd'}), 403
 
     try:
@@ -846,12 +858,12 @@ def restore_job(job_id):
     if getattr(current_user, 'role', None) != 'recruiter':
         return jsonify({'error': 'Toegang geweigerd'}), 403
 
-    rec = RecruiterUser.query.filter_by(user_id=current_user.id).first()
+    rec = get_current_recruiter()
     job = JobListing.query.get(job_id)
     if not job:
         return jsonify({'error': 'Vacature niet gevonden'}), 404
 
-    if not rec or not rec.employer or rec.employer.id != job.employer_id:
+    if not recruiter_owns_job(job):
         return jsonify({'error': 'Toegang geweigerd'}), 403
 
     try:
