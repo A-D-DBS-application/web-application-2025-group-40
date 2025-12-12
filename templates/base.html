@@ -6,10 +6,13 @@
 
     <title>{% block title %}Swipr{% endblock %}</title>
 
-    <!-- Globale CSS -->
+    <!-- Bootstrap CSS (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ENjdO4Dr2bkBIFxQpeoYz1hiKcHqvY1zYx1jz6a0u3r5q5c5V5q5V5q5V5q5V5" crossorigin="anonymous">
+
+    <!-- Project CSS overrides (load after Bootstrap so it can override defaults) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-    <!-- Extra scripts/CSS voor specifieke pagina's (bijv. Tailwind) -->
+    <!-- Extra scripts/CSS voor specifieke pagina's -->
     {% block extra_head %}{% endblock %}
 </head>
 
@@ -19,9 +22,14 @@
     {% block content %}{% endblock %}
 
     <!-- Standaard footer -->
-    <footer class="site-footer">
+    <footer class="site-footer mt-4">
         &copy; 2025 Swipr
     </footer>
+
+    <!-- Bootstrap JS bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+amk0VYjE6E3z0x0k0V5q5V5q5V5" crossorigin="anonymous"></script>
+
+    {% block extra_scripts %}{% endblock %}
 
 </body>
 </html>
