@@ -665,3 +665,56 @@ ul.vacature-list li strong {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Flash alerts used in multiple templates */
+.flash-alert {
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.flash-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+.flash-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+/* Terms & Privacy article styling moved from template */
+.terms-article {
+  max-width: 760px;
+  margin: 28px auto;
+  padding: 28px;
+  background: #fff;
+  color: #222;
+  line-height: 1.65;
+  font-size: 16px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  border-radius: 6px;
+}
+.terms-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom: 12px;
+}
+.terms-header h1 { margin:0; font-size:22px }
+.terms-actions { display:flex; gap:8px; align-items:center }
+.btn-print, .btn-back { background:#f3f4f6; border:1px solid #e5e7eb; padding:6px 10px; border-radius:4px; text-decoration:none; color:#111; cursor:pointer; font-size:14px; }
+.btn-print:hover, .btn-back:hover { background:#e5e7eb; }
+.terms-toc { margin: 18px 0; padding:12px; background:#fbfbfb; border:1px solid #f0f0f0; border-radius:4px }
+.terms-toc ol { margin:6px 0 0 18px }
+.terms-article h2 { margin-top:20px; margin-bottom:8px; font-size:18px }
+.terms-article ul { margin-left:18px }
+
+/* Print friendly for terms */
+@media print {
+  body { background: #fff }
+  .terms-article { box-shadow:none; border:none; margin:0; padding:0; }
+  .terms-actions { display:none }
+}
