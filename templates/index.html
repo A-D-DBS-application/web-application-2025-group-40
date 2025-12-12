@@ -3,34 +3,43 @@
 {% block title %}Kies uw rol — Swipr{% endblock %}
 
 {% block content %}
-<div class="role-wrapper">
-  <div class="role-card">
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
 
-    <div class="logo">
-      <div class="logo-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <div class="card shadow-lg text-center p-5" style="border-radius: 16px;">
+
+    <!-- Logo -->
+    <div class="mb-4">
+      <div class="logo-icon mx-auto mb-2">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h12" stroke="white" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
       <div class="logo-text">Swipr</div>
     </div>
 
-    <h1 style="font-size: 2rem; margin-bottom: 35px; color: #333;">Kies uw rol</h1>
+    <!-- Titel -->
+    <h1 class="mb-4">Kies uw rol</h1>
 
-    <button class="btn student"
-            style="width: 220px; margin: 15px auto;"
-            onclick="window.location.href='{{ url_for('login_student') }}'">
+    <!-- Knoppen -->
+    <button
+      class="btn student mb-3"
+      onclick="window.location.href='{{ url_for('login_student') }}'">
       Student
     </button>
 
-    <button class="btn bedrijf"
-            style="width: 220px; margin: 15px auto; display: block;"
-            onclick="window.location.href='{{ url_for('login_bedrijf') }}'">
+    <button
+      class="btn bedrijf"
+      onclick="window.location.href='{{ url_for('login_bedrijf') }}'">
       Bedrijf
     </button>
 
-
   </div>
+
 </div>
 {% endblock %}
+
+

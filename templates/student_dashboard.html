@@ -2,212 +2,144 @@
 
 {% block title %}Student Dashboard — Swipr{% endblock %}
 
-{% block extra_head %}
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            swipr: '#007BFF'
-          }
-        }
-      }
-    }
-  </script>
-{% endblock %}
-
 {% block content %}
-<div class="bg-gray-50 min-h-screen antialiased">
 
-  <header class="bg-white shadow-sm">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div>
-          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
-          <p class="text-xs text-gray-500">Student dashboard</p>
-        </div>
-      </div>
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-primary" href="/">Swipr</a>
 
-      <nav class="hidden sm:flex items-center gap-4 text-sm">
-  <a href="/student_dashboard" class="text-gray-600 hover:text-swipr">Mijn Profiel</a>
-        <a href="/match_page" class="text-gray-600 hover:text-swipr">Matches</a>
-        <a href="/vacatures_student" class="text-gray-600 hover:text-swipr">Vacatures</a>
-        <a href="/logout" class="px-3 py-1 rounded-md text-sm border">Uitloggen</a>
-      </nav>
-    </div>
-  </header>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-  <main class="max-w-3xl mx-auto mt-10 p-6">
-    <section class="bg-white p-6 rounded-xl shadow-md">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h2 class="text-2xl font-bold text-swipr">Student profiel</h2>
-          <p class="text-gray-600 text-sm">
-            Werk je gegevens bij zodat werkgevers je correct kunnen benaderen.
-          </p>
-        </div>
-      </div>
-
-      <form id="profileForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label class="flex flex-col">
-          <span class="text-sm font-medium text-gray-700">Voornaam</span>
-          <input id="firstName" name="firstName" type="text" placeholder="Voornaam"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
-        </label>
-
-        <label class="flex flex-col">
-          <span class="text-sm font-medium text-gray-700">Achternaam</span>
-          <input id="lastName" name="lastName" type="text" placeholder="Achternaam"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
-        </label>
-
-        <label class="flex flex-col md:col-span-2">
-          <span class="text-sm font-medium text-gray-700">E-mail</span>
-          <input id="email" name="email" type="email" placeholder="jij@example.com"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
-        </label>
-
-        <label class="flex flex-col md:col-span-2">
-          <span class="text-sm font-medium text-gray-700">Nieuw wachtwoord</span>
-          <input id="password" name="password" type="password" placeholder="Nieuw wachtwoord"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
-        </label>
-
-
-        <div class="flex items-center justify-between mt-2 md:col-span-2">
-          <div class="text-sm text-gray-500">
-            Je gegevens worden lokaal opgeslagen in je browser (demo).
-          </div>
-          <div class="flex items-center gap-3">
-            <button type="button" id="resetBtn" class="px-4 py-2 border rounded-md btn-ghost">Reset</button>
-            <button type="submit" class="px-5 py-2 bg-swipr text-white rounded-md">Gegevens opslaan</button>
-          </div>
-        </div>
-      </form>
-
-      <div id="toast" class="fixed right-6 bottom-6 bg-white border shadow-lg px-4 py-3 rounded-md hidden">
-        <div class="text-sm text-gray-800">Gegevens opgeslagen ✅</div>
-      </div>
-    </section>
-
-    <section class="mt-6 text-sm text-gray-600">
-      <h3 class="font-medium mb-2">Tips</h3>
-      <ul class="list-disc ml-5 space-y-1">
-        <li>Gebruik een professionele e-mail zodat werkgevers je serieus nemen.</li>
-        <li>Houd je profiel up-to-date voor relevante vacatures.</li>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+        <li class="nav-item">
+          <a class="nav-link" href="/student_dashboard">Mijn profiel</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/match_page">Matches</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/vacatures_student">Vacatures</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-secondary btn-sm" href="/logout">Uitloggen</a>
+        </li>
       </ul>
-    </section>
-  </main>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== CONTENT ===== -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <h1 class="h3 fw-bold text-primary mb-1">Student profiel</h1>
+      <p class="text-muted mb-4">
+        Werk je gegevens bij zodat werkgevers je correct kunnen benaderen.
+      </p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{% if category == 'danger' %}danger{% elif category == 'success' %}success{% else %}warning{% endif %} mb-3">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-md-5">
+
+          <form id="profileForm" method="POST" class="needs-validation" novalidate>
+
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label for="firstName" class="form-label fw-semibold">Voornaam</label>
+                <input id="firstName" name="firstName" type="text" class="form-control"
+                       placeholder="Voornaam" value="{{ student.first_name if student else '' }}" required />
+                <div class="invalid-feedback">Vul je voornaam in.</div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="lastName" class="form-label fw-semibold">Achternaam</label>
+                <input id="lastName" name="lastName" type="text" class="form-control"
+                       placeholder="Achternaam" value="{{ student.last_name if student else '' }}" required />
+                <div class="invalid-feedback">Vul je achternaam in.</div>
+              </div>
+
+              <div class="col-12">
+                <label for="email" class="form-label fw-semibold">E-mail</label>
+                <input id="email" name="email" type="email" class="form-control"
+                       placeholder="jij@example.com" value="{{ user.email if user else '' }}" required />
+                <div class="invalid-feedback">Vul een geldig e-mailadres in.</div>
+              </div>
+
+              <div class="col-12">
+                <label for="password" class="form-label fw-semibold">Nieuw wachtwoord</label>
+                <input id="password" name="password" type="password" class="form-control"
+                       placeholder="Nieuw wachtwoord" />
+                <div class="form-text">Leeg laten = geen wijziging.</div>
+              </div>
+
+              <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mt-2">
+                <small class="text-muted">
+                  Je gegevens worden opgeslagen in de database (niet enkel in je browser).
+                </small>
+
+                <div class="d-flex gap-2">
+                  <button type="button" id="resetBtn" class="btn btn-outline-secondary">
+                    Reset
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    Gegevens opslaan
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+      <div class="card shadow-sm mt-4">
+        <div class="card-body">
+          <h2 class="h6 fw-bold mb-2">Tips</h2>
+          <ul class="mb-0">
+            <li>Gebruik een professionele e-mail zodat werkgevers je serieus nemen.</li>
+            <li>Houd je profiel up-to-date voor relevante vacatures.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <script>
-  // server-provided profile (if any) - prefer this over localStorage to show correct user info
-  {% if student or user %}
-  const SERVER_PROFILE = {{ {'firstName': (student.first_name if student else ''), 'lastName': (student.last_name if student else ''), 'email': (user.email if user else '')} | tojson }};
-  {% else %}
-  const SERVER_PROFILE = {};
-  {% endif %}
-  const form = document.getElementById('profileForm');
-  const firstName = document.getElementById('firstName');
-  const lastName = document.getElementById('lastName');
-  const email = document.getElementById('email');
-  const toast = document.getElementById('toast');
-  const savedAt = document.getElementById('savedAt');
-  const resetBtn = document.getElementById('resetBtn');
+  (function () {
+    const form = document.getElementById('profileForm');
+    const resetBtn = document.getElementById('resetBtn');
 
-  const STORAGE_KEY = 'swipr_student_profile_v1';
-
-  function showToast(message = 'Gegevens opgeslagen ✅') {
-    toast.textContent = message;
-    toast.classList.remove('hidden');
-    setTimeout(() => toast.classList.add('hidden'), 2200);
-  }
-
-  function saveData(data) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      showToast();
-    } catch (e) {
-      alert('Kan niet opslaan in localStorage');
-    }
-  }
-
-  function loadData() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return null;
-      return JSON.parse(raw);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  function populateForm() {
-    // Prefer server-side profile when available (real user data). Fall back to localStorage for demo-only settings.
-    if (SERVER_PROFILE && Object.keys(SERVER_PROFILE).length > 0) {
-      firstName.value = SERVER_PROFILE.firstName || '';
-      lastName.value = SERVER_PROFILE.lastName || '';
-      email.value = SERVER_PROFILE.email || '';
-      // no savedAt from server; leave as is
-      return;
-    }
-    const data = loadData();
-    if (!data) return;
-    firstName.value = data.firstName || '';
-    lastName.value = data.lastName || '';
-    email.value = data.email || '';
-  }
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    // Build FormData including password fields so server can update credentials
-    const fd = new FormData(form);
-
-    try {
-      const res = await fetch(window.location.pathname, {
-        method: 'POST',
-        body: fd,
-        credentials: 'same-origin'
-      });
-
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        const msg = body.error || 'Opslaan mislukt';
-        showToast(msg);
-        return;
+    // Bootstrap validation
+    form.addEventListener('submit', function (e) {
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
       }
+      form.classList.add('was-validated');
+    }, false);
 
-      // also save locally for demo convenience
-      const payload = {
-        firstName: firstName.value.trim(),
-        lastName: lastName.value.trim(),
-        email: email.value.trim(),
-        savedAt: new Date().toISOString()
-      };
-      saveData(payload);
-    } catch (err) {
-      console.error(err);
-      showToast('Netwerkfout bij opslaan');
-    }
-  });
-
-  resetBtn.addEventListener('click', () => {
-    if (!confirm('Weet je zeker dat je je opgeslagen gegevens wilt verwijderen?')) return;
-    localStorage.removeItem(STORAGE_KEY);
-    firstName.value = '';
-    lastName.value = '';
-    email.value = '';
-    showToast('Opgeslagen gegevens verwijderd');
-  });
-
-  populateForm();
+    resetBtn.addEventListener('click', () => {
+      if (!confirm('Weet je zeker dat je de wijzigingen wilt resetten?')) return;
+      window.location.reload();
+    });
+  })();
 </script>
+
 {% endblock %}

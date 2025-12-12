@@ -3,26 +3,52 @@
 {% block title %}Login Bedrijf - Swipr{% endblock %}
 
 {% block content %}
-<div class="login-container bedrijf-login">
-  <h1>Login Bedrijf</h1>
-  
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="flash-alert flash-{{ category }}">
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-  
-  <form action="/login_bedrijf" method="POST">
-    <input type="email" name="email" placeholder="E-mail" required>
-    <input type="password" name="password" placeholder="Wachtwoord" required>
-    <button type="submit">Login</button>
-  </form>
-  <p>Nog geen account? <a href="/registratie_bedrijf">Registreer hier</a></p>
-</div>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+  <div class="card shadow-lg p-5 text-center" style="max-width: 420px; width: 100%; border-radius: 15px;">
 
-{# flash styles moved to static/css/style.css (flash-alert, flash-danger, flash-success) #}
+    <!-- Swipr logo -->
+    <div class="logo mb-3">
+      <div class="logo-icon mx-auto mb-2" style="background-color:#ff4b5c;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h12" stroke="white" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text" style="color:#ff4b5c;">Swipr</div>
+    </div>
+
+    <h1 class="mb-4" style="color:#ff4b5c;">Login Bedrijf</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-alert flash-{{ category }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form action="/login_bedrijf" method="POST">
+      <div class="mb-3">
+        <input type="email" name="email" class="form-control" placeholder="E-mail" required>
+      </div>
+
+      <div class="mb-4">
+        <input type="password" name="password" class="form-control" placeholder="Wachtwoord" required>
+      </div>
+
+      <button type="submit" class="btn bedrijf w-100 py-2">Login</button>
+    </form>
+
+    <p class="auth-link mt-3 mb-0">
+      Nog geen account?
+      <a href="/registratie_bedrijf">Registreer hier</a>
+    </p>
+
+  </div>
+</div>
 {% endblock %}

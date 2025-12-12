@@ -2,89 +2,108 @@
 
 {% block title %}Vacatures — Swipr{% endblock %}
 
-{% block extra_head %}
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            swipr: '#007BFF'
-          }
-        }
-      }
-    }
-  </script>
-{% endblock %}
-
 {% block content %}
-<div class="bg-gray-50 min-h-screen antialiased">
 
-  <header class="bg-white shadow-sm">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div>
-          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
-          <p class="text-xs text-gray-500">Beschikbare vacatures</p>
-        </div>
-      </div>
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-primary" href="/">Swipr</a>
 
-      <nav class="hidden sm:flex items-center gap-4 text-sm">
-  <a href="/student_dashboard" class="text-gray-600 hover:text-swipr">Mijn Profiel</a>
-        <a href="/match_page" class="text-gray-600 hover:text-swipr">Matches</a>
-        <a href="/logout" class="px-3 py-1 rounded-md text-sm border">Uitloggen</a>
-      </nav>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+        <li class="nav-item">
+          <a class="nav-link" href="/student_dashboard">Mijn profiel</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/match_page">Matches</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-secondary btn-sm" href="/logout">Uitloggen</a>
+        </li>
+      </ul>
     </div>
-  </header>
+  </div>
+</nav>
 
-  <main class="max-w-3xl mx-auto mt-10 p-6">
-    <h2 class="text-2xl font-bold text-swipr mb-6">Beschikbare Vacatures</h2>
-    
-    {% if jobs %}
-      {% for item in jobs %}
-        <section class="bg-white p-6 rounded-xl shadow-md mb-6 relative">
-          <div class="absolute top-6 right-6">
-            <div class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full border border-blue-300 shadow-sm">
-              {{ item.fit_pct }}% match
+<!-- ===== CONTENT ===== -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <h1 class="h3 fw-bold text-primary mb-1">Beschikbare vacatures</h1>
+      <p class="text-muted mb-4">Kies een vacature en like/dislike om te matchen.</p>
+
+      {% if jobs %}
+        {% for item in jobs %}
+          <div class="card shadow-sm mb-4 position-relative">
+            <div class="card-body p-4">
+
+              <!-- Match badge -->
+              <div class="position-absolute top-0 end-0 m-3">
+                <span class="badge rounded-pill text-bg-primary">
+                  {{ item.fit_pct }}% match
+                </span>
+              </div>
+
+              <h2 class="h5 fw-bold text-primary mb-3">
+                {{ item.job.title }}
+                {% if item.job.client %}
+                  <span class="text-muted fw-normal"> – {{ item.job.client }}</span>
+                {% endif %}
+              </h2>
+
+              <div class="mb-3">
+                <div class="fw-semibold small text-secondary">Bedrijf</div>
+                <div class="bg-light border rounded p-3">
+                  {{ item.job.client or item.job.company_name or 'Onbekend' }}
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="fw-semibold small text-secondary">Locatie</div>
+                <div class="bg-light border rounded p-3">
+                  {{ item.job.location }}
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="fw-semibold small text-secondary">Beschrijving</div>
+                <div class="bg-light border rounded p-3">
+                  {{ item.job.description }}
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 flex-wrap mt-4">
+                <form action="/jobs/{{ item.job.id }}/like" method="POST" class="m-0">
+                  <button type="submit" class="btn btn-success px-4">
+                    👍 Like
+                  </button>
+                </form>
+
+                <form action="/jobs/{{ item.job.id }}/dislike" method="POST" class="m-0">
+                  <button type="submit" class="btn btn-danger px-4">
+                    👎 Dislike
+                  </button>
+                </form>
+              </div>
+
             </div>
           </div>
-          <h3 class="text-xl font-bold text-swipr mb-4">{{ item.job.title }}{% if item.job.client %} - {{ item.job.client }}{% endif %}</h3>
-          <div class="space-y-3">
-            <div>
-              <span class="text-sm font-medium text-gray-700">Bedrijf</span>
-              <div class="mt-1 p-3 bg-gray-50 rounded-md text-gray-900">{{ item.job.client or item.job.company_name or 'Onbekend' }}</div>
-            </div>
-            <div>
-              <span class="text-sm font-medium text-gray-700">Locatie</span>
-              <div class="mt-1 p-3 bg-gray-50 rounded-md text-gray-900">{{ item.job.location }}</div>
-            </div>
-            <div>
-              <span class="text-sm font-medium text-gray-700">Beschrijving</span>
-              <div class="mt-1 p-3 bg-gray-50 rounded-md text-gray-900">{{ item.job.description }}</div>
-            </div>
-            <div class="flex gap-3 mt-4">
-              <form action="/jobs/{{ item.job.id }}/like" method="POST" style="display:inline;">
-                <button type="submit" class="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors">👍 Like</button>
-              </form>
-              <form action="/jobs/{{ item.job.id }}/dislike" method="POST" style="display:inline;">
-                <button type="submit" class="px-6 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors">👎 Dislike</button>
-              </form>
-            </div>
+        {% endfor %}
+      {% else %}
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <p class="text-muted mb-0">Geen vacatures beschikbaar op dit moment.</p>
           </div>
-        </section>
-      {% endfor %}
-    {% else %}
-      <section class="bg-white p-6 rounded-xl shadow-md">
-        <p class="text-gray-600">Geen vacatures beschikbaar op dit moment.</p>
-      </section>
-    {% endif %}
+        </div>
+      {% endif %}
 
-  </main>
+    </div>
+  </div>
 </div>
+
 {% endblock %}

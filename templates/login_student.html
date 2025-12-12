@@ -3,32 +3,79 @@
 {% block title %}Login Student - Swipr{% endblock %}
 
 {% block content %}
-<div class="login-container">
-  <h1>Login Student</h1>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="flash-alert flash-{{ category }}">
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-  
-  <form action="/login_student" method="POST">
-    <input type="email" name="email" placeholder="E-mail" required>
-    <input type="password" name="password" placeholder="Wachtwoord" required>
-    
-    <div class="terms-row">
-      <input type="checkbox" id="agree_terms" name="agree_terms" required>
-      <label for="agree_terms" class="terms-label">Ik ga akkoord met de <a href="/terms" target="_blank">algemene voorwaarden</a></label>
+  <div class="card shadow-lg p-5 text-center"
+       style="max-width: 420px; width: 100%; border-radius: 15px;">
+
+    <!-- Swipr logo -->
+    <div class="logo mb-3">
+      <div class="logo-icon mx-auto mb-2">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h12" stroke="white" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">Swipr</div>
     </div>
-    
-    <button type="submit" id="login-submit">Login</button>
-  </form>
-  <p>Nog geen account? <a href="/registratie_student">Registreer hier</a></p>
-</div>
 
-{# moved inline styles into static/css/style.css (flash-alert, flash-danger, flash-success) #}
+    <h1 class="mb-4 text-primary">Login Student</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-alert flash-{{ category }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form action="/login_student" method="POST">
+
+      <div class="mb-3">
+        <input type="email"
+               name="email"
+               class="form-control"
+               placeholder="E-mail"
+               required>
+      </div>
+
+      <div class="mb-3">
+        <input type="password"
+               name="password"
+               class="form-control"
+               placeholder="Wachtwoord"
+               required>
+      </div>
+
+      <div class="form-check mb-3 text-start">
+        <input class="form-check-input"
+               type="checkbox"
+               id="agree_terms"
+               name="agree_terms"
+               required>
+        <label class="form-check-label" for="agree_terms">
+          Ik ga akkoord met de
+          <a href="/terms" target="_blank">algemene voorwaarden</a>
+        </label>
+      </div>
+
+      <button type="submit"
+              class="btn student w-100 py-2"
+              id="login-submit">
+        Login
+      </button>
+    </form>
+
+    <p class="auth-link mt-3 mb-0">
+      Nog geen account?
+      <a href="/registratie_student">Registreer hier</a>
+    </p>
+
+  </div>
+</div>
 {% endblock %}

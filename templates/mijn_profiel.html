@@ -2,102 +2,140 @@
 
 {% block title %}Mijn Profiel — Swipr{% endblock %}
 
-{% block extra_head %}
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            swipr: '#007BFF'
-          }
-        }
-      }
-    }
-  </script>
-{% endblock %}
-
 {% block content %}
-<div class="bg-gray-50 min-h-screen antialiased">
 
-  <header class="bg-white shadow-sm">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div>
-          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
-          <p class="text-xs text-gray-500">Profiel</p>
-        </div>
-      </div>
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="/">
+      <span class="d-inline-flex align-items-center justify-content-center rounded"
+            style="width:32px;height:32px;background:#007bff;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      Swipr
+    </a>
 
-      <nav class="hidden sm:flex items-center gap-4 text-sm">
-        <a href="/vacatures_student" class="text-gray-600 hover:text-swipr">Vacatures</a>
-        <a href="/match_page" class="text-gray-600 hover:text-swipr">Matches</a>
-        <a href="/logout" class="px-3 py-1 rounded-md text-sm border">Uitloggen</a>
-      </nav>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+        <li class="nav-item">
+          <a class="nav-link" href="/vacatures_student">Vacatures</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/match_page">Matches</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-secondary btn-sm" href="/logout">Uitloggen</a>
+        </li>
+      </ul>
     </div>
-  </header>
+  </div>
+</nav>
 
-  <main class="max-w-3xl mx-auto mt-10 p-6">
-    <section class="bg-white p-6 rounded-xl shadow-md">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h2 class="text-2xl font-bold text-swipr">Mijn profiel</h2>
-          <p class="text-gray-600 text-sm">Werk je gegevens bij.</p>
+<!-- ===== CONTENT ===== -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <div class="mb-4">
+        <h1 class="h3 fw-bold text-primary mb-1">Mijn profiel</h1>
+        <p class="text-muted mb-0">Werk je gegevens bij.</p>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }} mb-3" role="alert">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
+          <form method="POST">
+            <div class="row g-3">
+
+              {% if student %}
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Voornaam</label>
+                  <input
+                    name="firstName"
+                    type="text"
+                    class="form-control"
+                    placeholder="Voornaam"
+                    value="{{ student.first_name or '' }}"
+                  />
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Achternaam</label>
+                  <input
+                    name="lastName"
+                    type="text"
+                    class="form-control"
+                    placeholder="Achternaam"
+                    value="{{ student.last_name or '' }}"
+                  />
+                </div>
+              {% endif %}
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">E-mail</label>
+                <input
+                  name="email"
+                  type="email"
+                  class="form-control"
+                  placeholder="jij@example.com"
+                  value="{{ user.email or '' }}"
+                  required
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Nieuw wachtwoord</label>
+                <input
+                  name="password"
+                  type="password"
+                  class="form-control"
+                  placeholder="Nieuw wachtwoord"
+                />
+                <div class="form-text">Leeg laten betekent geen wijziging.</div>
+              </div>
+
+              <div class="col-12 d-flex justify-content-end mt-2">
+                <button type="submit" class="btn btn-primary px-4">
+                  Gegevens opslaan
+                </button>
+              </div>
+
+            </div>
+          </form>
+
+          {% if bedrijf_naam %}
+            <hr class="my-4">
+            <div>
+              <h2 class="h6 fw-bold mb-1">Bedrijf</h2>
+              <p class="mb-1">{{ bedrijf_naam }}</p>
+              <p class="text-muted small mb-0">Bedrijfsgegevens kunnen apart worden beheerd.</p>
+            </div>
+          {% endif %}
+
         </div>
       </div>
 
-      <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {% if student %}
-        <label class="flex flex-col">
-          <span class="text-sm font-medium text-gray-700">Voornaam</span>
-          <input name="firstName" type="text" placeholder="Voornaam" value="{{ student.first_name or '' }}"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
-        </label>
-
-        <label class="flex flex-col">
-          <span class="text-sm font-medium text-gray-700">Achternaam</span>
-          <input name="lastName" type="text" placeholder="Achternaam" value="{{ student.last_name or '' }}"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
-        </label>
-        {% endif %}
-
-        <label class="flex flex-col md:col-span-2">
-          <span class="text-sm font-medium text-gray-700">E-mail</span>
-          <input name="email" type="email" placeholder="jij@example.com" value="{{ user.email or '' }}"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
-        </label>
-
-        <label class="flex flex-col md:col-span-1">
-          <span class="text-sm font-medium text-gray-700">Nieuw wachtwoord</span>
-          <input name="password" type="password" placeholder="Nieuw wachtwoord"
-                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
-        </label>
-
-        <div class="flex items-center justify-between mt-2 md:col-span-2">
-          <div class="text-sm text-gray-500">
-            Wachtwoord leeg laten betekent geen wijziging.
-          </div>
-          <div class="flex items-center gap-3">
-            <button type="submit" class="px-5 py-2 bg-swipr text-white rounded-md">Gegevens opslaan</button>
-          </div>
-        </div>
-      </form>
-
-      {% if bedrijf_naam %}
-      <section class="mt-6">
-        <h3 class="font-medium">Bedrijf</h3>
-        <p class="text-gray-700">{{ bedrijf_naam }}</p>
-        <p class="text-sm text-gray-500">Bedrijfsgegevens kunnen apart worden beheerd.</p>
-      </section>
-      {% endif %}
-
-    </section>
-  </main>
+    </div>
+  </div>
 </div>
+
 {% endblock %}

@@ -215,10 +215,14 @@ ul.vacature-list li strong {
   padding: 50px 40px;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  width: 350px;
+
+  width: 100%;
+  max-width: 420px;   /* 👈 breder maar nog netjes */
+  
   text-align: center;
   margin: 80px auto;
 }
+
 
 /* Make login card use student blue */
 .login-container h1 {
@@ -717,4 +721,14 @@ ul.vacature-list li strong {
   body { background: #fff }
   .terms-article { box-shadow:none; border:none; margin:0; padding:0; }
   .terms-actions { display:none }
+}
+/* ===== Index (rol kiezen) - grotere knoppen ===== */
+.role-card .btn {
+  width: 260px;        /* breder */
+  padding: 16px 0;     /* hoger */
+  font-size: 1.25rem;  /* grotere tekst */
+  font-weight: 700;
+  border-radius: 10px;
+  display: block;
+  margin: 16px auto;
 }
