@@ -73,3 +73,13 @@ def load_stopwords():
 if __name__ == '__main__':
     # quick local test helper
     print(load_stopwords())
+
+
+# Backwards-compatible alias
+def load_stopwords_from_db():
+    """Compatibility wrapper for older callers.
+
+    Historically the project exposed `load_stopwords_from_db`. Keep that name
+    working by delegating to `load_stopwords()`.
+    """
+    return load_stopwords()
