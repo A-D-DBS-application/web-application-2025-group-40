@@ -963,15 +963,9 @@ def test_supabase():
 
 
 # ------------------ UTILITIES ------------------
-def load_stopwords():
-    return {
-        "de","het","een","en","van","met","je","jij","u","ik","hij","zij","we","wij","ze",
-        "die","dat","dit","daar","hier","als","maar","om","te","is","in","op","voor","naar",
-        "door","aan","tot","uit","bij","ook","wat","hoe","waar","wanneer","wel","niet","geen",
-        "zijn","was","wordt","heb","heeft","hebben","kan","kunnen","moet","moeten","zal","zullen"
-    }
-
-STOPWORDS = load_stopwords()
+# STOPWORDS: keep empty default here and load from utils/stopwords inside routes
+# We avoid defining hardcoded stopwords here to allow dynamic management via Supabase/local DB.
+STOPWORDS = set()
 
 
 
