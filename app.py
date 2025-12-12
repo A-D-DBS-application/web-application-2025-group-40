@@ -339,6 +339,33 @@ def recruiter_dashboard_view():
     return render_template('recruiter_dashboard.html', stats=stats, jobs=jobs)
 
 
+@app.route('/recruiter/job_counts')
+@login_required
+def recruiter_job_counts():
+    """Return current match counts for active jobs belonging to the logged-in recruiter's employer.
+    Used by the recruiter dashboard JS to refresh counters in near-real-time.
+    """
+    if getattr(current_user, 'role', None) != 'recruiter':
+        return jsonify({'error': 'Toegang geweigerd'}), 403
+
+    employer = get_employer_for_current_user()
+    if not employer:
+        return jsonify({'error': 'Geen werkgever gevonden'}), 404
+
+    # get active jobs for this employer
+    jobs = JobListing.query.filter_by(employer_id=employer.id, is_active=True).all()
+    job_ids = [j.id for j in jobs]
+
+    # compute counts (simple method; fine for small datasets)
+    counts = {}
+    for j in jobs:
+        counts[j.id] = Match.query.filter_by(job_id=j.id).count()
+
+    total_matches = sum(counts.values())
+
+    return jsonify({'counts': counts, 'total_matches': total_matches})
+
+
 @app.route('/recruiter_profiel', methods=['GET', 'POST'])
 @login_required
 def recruiter_profiel():

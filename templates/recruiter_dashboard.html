@@ -87,9 +87,9 @@
                     <p class="text-sm text-gray-500">{{ job.location }}</p>
                   </div>
                   <div class="flex items-center gap-2">
-                    <button onclick="viewLikes({{ job.id }})" title="Matches" class="px-3 py-1 border rounded-md text-sm text-swipr hover:bg-swipr hover:text-white transition-colors">
+                    <button onclick="viewLikes({{ job.id }})" title="Matches" class="px-3 py-1 border rounded-md text-sm text-swipr hover:bg-swipr hover:text-white transition-colors" data-job-id="{{ job.id }}">
                       {% set cnt = job.matches|length %}
-                      {{ cnt }} {% if cnt == 1 %}Match{% else %}Matches{% endif %}
+                      <span class="match-count">{{ cnt }}</span> <span class="match-label">{% if cnt == 1 %}Match{% else %}Matches{% endif %}</span>
                     </button>
                     <button onclick="confirmDelete({{ job.id }})" title="Verwijderen" class="text-red-500 hover:text-red-700 p-2 rounded-md">
                       <!-- vuilbak icoon -->
@@ -294,5 +294,46 @@
       console.error(err);
     }
   }
+
+  // Polling: refresh match counts for active jobs every few seconds so recruiters
+  // see updates when students like a vacancy without a full page reload.
+  let pollInterval = 5000; // 5s
+  async function pollMatchCounts() {
+    try {
+      const res = await fetch('/recruiter/job_counts', { credentials: 'same-origin' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data || !data.counts) return;
+
+      // update per-job counters
+      Object.keys(data.counts).forEach(key => {
+        const id = key; // job id
+        const count = data.counts[id];
+        const btn = document.querySelector(`[data-job-id='${id}']`);
+        if (btn) {
+          const span = btn.querySelector('.match-count');
+          const label = btn.querySelector('.match-label');
+          if (span) span.textContent = count;
+          if (label) label.textContent = (count === 1) ? 'Match' : 'Matches';
+        }
+      });
+
+      // update total matches stat if present
+      if (data.total_matches !== undefined) {
+        const totalEl = document.querySelectorAll('.text-2xl.font-bold.text-swipr')[1];
+        // The template prints three stats; second one is total_matches. Use a safe check.
+        if (totalEl) totalEl.textContent = data.total_matches;
+      }
+    } catch (err) {
+      // silently ignore polling errors
+      console.debug('Poll error', err);
+    }
+  }
+
+  // Start polling when the page loads
+  window.addEventListener('load', () => {
+    pollMatchCounts();
+    setInterval(pollMatchCounts, pollInterval);
+  });
 </script>
 {% endblock %}
