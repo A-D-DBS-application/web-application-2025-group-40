@@ -227,6 +227,18 @@ def populate_jobs_display_fields(jobs):
         job.match_count = len(job.matches or [])
 
 
+def get_unseen_jobs_for_user(user):
+    """Return JobListing rows the given user hasn't matched/liked yet.
+    If the user has no matches, return all jobs.
+    """
+    matched_job_ids = [m.job_id for m in getattr(user, 'matches', [])] if getattr(user, 'matches', None) else []
+    if matched_job_ids:
+        jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids)).all()
+    else:
+        jobs = JobListing.query.all()
+    return jobs
+
+
 # -----------------------
 # ROUTES (eenvoudig)
 # -----------------------
@@ -302,14 +314,8 @@ def recruiter_dashboard_view():
         # show only active jobs by default in the recruiter dashboard
         jobs = JobListing.query.filter_by(employer_id=employer.id, is_active=True).all()
 
-    # Ensure each job has a company_name and client attribute for template rendering
-    for job in jobs:
-        # client may be an optional field on the job (some code paths may set it)
-        job.client = getattr(job, 'client', None)
-        job.company_name = job.employer.name if job.employer else 'Onbekend'
-        # compute a lightweight match_count to allow sorting in the UI
-        jm = job.matches or []
-        job.match_count = len(jm)
+    # Ensure each job has a company_name, client attribute and match_count for template rendering
+    populate_jobs_display_fields(jobs)
 
     # sort jobs by descending match count so highest-matching vacatures appear first
     jobs = sorted(jobs, key=lambda j: getattr(j, 'match_count', 0), reverse=True)
@@ -689,8 +695,7 @@ def logout():
 def student_dashboard():
     if current_user.role != 'student':
         abort(403)
-    matched_job_ids = [m.job_id for m in current_user.matches]
-    jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids)).all()
+    jobs = get_unseen_jobs_for_user(current_user)
     student = getattr(current_user, 'student', None)
     return render_template('student_dashboard.html', jobs=jobs, student=student, user=current_user)
 
@@ -704,8 +709,7 @@ def student_dashboard_view():
     """Shared view of the student dashboard that can be used after bedrijf login.
     This does not enforce the role==student check so recruiters can be redirected here.
     """
-    matched_job_ids = [m.job_id for m in current_user.matches] if getattr(current_user, 'matches', None) else []
-    jobs = JobListing.query.filter(~JobListing.id.in_(matched_job_ids)).all() if matched_job_ids else JobListing.query.all()
+    jobs = get_unseen_jobs_for_user(current_user)
     student = getattr(current_user, 'student', None)
     return render_template('student_dashboard.html', jobs=jobs, student=student, user=current_user)
 
