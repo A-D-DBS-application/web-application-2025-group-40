@@ -2,80 +2,104 @@
 
 {% block title %}Student Dashboard — Swipr{% endblock %}
 
+{% block extra_head %}
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            swipr: '#007BFF'
+          }
+        }
+      }
+    }
+  </script>
+{% endblock %}
+
 {% block content %}
-<div>
-  <header class="bg-white shadow-sm mb-4">
-    <div class="container d-flex align-items-center justify-content-between py-3">
-      <div class="d-flex align-items-center gap-3">
-        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width:40px;height:40px;">
+<div class="bg-gray-50 min-h-screen antialiased">
+
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="ms-2">
-          <h1 class="h5 mb-0 text-primary">Swipr</h1>
-          <small class="text-muted">Student dashboard</small>
+        <div>
+          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
+          <p class="text-xs text-gray-500">Student dashboard</p>
         </div>
       </div>
 
-      <nav class="d-none d-sm-flex align-items-center gap-3 small">
-        <a href="/student_dashboard" class="text-muted">Mijn Profiel</a>
-        <a href="/match_page" class="text-muted">Matches</a>
-        <a href="/vacatures_student" class="text-muted">Vacatures</a>
-        <a href="/logout" class="btn btn-outline-secondary btn-sm">Uitloggen</a>
+      <nav class="hidden sm:flex items-center gap-4 text-sm">
+  <a href="/student_dashboard" class="text-gray-600 hover:text-swipr">Mijn Profiel</a>
+        <a href="/match_page" class="text-gray-600 hover:text-swipr">Matches</a>
+        <a href="/vacatures_student" class="text-gray-600 hover:text-swipr">Vacatures</a>
+        <a href="/logout" class="px-3 py-1 rounded-md text-sm border">Uitloggen</a>
       </nav>
     </div>
   </header>
 
-  <main class="container mt-4">
-    <section class="card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between mb-3">
-          <div>
-            <h2 class="h5 text-primary">Student profiel</h2>
-            <p class="text-muted small mb-0">Werk je gegevens bij zodat werkgevers je correct kunnen benaderen.</p>
+  <main class="max-w-3xl mx-auto mt-10 p-6">
+    <section class="bg-white p-6 rounded-xl shadow-md">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-swipr">Student profiel</h2>
+          <p class="text-gray-600 text-sm">
+            Werk je gegevens bij zodat werkgevers je correct kunnen benaderen.
+          </p>
+        </div>
+      </div>
+
+      <form id="profileForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label class="flex flex-col">
+          <span class="text-sm font-medium text-gray-700">Voornaam</span>
+          <input id="firstName" name="firstName" type="text" placeholder="Voornaam"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+        </label>
+
+        <label class="flex flex-col">
+          <span class="text-sm font-medium text-gray-700">Achternaam</span>
+          <input id="lastName" name="lastName" type="text" placeholder="Achternaam"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+        </label>
+
+        <label class="flex flex-col md:col-span-2">
+          <span class="text-sm font-medium text-gray-700">E-mail</span>
+          <input id="email" name="email" type="email" placeholder="jij@example.com"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
+        </label>
+
+        <label class="flex flex-col md:col-span-2">
+          <span class="text-sm font-medium text-gray-700">Nieuw wachtwoord</span>
+          <input id="password" name="password" type="password" placeholder="Nieuw wachtwoord"
+                 class="mt-2 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
+        </label>
+
+
+        <div class="flex items-center justify-between mt-2 md:col-span-2">
+          <div class="text-sm text-gray-500">
+            Je gegevens worden lokaal opgeslagen in je browser (demo).
+          </div>
+          <div class="flex items-center gap-3">
+            <button type="button" id="resetBtn" class="px-4 py-2 border rounded-md btn-ghost">Reset</button>
+            <button type="submit" class="px-5 py-2 bg-swipr text-white rounded-md">Gegevens opslaan</button>
           </div>
         </div>
+      </form>
 
-        <form id="profileForm" class="row g-3">
-          <div class="col-12 col-md-6">
-            <label class="form-label">Voornaam</label>
-            <input id="firstName" name="firstName" type="text" placeholder="Voornaam" class="form-control" required />
-          </div>
-          <div class="col-12 col-md-6">
-            <label class="form-label">Achternaam</label>
-            <input id="lastName" name="lastName" type="text" placeholder="Achternaam" class="form-control" required />
-          </div>
-          <div class="col-12">
-            <label class="form-label">E-mail</label>
-            <input id="email" name="email" type="email" placeholder="jij@example.com" class="form-control" required />
-          </div>
-          <div class="col-12">
-            <label class="form-label">Nieuw wachtwoord</label>
-            <input id="password" name="password" type="password" placeholder="Nieuw wachtwoord" class="form-control" />
-          </div>
-
-          <div class="col-12 d-flex justify-content-between align-items-center">
-            <div class="text-muted small">Je gegevens worden lokaal opgeslagen in je browser (demo).</div>
-            <div class="d-flex gap-2">
-              <button type="button" id="resetBtn" class="btn btn-outline-secondary">Reset</button>
-              <button type="submit" class="btn btn-primary">Gegevens opslaan</button>
-            </div>
-          </div>
-        </form>
-
-        <div id="toast" class="position-fixed" style="right:1rem;bottom:1rem;display:none;">
-          <div class="card">
-            <div class="card-body small">Gegevens opgeslagen ✅</div>
-          </div>
-        </div>
+      <div id="toast" class="fixed right-6 bottom-6 bg-white border shadow-lg px-4 py-3 rounded-md hidden">
+        <div class="text-sm text-gray-800">Gegevens opgeslagen ✅</div>
       </div>
     </section>
 
-    <section class="mt-4 text-muted small">
-      <h3 class="h6">Tips</h3>
-      <ul>
+    <section class="mt-6 text-sm text-gray-600">
+      <h3 class="font-medium mb-2">Tips</h3>
+      <ul class="list-disc ml-5 space-y-1">
         <li>Gebruik een professionele e-mail zodat werkgevers je serieus nemen.</li>
         <li>Houd je profiel up-to-date voor relevante vacatures.</li>
       </ul>
@@ -101,12 +125,9 @@
   const STORAGE_KEY = 'swipr_student_profile_v1';
 
   function showToast(message = 'Gegevens opgeslagen ✅') {
-    try {
-      const body = toast.querySelector('.card-body');
-      if (body) body.textContent = message;
-    } catch (e) {}
-    toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 2200);
+    toast.textContent = message;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 2200);
   }
 
   function saveData(data) {

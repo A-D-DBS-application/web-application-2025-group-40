@@ -2,108 +2,112 @@
 
 {% block title %}Recruiter Dashboard — Swipr{% endblock %}
 
-{% block content %}
-{% block content %}
-<div>
+{% block extra_head %}
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            swipr: '#ff4b5c',
+            swipr_blue: '#007bff'
+          }
+        }
+      }
+    }
+  </script>
+{% endblock %}
 
-  <header class="bg-white shadow-sm mb-4">
-    <div class="container d-flex align-items-center justify-content-between py-3">
-      <div class="d-flex align-items-center gap-3">
-        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width:40px;height:40px;">
+{% block content %}
+<div class="bg-gray-50 min-h-screen antialiased">
+
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
             <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </div>
         <div>
-          <h1 class="h5 mb-0 text-primary">Swipr</h1>
-          <small class="text-muted">Recruiter dashboard</small>
+          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
+          <p class="text-xs text-gray-500">Recruiter dashboard</p>
         </div>
       </div>
 
-      <nav class="d-none d-sm-flex align-items-center gap-3 small">
-        <a href="/recruiter_profiel" class="text-muted">Mijn Profiel</a>
-        <a href="/" class="btn btn-outline-secondary btn-sm">Uitloggen</a>
+      <nav class="hidden sm:flex items-center gap-4 text-sm">
+        <a href="/recruiter_profiel" class="text-gray-600 hover:text-swipr">Mijn Profiel</a>
+        <a href="/" class="px-3 py-1 rounded-md text-sm border hover:bg-swipr hover:text-white transition-colors">
+          Uitloggen
+        </a>
       </nav>
     </div>
   </header>
 
-  <main class="container mt-4">
+  <main class="max-w-5xl mx-auto mt-8 p-4 space-y-8">
 
-    <section class="card text-white bg-primary mb-4">
-      <div class="card-body">
-        <h2 class="h5 mb-1">Welkom bij Swipr</h2>
-        <p class="small mb-0">Beheer uw vacatures en matches</p>
+    <section class="bg-swipr text-white rounded-xl shadow-sm p-6">
+      <h2 class="text-xl font-semibold">Welkom bij Swipr</h2>
+      <p class="text-sm opacity-90">Beheer uw vacatures en matches</p>
+    </section>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="bg-white rounded-xl shadow-sm p-3">
+        <p class="text-xs text-gray-500">Actieve vacatures</p>
+        <p class="text-2xl font-bold text-swipr">{{ stats.active_job_count }}</p>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm p-3">
+        <p class="text-xs text-gray-500">Totaal matches</p>
+        <p class="text-2xl font-bold text-swipr">{{ stats.total_matches }}</p>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm p-3">
+        <p class="text-xs text-gray-500">Recente Matches (laatste 7 dagen)</p>
+        <p class="text-2xl font-bold text-swipr">{{ stats.matches_last_7_days }}</p>
       </div>
     </section>
 
-    <section class="row g-3 mb-4">
-      <div class="col-12 col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <small class="text-muted">Actieve vacatures</small>
-            <p class="h3 text-primary mb-0" data-stat="active_job_count">{{ stats.active_job_count }}</p>
-          </div>
-        </div>
+    <section class="bg-white p-6 rounded-xl shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-800">Mijn vacatures</h2>
+        <a href="/vacature/nieuw"
+           class="px-3 py-2 text-sm rounded-md bg-swipr text-white">
+          + Nieuwe vacature
+        </a>
       </div>
-      <div class="col-12 col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <small class="text-muted">Totaal matches</small>
-            <p class="h3 text-primary mb-0" data-stat="total_matches">{{ stats.total_matches }}</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <small class="text-muted">Recente Matches (laatste 7 dagen)</small>
-            <p class="h3 text-primary mb-0" data-stat="matches_last_7_days">{{ stats.matches_last_7_days }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="card-body">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <h2 class="h5 mb-0">Mijn vacatures</h2>
-          <a href="/vacature/nieuw" class="btn btn-primary btn-sm">+ Nieuwe vacature</a>
-        </div>
-
-        <div>
-          {% if jobs and jobs|length > 0 %}
-            <div class="list-group">
-              {% for job in jobs %}
-                <div id="job-{{ job.id }}" class="list-group-item list-group-item-action py-3">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                      <h5 class="mb-1">{{ job.title }}{% if job.client %} - {{ job.client }}{% endif %}</h5>
-                      <p class="mb-0 small text-muted">{{ job.location }}</p>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                      <button onclick="viewLikes({{ job.id }})" title="Matches" class="btn btn-outline-primary btn-sm" data-job-id="{{ job.id }}">
-                        {% set cnt = job.matches|length %}
-                        <span class="match-count">{{ cnt }}</span> <span class="match-label">{% if cnt == 1 %}Match{% else %}Matches{% endif %}</span>
-                      </button>
-                      <button onclick="confirmDelete({{ job.id }})" title="Verwijderen" class="btn btn-outline-danger btn-sm">
-                        <!-- vuilbak icoon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" />
-                        </svg>
-                      </button>
-                    </div>
+      <!-- vacaturelijst -->
+      <div class="space-y-4">
+        {% if jobs and jobs|length > 0 %}
+          <ul class="space-y-3">
+            {% for job in jobs %}
+              <li id="job-{{ job.id }}" class="p-4 border rounded-lg">
+                <div class="flex items-center justify-between gap-4">
+                  <div>
+                    <h3 class="font-semibold text-gray-800">{{ job.title }}{% if job.client %} - {{ job.client }}{% endif %}</h3>
+                    <p class="text-sm text-gray-500">{{ job.location }}</p>
                   </div>
-                  {% if job.description %}
-                    <p class="mt-2 small text-muted">{{ job.description }}</p>
-                  {% endif %}
+                  <div class="flex items-center gap-2">
+                    <button onclick="viewLikes({{ job.id }})" title="Matches" class="px-3 py-1 border rounded-md text-sm text-swipr hover:bg-swipr hover:text-white transition-colors" data-job-id="{{ job.id }}">
+                      {% set cnt = job.matches|length %}
+                      <span class="match-count">{{ cnt }}</span> <span class="match-label">{% if cnt == 1 %}Match{% else %}Matches{% endif %}</span>
+                    </button>
+                    <button onclick="confirmDelete({{ job.id }})" title="Verwijderen" class="text-red-500 hover:text-red-700 p-2 rounded-md">
+                      <!-- vuilbak icoon -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <p class="text-muted small">Geen vacatures geplaatst.</p>
-          {% endif %}
-        </div>
+                {% if job.description %}
+                  <p class="mt-2 text-sm text-gray-700">{{ job.description }}</p>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-sm text-gray-500">Geen vacatures geplaatst.</p>
+        {% endif %}
       </div>
     </section>
 
@@ -161,13 +165,13 @@
       return;
     }
 
-    // decrement active jobs counter
-    const counterEl = document.querySelector('[data-stat="active_job_count"]');
+    // decrement counter
+    const counter = document.querySelector('.text-2xl.font-bold.text-swipr');
     let counterWas = null;
-    if (counterEl && !isNaN(parseInt(counterEl.textContent))) {
-      counterWas = parseInt(counterEl.textContent);
+    if (counter && !isNaN(parseInt(counter.textContent))) {
+      counterWas = parseInt(counter.textContent);
       const val = counterWas - 1;
-      counterEl.textContent = val >= 0 ? val : 0;
+      counter.textContent = val >= 0 ? val : 0;
     }
 
     // create undo toast
@@ -316,7 +320,8 @@
 
       // update total matches stat if present
       if (data.total_matches !== undefined) {
-        const totalEl = document.querySelector('[data-stat="total_matches"]');
+        const totalEl = document.querySelectorAll('.text-2xl.font-bold.text-swipr')[1];
+        // The template prints three stats; second one is total_matches. Use a safe check.
         if (totalEl) totalEl.textContent = data.total_matches;
       }
     } catch (err) {
