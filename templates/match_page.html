@@ -2,70 +2,132 @@
 
 {% block title %}Jouw Matches — Swipr{% endblock %}
 
-{% block extra_head %}
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            swipr: '#007BFF'
-          }
-        }
-      }
-    }
-  </script>
-{% endblock %}
-
 {% block content %}
-<div class="bg-gray-50 min-h-screen antialiased">
 
-  <header class="bg-white shadow-sm">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div>
-          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
-          <p class="text-xs text-gray-500">Mijn matches</p>
-        </div>
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="/">
+      <span class="d-inline-flex align-items-center justify-content-center rounded"
+            style="width:32px;height:32px;background:#007bff;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      Swipr
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+        {% if current_user.is_authenticated and current_user.role == 'student' %}
+          <li class="nav-item">
+            <a class="nav-link" href="/student_dashboard">Mijn profiel</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/vacatures_student">Vacatures</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active fw-semibold" aria-current="page" href="/match_page">Matches</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="/recruiter_dashboard">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active fw-semibold" aria-current="page" href="/match_page">Matches</a>
+          </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="btn btn-outline-secondary btn-sm" href="/logout">Uitloggen</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== CONTENT ===== -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <div class="mb-4">
+        <h1 class="h3 fw-bold text-primary mb-1">Mijn Matches</h1>
+        <p class="text-muted mb-0">Overzicht van je matches</p>
       </div>
 
-      <nav class="hidden sm:flex items-center gap-4 text-sm">
-  <a href="/student_dashboard" class="text-gray-600 hover:text-swipr">Mijn Profiel</a>
-        <a href="/vacatures_student" class="text-gray-600 hover:text-swipr">Vacatures</a>
-        <a href="/logout" class="px-3 py-1 rounded-md text-sm border">Uitloggen</a>
-      </nav>
-    </div>
-  </header>
+      {% if matches %}
+        {% for item in matches %}
 
-  <main class="max-w-3xl mx-auto mt-10 p-6">
-    <h2 class="text-2xl font-bold text-swipr mb-6">Mijn Matches</h2>
+          {# student krijgt dict, recruiter krijgt Match object #}
+          {% if item is mapping %}
+            {% set job = item.job %}
+            {% set match = item.match %}
+          {% else %}
+            {% set job = item.job %}
+            {% set match = item %}
+          {% endif %}
 
-    {% if matches %}
-      {% for item in matches %}
-        <section class="bg-white p-6 rounded-xl shadow-md mb-6">
-          <div class="text-xs text-gray-500 mb-2">Match</div>
-          <h3 class="text-xl font-bold text-swipr mb-4">{{ item.job.title }}{% if item.job.client %} - {{ item.job.client }}{% endif %}</h3>
-          
-          <div class="space-y-2 text-sm text-gray-700">
-            <div>📍 <span class="font-medium">Locatie:</span> {{ item.job.location or '-' }}</div>
-            <div>⏰ <span class="font-medium">Gematcht op:</span> {{ item.match.matched_at.strftime("%Y-%m-%d %H:%M") if item.match.matched_at else '-' }}</div>
-            <div>ℹ️ <span class="font-medium">Beschrijving:</span> {{ item.job.description[:100] }}{% if item.job.description|length > 100 %}...{% endif %}</div>
+          <div class="card shadow-sm mb-4">
+            <div class="card-body p-4">
+
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div>
+                  <div class="text-muted small mb-1">Match</div>
+
+                  <h2 class="h5 fw-bold text-primary mb-2">
+                    {{ job.title }}
+                    {% if job.client %}
+                      <span class="text-muted fw-normal"> – {{ job.client }}</span>
+                    {% endif %}
+                  </h2>
+                </div>
+
+                {% if match and match.matched_at %}
+                  <span class="badge text-bg-light border">
+                    {{ match.matched_at.strftime("%Y-%m-%d") }}
+                  </span>
+                {% endif %}
+              </div>
+
+              <ul class="list-unstyled mb-0 mt-3">
+                <li class="mb-2">
+                  📍 <strong>Locatie:</strong> {{ job.location or '-' }}
+                </li>
+                <li class="mb-2">
+                  ⏰ <strong>Gematcht op:</strong>
+                  {{ match.matched_at.strftime("%Y-%m-%d %H:%M") if match and match.matched_at else '-' }}
+                </li>
+                <li>
+                  ℹ️ <strong>Beschrijving:</strong>
+                  {{ job.description[:140] if job.description else '-' }}
+                  {% if job.description and job.description|length > 140 %}...{% endif %}
+                </li>
+              </ul>
+
+            </div>
           </div>
-        </section>
-      {% endfor %}
-    {% else %}
-      <section class="bg-white p-6 rounded-xl shadow-md">
-        <p class="text-gray-600">Je hebt nog geen matches. Begin met vacatures te bekijken!</p>
-      </section>
-    {% endif %}
 
-  </main>
+        {% endfor %}
+      {% else %}
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <p class="text-muted mb-0">
+              Je hebt nog geen matches. Begin met vacatures te bekijken!
+            </p>
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
 </div>
+
 {% endblock %}
-cdn.tailwindcss.com
+

@@ -2,99 +2,129 @@
 
 {% block title %}Vacature Plaatsen — Swipr{% endblock %}
 
-{% block extra_head %}
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            swipr: '#FF4B5C'
-          }
-        }
-      }
-    }
-  </script>
-{% endblock %}
-
 {% block content %}
-<div class="bg-gray-50 min-h-screen antialiased">
 
-  <header class="bg-white shadow-sm">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div>
-          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
-          <p class="text-xs text-gray-500">Vacature plaatsen</p>
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" style="color:#FF4B5C;" href="/">Swipr</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+        <li class="nav-item">
+          <a class="nav-link" href="/recruiter_dashboard">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-secondary btn-sm" href="/logout">Uitloggen</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== CONTENT ===== -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-md-5">
+
+          <h1 class="h3 fw-bold mb-1" style="color:#FF4B5C;">Vacature plaatsen</h1>
+          <p class="text-muted mb-4">Vul de gegevens in om een nieuwe vacature te publiceren.</p>
+
+          <form method="POST" action="/vacature/opslaan">
+
+            <div class="row g-3 align-items-end">
+              <div class="col-md-8">
+                <label class="form-label fw-semibold">Bedrijfsnaam</label>
+
+                {% if employer %}
+                  <div class="form-control bg-light" style="height:auto;">
+                    <span class="fw-semibold text-dark">{{ employer.name }}</span>
+                  </div>
+
+                  <!-- include employer id (preferred) and keep companyName for backward compatibility -->
+                  <input type="hidden" id="employer_id" name="employer_id" value="{{ employer.id }}" />
+                  <input type="hidden" id="companyName" name="companyName" value="{{ employer.name }}" />
+                {% else %}
+                  <input
+                    type="text"
+                    id="companyName"
+                    name="companyName"
+                    class="form-control"
+                    placeholder="Naam van het bedrijf"
+                    required
+                  />
+                {% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label for="client" class="form-label fw-semibold">Client</label>
+                <input
+                  type="text"
+                  id="client"
+                  name="client"
+                  class="form-control"
+                  placeholder="bv. Euroshop"
+                />
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <label for="jobTitle" class="form-label fw-semibold">Functietitel</label>
+              <input
+                type="text"
+                id="jobTitle"
+                name="jobTitle"
+                class="form-control"
+                placeholder="bv. Kassamedewerker"
+                required
+              />
+            </div>
+
+            <div class="mt-3">
+              <label for="location" class="form-label fw-semibold">Locatie</label>
+              <input
+                type="text"
+                id="location"
+                name="location"
+                class="form-control"
+                placeholder="bv. Gent, België"
+                required
+              />
+            </div>
+
+            <div class="mt-3">
+              <label for="description" class="form-label fw-semibold">Beschrijving</label>
+              <textarea
+                id="description"
+                name="description"
+                rows="6"
+                class="form-control"
+                placeholder="Beschrijf de job, taken, vereisten en aantal uren per week..."
+                required
+              ></textarea>
+            </div>
+
+            <button
+              type="submit"
+              class="btn w-100 mt-4 py-2 text-white"
+              style="background-color:#FF4B5C;"
+            >
+              Vacature plaatsen
+            </button>
+          </form>
+
         </div>
       </div>
 
-      <nav class="hidden sm:flex items-center gap-4 text-sm">
-        <a href="/recruiter_dashboard" class="text-gray-600 hover:text-swipr">Dashboard</a>
-        <a href="/" class="px-3 py-1 rounded-md text-sm border hover:bg-swipr hover:text-white transition-colors">Uitloggen</a>
-      </nav>
     </div>
-  </header>
-
-  <main class="max-w-3xl mx-auto mt-10 p-6">
-    <section class="bg-white p-6 rounded-xl shadow-md">
-      <h2 class="text-2xl font-bold text-swipr mb-4">Vacature Plaatsen</h2>
-
-      <form method="POST" action="/vacature/opslaan" class="space-y-4">
-        <div class="flex items-start gap-4">
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700">Bedrijfsnaam</label>
-            {% if employer %}
-              <!-- Fixed company name for recruiters; include hidden input so it is submitted -->
-              <div class="mt-2 p-3 border rounded-md bg-gray-100 text-gray-800 font-medium">{{ employer.name }}</div>
-              <!-- include employer id (preferred) and keep companyName for backward compatibility -->
-              <input type="hidden" id="employer_id" name="employer_id" value="{{ employer.id }}" />
-              <input type="hidden" id="companyName" name="companyName" value="{{ employer.name }}" />
-            {% else %}
-              <input type="text" id="companyName" name="companyName" placeholder="Naam van het bedrijf" 
-                     class="mt-2 w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
-            {% endif %}
-          </div>
-
-          <div class="w-1/3">
-            <label for="client" class="block text-sm font-medium text-gray-700">Client</label>
-            <input type="text" id="client" name="client" placeholder="bv. Euroshop"
-                   class="mt-2 w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" />
-          </div>
-        </div>
-
-        <div>
-          <label for="jobTitle" class="block text-sm font-medium text-gray-700">Functietitel</label>
-          <input type="text" id="jobTitle" name="jobTitle" placeholder="bv. Kassamedewerker" 
-                 class="mt-2 w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
-        </div>
-
-        <div>
-          <label for="location" class="block text-sm font-medium text-gray-700">Locatie</label>
-          <input type="text" id="location" name="location" placeholder="bv. Gent, België" 
-                 class="mt-2 w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required />
-        </div>
-
-        <div>
-          <label for="description" class="block text-sm font-medium text-gray-700">Beschrijving</label>
-          <textarea id="description" name="description" rows="6"
-                    placeholder="Beschrijf de job, taken, vereisten en aantal uren per week..."
-                    class="mt-2 w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-swipr" required></textarea>
-        </div>
-
-        <button type="submit" class="w-full px-6 py-3 bg-swipr text-white rounded-md hover:bg-[#E04352] transition-colors font-medium">
-          Vacature plaatsen
-        </button>
-      </form>
-    </section>
-
-    <!-- 'Mijn Vacatures' container removed per request -->
-  </main>
+  </div>
 </div>
+
 {% endblock %}

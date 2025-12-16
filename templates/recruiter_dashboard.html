@@ -2,216 +2,255 @@
 
 {% block title %}Recruiter Dashboard — Swipr{% endblock %}
 
-{% block extra_head %}
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            swipr: '#ff4b5c',
-            swipr_blue: '#007bff'
-          }
-        }
-      }
-    }
-  </script>
-{% endblock %}
-
 {% block content %}
-<div class="bg-gray-50 min-h-screen antialiased">
 
-  <header class="bg-white shadow-sm">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-swipr flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div>
-          <h1 class="text-xl font-semibold text-swipr">Swipr</h1>
-          <p class="text-xs text-gray-500">Recruiter dashboard</p>
-        </div>
-      </div>
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-danger d-flex align-items-center gap-2" href="/recruiter_dashboard">
+      <span class="d-inline-flex align-items-center justify-content-center rounded"
+            style="width:32px;height:32px;background:#ff4b5c;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      Swipr
+    </a>
 
-      <nav class="hidden sm:flex items-center gap-4 text-sm">
-        <a href="/recruiter_profiel" class="text-gray-600 hover:text-swipr">Mijn Profiel</a>
-        <a href="/" class="px-3 py-1 rounded-md text-sm border hover:bg-swipr hover:text-white transition-colors">
-          Uitloggen
-        </a>
-      </nav>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+        <li class="nav-item">
+          <a class="nav-link" href="/recruiter_profiel">Mijn profiel</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-secondary btn-sm" href="/logout">Uitloggen</a>
+        </li>
+      </ul>
     </div>
-  </header>
+  </div>
+</nav>
 
-  <main class="max-w-5xl mx-auto mt-8 p-4 space-y-8">
+<!-- ===== CONTENT ===== -->
+<div class="container py-5">
 
-    <section class="bg-swipr text-white rounded-xl shadow-sm p-6">
-      <h2 class="text-xl font-semibold">Welkom bij Swipr</h2>
-      <p class="text-sm opacity-90">Beheer uw vacatures en matches</p>
-    </section>
+  <!-- Welcome banner -->
+  <div class="card border-0 shadow-sm mb-4"
+       style="background:#ff4b5c;">
+    <div class="card-body text-white p-4">
+      <h1 class="h4 fw-bold mb-1">Welkom bij Swipr</h1>
+      <p class="mb-0 opacity-75">Beheer uw vacatures en matches</p>
+    </div>
+  </div>
 
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <div class="bg-white rounded-xl shadow-sm p-3">
-        <p class="text-xs text-gray-500">Actieve vacatures</p>
-        <p class="text-2xl font-bold text-swipr">{{ stats.active_job_count }}</p>
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="text-muted small">Actieve vacatures</div>
+          <div class="display-6 fw-bold text-danger">{{ stats.active_job_count }}</div>
+        </div>
       </div>
-      <div class="bg-white rounded-xl shadow-sm p-3">
-        <p class="text-xs text-gray-500">Totaal matches</p>
-        <p class="text-2xl font-bold text-swipr">{{ stats.total_matches }}</p>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="text-muted small">Totaal matches</div>
+          <div class="display-6 fw-bold text-danger">{{ stats.total_matches }}</div>
+        </div>
       </div>
-      <div class="bg-white rounded-xl shadow-sm p-3">
-        <p class="text-xs text-gray-500">Recente Matches (laatste 7 dagen)</p>
-        <p class="text-2xl font-bold text-swipr">{{ stats.matches_last_7_days }}</p>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="text-muted small">Recente matches (laatste 7 dagen)</div>
+          <div class="display-6 fw-bold text-danger">{{ stats.matches_last_7_days }}</div>
+        </div>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <section class="bg-white p-6 rounded-xl shadow-sm">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-semibold text-gray-800">Mijn vacatures</h2>
-        <a href="/vacature/nieuw"
-           class="px-3 py-2 text-sm rounded-md bg-swipr text-white">
+  <!-- Jobs -->
+  <div class="card shadow-sm">
+    <div class="card-body p-4">
+
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+        <h2 class="h5 fw-bold mb-0">Mijn vacatures</h2>
+        <a href="/vacature/nieuw" class="btn btn-danger">
           + Nieuwe vacature
         </a>
       </div>
-      <!-- vacaturelijst -->
-      <div class="space-y-4">
-        {% if jobs and jobs|length > 0 %}
-          <ul class="space-y-3">
-            {% for job in jobs %}
-              <li id="job-{{ job.id }}" class="p-4 border rounded-lg">
-                <div class="flex items-center justify-between gap-4">
-                  <div>
-                    <h3 class="font-semibold text-gray-800">{{ job.title }}{% if job.client %} - {{ job.client }}{% endif %}</h3>
-                    <p class="text-sm text-gray-500">{{ job.location }}</p>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <button onclick="viewLikes({{ job.id }})" title="Matches" class="px-3 py-1 border rounded-md text-sm text-swipr hover:bg-swipr hover:text-white transition-colors" data-job-id="{{ job.id }}">
-                      {% set cnt = job.matches|length %}
-                      <span class="match-count">{{ cnt }}</span> <span class="match-label">{% if cnt == 1 %}Match{% else %}Matches{% endif %}</span>
-                    </button>
-                    <button onclick="confirmDelete({{ job.id }})" title="Verwijderen" class="text-red-500 hover:text-red-700 p-2 rounded-md">
-                      <!-- vuilbak icoon -->
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                {% if job.description %}
-                  <p class="mt-2 text-sm text-gray-700">{{ job.description }}</p>
-                {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p class="text-sm text-gray-500">Geen vacatures geplaatst.</p>
-        {% endif %}
-      </div>
-    </section>
 
-  </main>
+      {% if jobs and jobs|length > 0 %}
+        <div class="list-group">
+          {% for job in jobs %}
+            <div id="job-{{ job.id }}" class="list-group-item list-group-item-action">
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div class="flex-grow-1">
+                  <h3 class="h6 fw-bold mb-1">
+                    {{ job.title }}{% if job.client %} – {{ job.client }}{% endif %}
+                  </h3>
+                  <div class="text-muted small">{{ job.location }}</div>
+
+                  {% if job.description %}
+                    <p class="mb-0 mt-2 text-body">
+                      {{ job.description }}
+                    </p>
+                  {% endif %}
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    onclick="viewLikes({{ job.id }})"
+                    title="Matches"
+                    data-job-id="{{ job.id }}"
+                  >
+                    {% set cnt = job.matches|length %}
+                    <span class="match-count">{{ cnt }}</span>
+                    <span class="match-label">{% if cnt == 1 %}Match{% else %}Matches{% endif %}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    onclick="confirmDelete({{ job.id }})"
+                    title="Verwijderen"
+                    aria-label="Verwijderen"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                         viewBox="0 0 16 16">
+                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v7a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5.5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0V6Zm2 .5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Z"/>
+                      <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1Zm-3.5 1H5v9a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V4ZM2.5 2v1h11V2h-11Z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted mb-0">Geen vacatures geplaatst.</p>
+      {% endif %}
+
+    </div>
+  </div>
+
 </div>
+
 <script>
-  // Small non-blocking toast helper
+  // Small toast helper
   function showToast(message, type = 'success', timeout = 2200) {
     const id = `toast-${Date.now()}`;
     const node = document.createElement('div');
     node.id = id;
-    node.className = 'fixed right-6 bottom-6 px-4 py-3 rounded-md shadow-lg';
-    node.style.zIndex = 9999;
-    if (type === 'error') {
-      node.style.backgroundColor = 'white';
-      node.style.border = '1px solid #f87171';
-      node.innerHTML = `<div class="text-sm text-red-600">${message}</div>`;
-    } else {
-      node.style.backgroundColor = 'white';
-      node.style.border = '1px solid #e5e7eb';
-      node.innerHTML = `<div class="text-sm text-gray-800">${message}</div>`;
-    }
+    node.className = 'position-fixed bottom-0 end-0 p-3';
+    node.style.zIndex = 1080;
+
+    const alert = document.createElement('div');
+    alert.className = `alert ${type === 'error' ? 'alert-danger' : 'alert-secondary'} shadow-sm mb-0`;
+    alert.textContent = message;
+
+    node.appendChild(alert);
     document.body.appendChild(node);
-    setTimeout(() => { const n = document.getElementById(id); if (n) n.remove(); }, timeout);
+
+    setTimeout(() => {
+      const n = document.getElementById(id);
+      if (n) n.remove();
+    }, timeout);
   }
 
-  // Make delete undoable for 5 seconds: hide immediately, allow undo, then call server to delete
+  // Undoable delete (deactivate immediately, then hard delete after 5s unless undone)
   const pendingDeletes = {};
+
   async function confirmDelete(jobId) {
     if (!confirm('Weet je zeker dat je deze vacature wilt verwijderen?')) return;
 
     const el = document.getElementById(`job-${jobId}`);
     if (!el) return;
 
-    // store a clone so we can restore if undone
     const clone = el.cloneNode(true);
-
-    // hide element immediately
     el.style.display = 'none';
 
-    // call server to deactivate immediately so students no longer see it
+    // deactivate on server so students don't see it
     try {
-      const decRes = await fetch(`/jobs/${jobId}/deactivate`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+      const decRes = await fetch(`/jobs/${jobId}/deactivate`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
       if (!decRes.ok) {
-        // failed to deactivate on server -> restore UI and abort
         el.style.display = '';
         showToast('Fout bij verwijderen (deactiveren mislukt)', 'error');
         return;
       }
     } catch (err) {
-      console.error('Network error while deactivating', err);
-      // restore UI on network error
       el.style.display = '';
       showToast('Netwerkfout bij verwijderen', 'error');
       return;
     }
 
-    // decrement counter
-    const counter = document.querySelector('.text-2xl.font-bold.text-swipr');
-    let counterWas = null;
-    if (counter && !isNaN(parseInt(counter.textContent))) {
-      counterWas = parseInt(counter.textContent);
-      const val = counterWas - 1;
-      counter.textContent = val >= 0 ? val : 0;
+    // update "Actieve vacatures" stat (first stat)
+    const statEls = document.querySelectorAll('.display-6.fw-bold.text-danger');
+    const activeStat = statEls && statEls.length > 0 ? statEls[0] : null;
+    let activeWas = null;
+    if (activeStat && !isNaN(parseInt(activeStat.textContent))) {
+      activeWas = parseInt(activeStat.textContent);
+      activeStat.textContent = Math.max(0, activeWas - 1);
     }
 
     // create undo toast
     const toastId = `delete-toast-${jobId}`;
     let toast = document.getElementById(toastId);
     if (toast) toast.remove();
+
     toast = document.createElement('div');
     toast.id = toastId;
-    toast.className = 'fixed right-6 bottom-6 bg-white border shadow-lg px-4 py-3 rounded-md';
-    toast.innerHTML = `<div class="flex items-center gap-4"><div class="text-sm text-gray-800">Vacature verwijderd</div><div><button id="undo-${jobId}" class="px-3 py-1 text-sm border rounded-md">Ongedaan</button></div></div>`;
+    toast.className = 'position-fixed bottom-0 end-0 p-3';
+    toast.style.zIndex = 1080;
+    toast.innerHTML = `
+      <div class="alert alert-light border shadow-sm d-flex align-items-center gap-3 mb-0">
+        <div class="small text-dark mb-0">Vacature verwijderd</div>
+        <button class="btn btn-outline-secondary btn-sm" id="undo-${jobId}">Ongedaan</button>
+      </div>
+    `;
     document.body.appendChild(toast);
 
-    // start timer to call server after 5s
     const timeoutHandle = setTimeout(async () => {
       try {
-        const res = await fetch(`/jobs/${jobId}/delete`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        const res = await fetch(`/jobs/${jobId}/delete`, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
         if (!res.ok) {
-          // restore on failure
-          if (el && el.parentNode) {
-            el.style.display = '';
-          } else if (clone) {
-            const list = document.querySelector('ul.space-y-3');
+          // restore UI on failure
+          if (el && el.parentNode) el.style.display = '';
+          else {
+            const list = document.querySelector('.list-group');
             if (list) list.appendChild(clone);
           }
-          // restore counter
-          if (counter && counterWas !== null) counter.textContent = counterWas;
+          if (activeStat && activeWas !== null) activeStat.textContent = activeWas;
+
           let msg = 'Fout bij verwijderen';
-          try { const body = await res.json(); msg = body.error || msg; } catch(e){ try { msg = await res.text(); } catch(_){} }
+          try { const body = await res.json(); msg = body.error || msg; } catch(e) {}
           showToast(msg, 'error');
         }
       } catch (err) {
-        console.error(err);
-        // restore element on network error
-        if (el && el.parentNode) {
-          el.style.display = '';
-        } else if (clone) {
-          const list = document.querySelector('ul.space-y-3');
+        if (el && el.parentNode) el.style.display = '';
+        else {
+          const list = document.querySelector('.list-group');
           if (list) list.appendChild(clone);
         }
-        if (counter && counterWas !== null) counter.textContent = counterWas;
+        if (activeStat && activeWas !== null) activeStat.textContent = activeWas;
         showToast('Fout bij verwijderen (netwerkfout)', 'error');
       } finally {
         const t = document.getElementById(toastId);
@@ -220,40 +259,38 @@
       }
     }, 5000);
 
-    pendingDeletes[jobId] = { timeout: timeoutHandle, clone };
+    pendingDeletes[jobId] = { timeout: timeoutHandle, clone, activeWas };
 
-    // undo handler
     document.getElementById(`undo-${jobId}`).addEventListener('click', async () => {
       const pd = pendingDeletes[jobId];
       if (!pd) return;
       clearTimeout(pd.timeout);
 
-      // call restore endpoint on server
       try {
-        const res = await fetch(`/jobs/${jobId}/restore`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        const res = await fetch(`/jobs/${jobId}/restore`, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
         if (!res.ok) {
           let msg = 'Fout bij herstellen';
-          try { const body = await res.json(); msg = body.error || msg; } catch(e){}
+          try { const body = await res.json(); msg = body.error || msg; } catch(e) {}
           showToast(msg, 'error');
-          // keep hidden since restore failed
           return;
         }
       } catch (err) {
-        console.error('Network error while restoring', err);
         showToast('Netwerkfout bij herstellen', 'error');
         return;
       }
 
-      // restore DOM
-      if (el && el.parentNode) {
-        el.style.display = '';
-      } else if (pd.clone) {
-        const list = document.querySelector('ul.space-y-3');
-        if (list) list.appendChild(pd.clone);
+      if (el && el.parentNode) el.style.display = '';
+      else {
+        const list = document.querySelector('.list-group');
+        if (list && pd.clone) list.appendChild(pd.clone);
       }
-      // restore counter
-      if (counter && counterWas !== null) counter.textContent = counterWas;
-      // remove toast
+
+      if (activeStat && pd.activeWas !== null) activeStat.textContent = pd.activeWas;
+
       const t = document.getElementById(toastId);
       if (t) t.remove();
       delete pendingDeletes[jobId];
@@ -269,35 +306,69 @@
         return;
       }
       const data = await res.json();
-      // build modal content
-      let html = `<div class="p-4"><h3 class="font-semibold mb-2">Likes voor: ${data.title}</h3>`;
-      if (!data.likes || data.likes.length === 0) {
-        html += '<div class="text-sm text-gray-600">Geen likes</div>';
-      } else {
-        html += '<ul class="divide-y">';
-        data.likes.forEach(l => {
-          html += `<li class="py-2"><div class="text-sm font-medium">${l.name || l.email}</div><div class="text-xs text-gray-500">${l.email}</div></li>`;
-        });
-        html += '</ul>';
-      }
-      html += '<div class="mt-4 text-right"><button id="closeLikes" class="px-3 py-1 bg-swipr text-white rounded-md">Sluiten</button></div></div>';
 
-      // insert and show modal
-      let modal = document.createElement('div');
-      modal.id = 'likesModal';
-      modal.className = 'fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center';
-      modal.innerHTML = `<div class="bg-white rounded-md shadow-lg max-w-md w-full">${html}</div>`;
-      document.body.appendChild(modal);
-      document.getElementById('closeLikes').addEventListener('click', () => modal.remove());
+      // Bootstrap-like modal (simple)
+      const existing = document.getElementById('likesModal');
+      if (existing) existing.remove();
+
+      let html = `
+        <div class="modal fade show" id="likesModal" tabindex="-1" style="display:block;" aria-modal="true" role="dialog">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Likes voor: ${data.title}</h5>
+                <button type="button" class="btn-close" aria-label="Close" id="closeLikesX"></button>
+              </div>
+              <div class="modal-body">
+      `;
+
+      if (!data.likes || data.likes.length === 0) {
+        html += `<p class="text-muted mb-0">Geen likes</p>`;
+      } else {
+        html += `<ul class="list-group">`;
+        data.likes.forEach(l => {
+          html += `
+            <li class="list-group-item">
+              <div class="fw-semibold">${(l.name || l.email)}</div>
+              <div class="text-muted small">${l.email}</div>
+            </li>`;
+        });
+        html += `</ul>`;
+      }
+
+      html += `
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="closeLikesBtn">Sluiten</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-backdrop fade show" id="likesBackdrop"></div>
+      `;
+
+      document.body.insertAdjacentHTML('beforeend', html);
+
+      const close = () => {
+        const m = document.getElementById('likesModal');
+        const b = document.getElementById('likesBackdrop');
+        if (m) m.remove();
+        if (b) b.remove();
+      };
+
+      document.getElementById('closeLikesBtn').addEventListener('click', close);
+      document.getElementById('closeLikesX').addEventListener('click', close);
+      document.getElementById('likesBackdrop').addEventListener('click', close);
+
     } catch (err) {
-        showToast('Fout bij ophalen likes', 'error');
       console.error(err);
+      showToast('Fout bij ophalen likes', 'error');
     }
   }
 
-  // Polling: refresh match counts for active jobs every few seconds so recruiters
-  // see updates when students like a vacancy without a full page reload.
-  let pollInterval = 5000; // 5s
+  // Polling: refresh match counts
+  const pollInterval = 5000;
+
   async function pollMatchCounts() {
     try {
       const res = await fetch('/recruiter/job_counts', { credentials: 'same-origin' });
@@ -305,9 +376,7 @@
       const data = await res.json();
       if (!data || !data.counts) return;
 
-      // update per-job counters
-      Object.keys(data.counts).forEach(key => {
-        const id = key; // job id
+      Object.keys(data.counts).forEach(id => {
         const count = data.counts[id];
         const btn = document.querySelector(`[data-job-id='${id}']`);
         if (btn) {
@@ -318,22 +387,20 @@
         }
       });
 
-      // update total matches stat if present
-      if (data.total_matches !== undefined) {
-        const totalEl = document.querySelectorAll('.text-2xl.font-bold.text-swipr')[1];
-        // The template prints three stats; second one is total_matches. Use a safe check.
-        if (totalEl) totalEl.textContent = data.total_matches;
-      }
+      // update total matches stat (second stat)
+      const statEls = document.querySelectorAll('.display-6.fw-bold.text-danger');
+      const totalStat = statEls && statEls.length > 1 ? statEls[1] : null;
+      if (totalStat && data.total_matches !== undefined) totalStat.textContent = data.total_matches;
+
     } catch (err) {
-      // silently ignore polling errors
-      console.debug('Poll error', err);
+      // ignore
     }
   }
 
-  // Start polling when the page loads
   window.addEventListener('load', () => {
     pollMatchCounts();
     setInterval(pollMatchCounts, pollInterval);
   });
 </script>
+
 {% endblock %}

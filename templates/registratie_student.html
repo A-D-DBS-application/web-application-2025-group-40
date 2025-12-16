@@ -3,96 +3,172 @@
 {% block title %}Swipr - Registratie Student{% endblock %}
 
 {% block content %}
-<div class="form-container student-form-container">
-  <h2>Registratie Student</h2>
+<div class="container d-flex justify-content-center align-items-center min-vh-100 py-5">
+  <div class="card shadow-sm w-100" style="max-width: 560px;">
+    <div class="card-body p-4 p-md-5">
 
-  <form id="registerForm" method="POST" action="{{ url_for('registratie_student') }}">
-    <label for="firstName">Voornaam</label>
-    <input type="text" id="firstName" name="firstName" placeholder="Voornaam" required />
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span class="d-inline-flex align-items-center justify-content-center rounded"
+              style="width:32px;height:32px;background:#007bff;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+               xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <div class="fw-bold text-primary">Swipr</div>
+      </div>
 
-    <label for="lastName">Achternaam</label>
-    <input type="text" id="lastName" name="lastName" placeholder="Achternaam" required />
+      <h1 class="h4 fw-bold text-primary mb-1">Registratie Student</h1>
+      <p class="text-muted mb-4">Maak je studentenaccount aan.</p>
 
-    <label for="email">Studenten e-mail</label>
-    <input type="email" id="email" name="email" placeholder="bv. naam@student.ugent.be" required />
-    <div class="error" id="emailError"></div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{% if category == 'danger' %}danger{% elif category == 'success' %}success{% else %}warning{% endif %} mb-3">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
 
-    <label for="password">Wachtwoord</label>
-    <input type="password" id="password" name="password" placeholder="Kies een wachtwoord" required />
-    <div class="error" id="passwordError"></div>
+      <form id="registerForm" method="POST" action="{{ url_for('registratie_student') }}" novalidate>
+        <div class="row g-3">
 
-    <button type="submit" class="register-button">Registreren</button>
-  </form>
+          <div class="col-12 col-md-6">
+            <label for="firstName" class="form-label fw-semibold">Voornaam</label>
+            <input type="text" class="form-control" id="firstName" name="firstName"
+                   placeholder="Voornaam" required />
+            <div class="invalid-feedback">Vul je voornaam in.</div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label for="lastName" class="form-label fw-semibold">Achternaam</label>
+            <input type="text" class="form-control" id="lastName" name="lastName"
+                   placeholder="Achternaam" required />
+            <div class="invalid-feedback">Vul je achternaam in.</div>
+          </div>
+
+          <div class="col-12">
+            <label for="email" class="form-label fw-semibold">Studenten e-mail</label>
+            <input type="email" class="form-control" id="email" name="email"
+                   placeholder="bv. naam@student.ugent.be" required />
+            <div class="invalid-feedback" id="emailErrorBs">Gebruik je officiële studenten e-mailadres.</div>
+            <div class="form-text">Enkel toegelaten studentendomeinen.</div>
+          </div>
+
+          <div class="col-12">
+            <label for="password" class="form-label fw-semibold">Wachtwoord</label>
+            <input type="password" class="form-control" id="password" name="password"
+                   placeholder="Kies een wachtwoord" required />
+            <div class="invalid-feedback" id="passwordErrorBs">
+              Min. 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.
+            </div>
+          </div>
+
+          <div class="col-12 d-grid mt-2">
+            <button type="submit" class="btn btn-primary btn-lg">Registreren</button>
+          </div>
+
+          <div class="col-12 text-center">
+            <small class="text-muted">
+              Al een account? <a href="/login_student" class="text-decoration-none">Log in</a>
+            </small>
+          </div>
+
+        </div>
+      </form>
+
+    </div>
+  </div>
 </div>
 
 <script>
-  const form = document.getElementById('registerForm');
-  const emailInput = document.getElementById('email');
-  const emailError = document.getElementById('emailError');
-  const passwordInput = document.getElementById('password');
-  const passwordError = document.getElementById('passwordError');
+  (function () {
+    const form = document.getElementById('registerForm');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
 
-  const allowedDomains = [
-    "ugent.be", "student.ugent.be",
-    "kuleuven.be", "student.kuleuven.be",
-    "hogent.be", "student.hogent.be",
-    "vub.be",
-    "arteveldehs.be",
-    "student.odisee.be",
-    "student.uantwerpen.be",
-    "student.vives.be",
-    "howest.be"
-  ];
+    const allowedDomains = [
+      "ugent.be", "student.ugent.be",
+      "kuleuven.be", "student.kuleuven.be",
+      "hogent.be", "student.hogent.be",
+      "vub.be",
+      "arteveldehs.be",
+      "student.odisee.be",
+      "student.uantwerpen.be",
+      "student.vives.be",
+      "howest.be"
+    ];
 
-  emailInput.addEventListener('input', () => {
-    const emailValue = emailInput.value.toLowerCase().trim();
-    const valid = allowedDomains.some(domain => emailValue.endsWith("@" + domain));
-    if (valid) {
-      emailError.textContent = "";
-      emailInput.setCustomValidity("");
-    }
-  });
-
-  passwordInput.addEventListener('input', () => {
-    const value = passwordInput.value;
-    const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
-    if (!strongPattern.test(value)) {
-      passwordError.textContent = "Min. 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.";
-      passwordInput.setCustomValidity("Wachtwoord niet sterk genoeg");
-    } else {
-      passwordError.textContent = "";
-      passwordInput.setCustomValidity("");
-    }
-  });
-
-  form.addEventListener('submit', function (e) {
-    let valid = true;
-
-    const emailValue = emailInput.value.toLowerCase().trim();
-    const isAllowed = allowedDomains.some(domain => emailValue.endsWith("@" + domain));
-
-    if (!isAllowed) {
-      emailError.textContent = "Gebruik je officiële studenten e-mailadres.";
-      emailInput.setCustomValidity("Ongeldig e-mailadres");
-      valid = false;
-    } else {
-      emailError.textContent = "";
-      emailInput.setCustomValidity("");
-    }
-
-    const value = passwordInput.value;
     const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
 
-    if (!strongPattern.test(value)) {
-      passwordError.textContent = "Min. 8 tekens, 1 hoofdletter, 1 cijfer en 1 speciaal teken.";
-      passwordInput.setCustomValidity("Wachtwoord niet sterk genoeg");
-      valid = false;
-    } else {
-      passwordError.textContent = "";
-      passwordInput.setCustomValidity("");
+    function markValid(input) {
+      input.classList.remove('is-invalid');
+      input.classList.add('is-valid');
+      input.setCustomValidity('');
     }
 
-    if (!valid) e.preventDefault();
-  });
+    function markInvalid(input, message) {
+      input.classList.remove('is-valid');
+      input.classList.add('is-invalid');
+      input.setCustomValidity(message || 'invalid');
+    }
+
+    function validateEmail() {
+      const emailValue = (emailInput.value || '').toLowerCase().trim();
+      const isAllowed = allowedDomains.some(domain => emailValue.endsWith("@" + domain));
+
+      if (!emailInput.checkValidity()) {
+        markInvalid(emailInput, "Ongeldig e-mailadres");
+        return false;
+      }
+      if (!isAllowed) {
+        markInvalid(emailInput, "Ongeldig e-mailadres");
+        return false;
+      }
+
+      markValid(emailInput);
+      return true;
+    }
+
+    function validatePassword() {
+      const value = passwordInput.value || '';
+      if (!strongPattern.test(value)) {
+        markInvalid(passwordInput, "Wachtwoord niet sterk genoeg");
+        return false;
+      }
+      markValid(passwordInput);
+      return true;
+    }
+
+    emailInput.addEventListener('input', () => {
+      if (emailInput.value.trim().length >= 3) validateEmail();
+      else emailInput.classList.remove('is-valid', 'is-invalid');
+    });
+
+    passwordInput.addEventListener('input', () => {
+      if (passwordInput.value.length > 0) validatePassword();
+      else passwordInput.classList.remove('is-valid', 'is-invalid');
+    });
+
+    form.addEventListener('submit', function (e) {
+      let ok = true;
+
+      // native required fields
+      if (!form.checkValidity()) ok = false;
+
+      // custom rules
+      if (!validateEmail()) ok = false;
+      if (!validatePassword()) ok = false;
+
+      if (!ok) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      form.classList.add('was-validated');
+    });
+  })();
 </script>
 {% endblock %}
