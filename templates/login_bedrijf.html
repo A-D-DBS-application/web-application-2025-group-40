@@ -6,19 +6,8 @@
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
   <div class="card shadow-lg p-5 text-center" style="max-width: 420px; width: 100%; border-radius: 15px;">
 
-    <!-- Swipr logo -->
-    <div class="logo mb-3">
-      <div class="logo-icon mx-auto mb-2" style="background-color:#ff4b5c;">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
-             xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 12h12" stroke="white" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="logo-text" style="color:#ff4b5c;">Swipr</div>
-    </div>
+    {% from '_logo.html' import logo %}
+    {{ logo(26, '#ff4b5c', '#ff4b5c') }}
 
     <h1 class="mb-4" style="color:#ff4b5c;">Login Bedrijf</h1>
 

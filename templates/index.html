@@ -7,19 +7,8 @@
 
   <div class="card shadow-lg text-center p-5" style="border-radius: 16px;">
 
-    <!-- Logo -->
-    <div class="mb-4">
-      <div class="logo-icon mx-auto mb-2">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
-             xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 12h12" stroke="white" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="logo-text">Swipr</div>
-    </div>
+    {% from '_logo.html' import logo %}
+    {{ logo() }}
 
     <!-- Titel -->
     <h1 class="mb-4">Kies uw rol</h1>
