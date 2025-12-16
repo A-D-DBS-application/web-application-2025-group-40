@@ -7,7 +7,10 @@
 <!-- ===== NAVBAR ===== -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
   <div class="container">
-    <a class="navbar-brand fw-bold text-primary" href="/">Swipr</a>
+    {% from '_logo.html' import logo_brand %}
+    <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="/">
+      {{ logo_brand() }}
+    </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
       <span class="navbar-toggler-icon"></span>

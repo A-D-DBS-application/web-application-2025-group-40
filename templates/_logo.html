@@ -12,3 +12,15 @@
   <div class="logo-text"{% if text_color %} style="color:{{ text_color }};"{% endif %}>Swipr</div>
 </div>
 {% endmacro %}
+
+{# Compact brand macro for navbars: renders the colored square + text inline #}
+{% macro logo_brand(size=32, bg_color='#007bff', text='Swipr') %}
+<span class="d-inline-flex align-items-center justify-content-center rounded"
+      style="width:{{ size }}px;height:{{ size }}px;background:{{ bg_color }};">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</span>
+{{ text }}
+{% endmacro %}
