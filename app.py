@@ -112,12 +112,10 @@ class Employer(db.Model):
     __tablename__ = 'employer'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(120), nullable=False)
-    location = db.Column(db.String(120))
     contact_person = db.Column(db.String(120))
     btw_number = db.Column(db.String(60))
     description = db.Column(db.Text)
     contact_email = db.Column(db.String(120))
-    is_agency = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     recruiters = db.relationship('RecruiterUser', back_populates='employer')
@@ -133,13 +131,9 @@ class JobListing(db.Model):
     title = db.Column(db.String(140), nullable=False)
     description = db.Column(db.Text)
     location = db.Column(db.String(120))
-    salary = db.Column(db.Numeric, nullable=True)
-    periode = db.Column(db.String(80))
-    requirements = db.Column(db.Text)
 
     employer = db.relationship('Employer', back_populates='job_listings')
     matches = db.relationship('Match', back_populates='job')
-    sectors = db.relationship('JobListingSector', back_populates='job')
 
 
 class Match(db.Model):
@@ -148,9 +142,6 @@ class Match(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
     job_id = db.Column(db.Integer, db.ForeignKey('job_listing.id'), nullable=False)
     matched_at = db.Column(db.DateTime, default=datetime.utcnow)
-    notification_sent = db.Column(db.Boolean, default=False)
-    notification_sent_at = db.Column(db.DateTime, nullable=True)
-    notification_message = db.Column(db.Text, nullable=True)
 
     user = db.relationship('AppUser', back_populates='matches')
     job = db.relationship('JobListing', back_populates='matches')
@@ -167,22 +158,7 @@ class Dislike(db.Model):
     job = db.relationship('JobListing', backref='dislikes')
 
 
-class JobListingSector(db.Model):
-    __tablename__ = 'job_listing_sector'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    job_id = db.Column(db.Integer, db.ForeignKey('job_listing.id'), nullable=False)
-    sector_id = db.Column(db.Integer, db.ForeignKey('sector.id'), nullable=False)
 
-    job = db.relationship('JobListing', back_populates='sectors')
-    sector = db.relationship('Sector', back_populates='job_links')
-
-
-class Sector(db.Model):
-    __tablename__ = 'sector'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)
-
-    job_links = db.relationship('JobListingSector', back_populates='sector')
 
 
 # -----------------------
@@ -813,7 +789,6 @@ def delete_job(job_id):
         # students will no longer see matches/dislikes for this job.
         Match.query.filter_by(job_id=job.id).delete()
         Dislike.query.filter_by(job_id=job.id).delete()
-        JobListingSector.query.filter_by(job_id=job.id).delete()
         db.session.delete(job)
         db.session.commit()
         return jsonify({'success': True}), 200
@@ -931,15 +906,6 @@ def test_vacature():
     return render_template("vacature_student.html", job=job)
 
 
-@app.route('/_init_demo')
-def init_demo():
-    if Sector.query.first():
-        return "Demo al geïnitialiseerd."
-    s1 = Sector(name='Horeca')
-    s2 = Sector(name='Retail')
-    db.session.add_all([s1, s2])
-    db.session.commit()
-    return "Demo sectors aangemaakt."
 
 
 @app.route("/test-supabase")
@@ -1023,86 +989,6 @@ def vacatures_student():
     return render_template('vacatures_list.html', jobs=jobs_sorted)
 
 
-# -----------------------
-# SEED DATA
-# -----------------------
-def seed_database():
-    """Create sample data if database is empty"""
-    with app.app_context():
-        db.create_all()
-        
-        # Check if database already has data
-        if JobListing.query.first():
-            return  # Data already exists
-        
-        # Create sample employers
-        employers = [
-            Employer(name='ACME BV', location='Amsterdam', description='A leading tech company'),
-            Employer(name='TechCorp', location='Utrecht', description='Innovation in software'),
-            Employer(name='WebDesign Inc', location='Rotterdam', description='Digital solutions'),
-            Employer(name='DataSystems', location='Groningen', description='Big data & analytics'),
-        ]
-        
-        for emp in employers:
-            db.session.add(emp)
-        db.session.commit()
-        
-        # Create sample job listings
-        jobs_data = [
-            {
-                'employer_id': employers[0].id,
-                'title': 'Python Developer',
-                'description': 'We are looking for an experienced Python developer to join our growing team. Experience with Django and FastAPI required.',
-                'location': 'Amsterdam',
-                'salary': 3500,
-                'periode': '6 months'
-            },
-            {
-                'employer_id': employers[1].id,
-                'title': 'Frontend Developer',
-                'description': 'Looking for a skilled React/Vue developer. Must have experience with modern JavaScript frameworks and responsive design.',
-                'location': 'Utrecht',
-                'salary': 3200,
-                'periode': '4 months'
-            },
-            {
-                'employer_id': employers[2].id,
-                'title': 'Full Stack Developer',
-                'description': 'Develop both backend and frontend solutions. Tech stack includes Node.js, React, and PostgreSQL.',
-                'location': 'Rotterdam',
-                'salary': 3800,
-                'periode': '6 months'
-            },
-            {
-                'employer_id': employers[3].id,
-                'title': 'Data Analyst',
-                'description': 'Analyze large datasets and create insights. Experience with Python, SQL, and visualization tools required.',
-                'location': 'Groningen',
-                'salary': 2800,
-                'periode': '3 months'
-            },
-            {
-                'employer_id': employers[0].id,
-                'title': 'DevOps Engineer',
-                'description': 'Manage cloud infrastructure and CI/CD pipelines. Experience with Docker, Kubernetes, and AWS needed.',
-                'location': 'Amsterdam',
-                'salary': 4000,
-                'periode': '6 months'
-            },
-            {
-                'employer_id': employers[1].id,
-                'title': 'UI/UX Designer',
-                'description': 'Design user-friendly interfaces for web applications. Portfolio and experience with Figma required.',
-                'location': 'Utrecht',
-                'salary': 2900,
-                'periode': '3 months'
-            },
-        ]
-        
-        for job_data in jobs_data:
-            job = JobListing(**job_data)
-            db.session.add(job)
-        db.session.commit()
 
 # -----------------------
 # START
