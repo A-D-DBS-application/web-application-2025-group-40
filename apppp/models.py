@@ -67,21 +67,6 @@ class Employer(db.Model):
         return f'<Employer {self.name}>'
 
 
-# ---------------------------------------------------
-# SECTOR
-# ---------------------------------------------------
-
-class Sector(db.Model):
-    __tablename__ = 'sector'
-
-    id = db.Column(db.BigInteger, primary_key=True)
-    name = db.Column(db.String(255), unique=True, nullable=False)
-
-    job_links = db.relationship('JobListingSector', backref='sector', lazy=True)
-
-    def __repr__(self):
-        return f'<Sector {self.name}>'
-
 
 # ---------------------------------------------------
 # JOB LISTING
@@ -106,19 +91,6 @@ class JobListing(db.Model):
     def __repr__(self):
         return f'<JobListing {self.title}>'
 
-
-# ---------------------------------------------------
-# MANY-TO-MANY: JOBLISTING — SECTOR
-# ---------------------------------------------------
-
-class JobListingSector(db.Model):
-    __tablename__ = 'job_listing_sector'
-
-    job_id = db.Column(db.BigInteger, db.ForeignKey('job_listing.id'), primary_key=True)
-    sector_id = db.Column(db.BigInteger, db.ForeignKey('sector.id'), primary_key=True)
-
-    def __repr__(self):
-        return f'<JobListingSector job_id={self.job_id} sector_id={self.sector_id}>'
 
 
 # ---------------------------------------------------
