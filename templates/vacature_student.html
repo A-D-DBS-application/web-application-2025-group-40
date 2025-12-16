@@ -2,12 +2,13 @@
 
 {% block title %}Vacature — Swipr{% endblock %}
 
+{% from '_logo.html' import logo_brand %}
+
 {% block content %}
 
 <!-- ===== NAVBAR ===== -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
   <div class="container">
-    {% from '_logo.html' import logo_brand %}
     <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="/">
       {{ logo_brand() }}
     </a>
