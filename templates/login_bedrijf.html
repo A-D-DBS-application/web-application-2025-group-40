@@ -4,12 +4,13 @@
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
-  <div class="card shadow-lg p-5 text-center" style="max-width: 420px; width: 100%; border-radius: 15px;">
+  <div class="card shadow-lg p-5 text-center"
+       style="max-width: 420px; width: 100%; border-radius: 15px;">
 
     {% from '_logo.html' import logo %}
     {{ logo(26, '#ff4b5c', '#ff4b5c') }}
 
-    <h1 class="mb-4" style="color:#ff4b5c;">Login Bedrijf</h1>
+    <h1 class="mb-4 text-danger">Login Bedrijf</h1>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -23,21 +24,40 @@
 
     <form action="/login_bedrijf" method="POST">
       <div class="mb-3">
-        <input type="email" name="email" class="form-control" placeholder="E-mail" required>
+        <input
+          type="email"
+          name="email"
+          class="form-control form-control-lg"
+          placeholder="E-mail"
+          required
+        >
       </div>
 
       <div class="mb-4">
-        <input type="password" name="password" class="form-control" placeholder="Wachtwoord" required>
+        <input
+          type="password"
+          name="password"
+          class="form-control form-control-lg"
+          placeholder="Wachtwoord"
+          required
+        >
       </div>
 
-      <button type="submit" class="btn bedrijf w-100 py-2">Login</button>
+      <button
+        type="submit"
+        class="btn btn-swipr-bedrijf btn-lg w-100 py-3 fs-5">
+        Login
+      </button>
     </form>
 
-    <p class="auth-link mt-3 mb-0">
+    <p class="mt-3 mb-0">
       Nog geen account?
-      <a href="/registratie_bedrijf">Registreer hier</a>
+      <a href="/registratie_bedrijf" class="text-decoration-none fw-semibold text-danger">
+        Registreer hier
+      </a>
     </p>
 
   </div>
 </div>
 {% endblock %}
+

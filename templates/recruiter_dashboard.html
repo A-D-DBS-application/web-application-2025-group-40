@@ -41,8 +41,7 @@
 <div class="container py-5">
 
   <!-- Welcome banner -->
-  <div class="card border-0 shadow-sm mb-4"
-       style="background:#ff4b5c;">
+  <div class="card border-0 shadow-sm mb-4" style="background:#ff4b5c;">
     <div class="card-body text-white p-4">
       <h1 class="h4 fw-bold mb-1">Welkom bij Swipr</h1>
       <p class="mb-0 opacity-75">Beheer uw vacatures en matches</p>
@@ -83,7 +82,9 @@
 
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
         <h2 class="h5 fw-bold mb-0">Mijn vacatures</h2>
-        <a href="/vacature/nieuw" class="btn btn-danger">
+
+        <!-- ✅ Bedrijf knop-class -->
+        <a href="/vacature/nieuw" class="btn btn-swipr-bedrijf">
           + Nieuwe vacature
         </a>
       </div>
@@ -339,7 +340,8 @@
       html += `
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="closeLikesBtn">Sluiten</button>
+                <!-- ✅ Bedrijf knop-class -->
+                <button type="button" class="btn btn-swipr-bedrijf" id="closeLikesBtn">Sluiten</button>
               </div>
             </div>
           </div>

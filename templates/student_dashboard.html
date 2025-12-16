@@ -2,25 +2,29 @@
 
 {% block title %}Student Dashboard — Swipr{% endblock %}
 
+{% block content %}
+
 {% from '_logo.html' import logo_brand %}
 
-{% block content %}
+{% set brand_color = '#007bff' %}
 
 <!-- ===== NAVBAR ===== -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
   <div class="container">
+
     <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="/">
-      {{ logo_brand() }}
+      {{ logo_brand(32, brand_color, 'Swipr') }}
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="mainNav">
       <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
         <li class="nav-item">
-          <a class="nav-link" href="/student_dashboard">Mijn profiel</a>
+          <a class="nav-link active fw-semibold" aria-current="page" href="/student_dashboard">Mijn profiel</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/match_page">Matches</a>
@@ -41,15 +45,17 @@
   <div class="row justify-content-center">
     <div class="col-lg-8">
 
-      <h1 class="h3 fw-bold text-primary mb-1">Student profiel</h1>
-      <p class="text-muted mb-4">
-        Werk je gegevens bij zodat werkgevers je correct kunnen benaderen.
-      </p>
+      <div class="mb-4">
+        <h1 class="h3 fw-bold text-primary mb-1">Student profiel</h1>
+        <p class="text-muted mb-0">
+          Werk je gegevens bij zodat werkgevers je correct kunnen benaderen.
+        </p>
+      </div>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           {% for category, message in messages %}
-            <div class="alert alert-{% if category == 'danger' %}danger{% elif category == 'success' %}success{% else %}warning{% endif %} mb-3">
+            <div class="alert alert-{% if category == 'danger' %}danger{% elif category == 'success' %}success{% else %}warning{% endif %} mb-3" role="alert">
               {{ message }}
             </div>
           {% endfor %}
@@ -60,33 +66,59 @@
         <div class="card-body p-4 p-md-5">
 
           <form id="profileForm" method="POST" class="needs-validation" novalidate>
-
             <div class="row g-3">
+
               <div class="col-12 col-md-6">
                 <label for="firstName" class="form-label fw-semibold">Voornaam</label>
-                <input id="firstName" name="firstName" type="text" class="form-control"
-                       placeholder="Voornaam" value="{{ student.first_name if student else '' }}" required />
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  class="form-control"
+                  placeholder="Voornaam"
+                  value="{{ student.first_name if student else '' }}"
+                  required
+                />
                 <div class="invalid-feedback">Vul je voornaam in.</div>
               </div>
 
               <div class="col-12 col-md-6">
                 <label for="lastName" class="form-label fw-semibold">Achternaam</label>
-                <input id="lastName" name="lastName" type="text" class="form-control"
-                       placeholder="Achternaam" value="{{ student.last_name if student else '' }}" required />
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  class="form-control"
+                  placeholder="Achternaam"
+                  value="{{ student.last_name if student else '' }}"
+                  required
+                />
                 <div class="invalid-feedback">Vul je achternaam in.</div>
               </div>
 
               <div class="col-12">
                 <label for="email" class="form-label fw-semibold">E-mail</label>
-                <input id="email" name="email" type="email" class="form-control"
-                       placeholder="jij@example.com" value="{{ user.email if user else '' }}" required />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  class="form-control"
+                  placeholder="jij@example.com"
+                  value="{{ user.email if user else '' }}"
+                  required
+                />
                 <div class="invalid-feedback">Vul een geldig e-mailadres in.</div>
               </div>
 
               <div class="col-12">
                 <label for="password" class="form-label fw-semibold">Nieuw wachtwoord</label>
-                <input id="password" name="password" type="password" class="form-control"
-                       placeholder="Nieuw wachtwoord" />
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  class="form-control"
+                  placeholder="Nieuw wachtwoord"
+                />
                 <div class="form-text">Leeg laten = geen wijziging.</div>
               </div>
 
@@ -99,7 +131,7 @@
                   <button type="button" id="resetBtn" class="btn btn-outline-secondary">
                     Reset
                   </button>
-                  <button type="submit" class="btn btn-primary">
+                  <button type="submit" class="btn btn-primary px-4">
                     Gegevens opslaan
                   </button>
                 </div>
@@ -130,7 +162,6 @@
     const form = document.getElementById('profileForm');
     const resetBtn = document.getElementById('resetBtn');
 
-    // Bootstrap validation
     form.addEventListener('submit', function (e) {
       if (!form.checkValidity()) {
         e.preventDefault();

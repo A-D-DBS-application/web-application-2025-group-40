@@ -5,7 +5,8 @@
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
 
-  <div class="card shadow-lg text-center p-5" style="border-radius: 16px;">
+  <div class="card shadow-lg text-center p-5"
+       style="border-radius: 16px; max-width: 460px; width: 100%;">
 
     {% from '_logo.html' import logo %}
     {{ logo() }}
@@ -15,13 +16,15 @@
 
     <!-- Knoppen -->
     <button
-      class="btn student mb-3"
+      type="button"
+      class="btn btn-swipr-student btn-lg w-100 mb-3 py-3 fs-5"
       onclick="window.location.href='{{ url_for('login_student') }}'">
       Student
     </button>
 
     <button
-      class="btn bedrijf"
+      type="button"
+      class="btn btn-swipr-bedrijf btn-lg w-100 py-3 fs-5"
       onclick="window.location.href='{{ url_for('login_bedrijf') }}'">
       Bedrijf
     </button>
@@ -30,5 +33,3 @@
 
 </div>
 {% endblock %}
-
-

@@ -4,7 +4,6 @@
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
-
   <div class="card shadow-lg p-5 text-center"
        style="max-width: 420px; width: 100%; border-radius: 15px;">
 
@@ -26,45 +25,53 @@
     <form action="/login_student" method="POST">
 
       <div class="mb-3">
-        <input type="email"
-               name="email"
-               class="form-control"
-               placeholder="E-mail"
-               required>
+        <input
+          type="email"
+          name="email"
+          class="form-control"
+          placeholder="E-mail"
+          required
+        >
       </div>
 
       <div class="mb-3">
-        <input type="password"
-               name="password"
-               class="form-control"
-               placeholder="Wachtwoord"
-               required>
+        <input
+          type="password"
+          name="password"
+          class="form-control"
+          placeholder="Wachtwoord"
+          required
+        >
       </div>
 
       <div class="form-check mb-3 text-start">
-        <input class="form-check-input"
-               type="checkbox"
-               id="agree_terms"
-               name="agree_terms"
-               required>
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="agree_terms"
+          name="agree_terms"
+          required
+        >
         <label class="form-check-label" for="agree_terms">
           Ik ga akkoord met de
-          <a href="/terms" target="_blank">algemene voorwaarden</a>
+          <a href="/terms" target="_blank" class="link-primary">algemene voorwaarden</a>
         </label>
       </div>
 
-      <button type="submit"
-              class="btn student w-100 py-2"
-              id="login-submit">
+      <button
+        type="submit"
+        class="btn btn-swipr-student w-100 py-2"
+        id="login-submit">
         Login
       </button>
     </form>
 
-    <p class="auth-link mt-3 mb-0">
+    <p class="mt-3 mb-0">
       Nog geen account?
-      <a href="/registratie_student">Registreer hier</a>
+      <a href="/registratie_student" class="link-primary text-decoration-none fw-semibold">Registreer hier</a>
     </p>
 
   </div>
 </div>
 {% endblock %}
+

@@ -4,19 +4,17 @@
 
 {% block content %}
 
+{% from '_logo.html' import logo_brand %}
+
+{% set brand_color = '#ff4b5c' %}
+{% set brand_text_class = 'text-danger' %}
+
 <!-- ===== NAVBAR ===== -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
   <div class="container">
-    <a class="navbar-brand fw-bold text-danger d-flex align-items-center gap-2" href="/recruiter_dashboard">
-      <span class="d-inline-flex align-items-center justify-content-center rounded"
-            style="width:32px;height:32px;background:#ff4b5c;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-             xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </span>
-      Swipr
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2 {{ brand_text_class }}"
+       href="/recruiter_dashboard">
+      {{ logo_brand(32, brand_color, 'Swipr') }}
     </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
@@ -46,14 +44,14 @@
         <div class="card-body p-4 p-md-5">
 
           <div class="mb-4">
-            <h1 class="h4 fw-bold text-danger mb-1">Bedrijfsprofiel</h1>
+            <h1 class="h4 fw-bold {{ brand_text_class }} mb-1">Bedrijfsprofiel</h1>
             <p class="text-muted mb-0">Werk uw bedrijfsgegevens en accountgegevens bij.</p>
           </div>
 
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
               {% for category, message in messages %}
-                <div class="alert alert-{% if category == 'danger' %}danger{% elif category == 'success' %}success{% else %}secondary{% endif %} mb-3">
+                <div class="alert alert-{% if category == 'danger' %}danger{% elif category == 'success' %}success{% else %}secondary{% endif %} mb-3" role="alert">
                   {{ message }}
                 </div>
               {% endfor %}
@@ -108,7 +106,6 @@
                 >
               </div>
 
-              <!-- Nieuw wachtwoord direct onder BTW-nummer -->
               <div class="col-12">
                 <label class="form-label fw-semibold">Nieuw wachtwoord</label>
                 <input
@@ -143,9 +140,7 @@
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080">
   <div id="saveToast" class="toast align-items-center text-bg-light border shadow-sm" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
-      <div class="toast-body">
-        Gegevens opgeslagen ✅
-      </div>
+      <div class="toast-body">Gegevens opgeslagen ✅</div>
       <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
   </div>

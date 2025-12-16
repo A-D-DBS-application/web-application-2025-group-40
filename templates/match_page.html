@@ -4,19 +4,19 @@
 
 {% block content %}
 
+{% from '_logo.html' import logo_brand %}
+
+{% set is_recruiter = (current_user.is_authenticated and current_user.role == 'recruiter') %}
+{% set brand_color = '#ff4b5c' if is_recruiter else '#007bff' %}
+{% set brand_text_class = 'text-danger' if is_recruiter else 'text-primary' %}
+
 <!-- ===== NAVBAR ===== -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
   <div class="container">
-    <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="/">
-      <span class="d-inline-flex align-items-center justify-content-center rounded"
-            style="width:32px;height:32px;background:#007bff;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-             xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </span>
-      Swipr
+
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2 {{ brand_text_class }}"
+       href="{{ '/recruiter_dashboard' if is_recruiter else '/' }}">
+      {{ logo_brand(32, brand_color, 'Swipr') }}
     </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
@@ -26,6 +26,7 @@
 
     <div class="collapse navbar-collapse" id="mainNav">
       <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
         {% if current_user.is_authenticated and current_user.role == 'student' %}
           <li class="nav-item">
             <a class="nav-link" href="/student_dashboard">Mijn profiel</a>
@@ -44,6 +45,7 @@
             <a class="nav-link active fw-semibold" aria-current="page" href="/match_page">Matches</a>
           </li>
         {% endif %}
+
         <li class="nav-item">
           <a class="btn btn-outline-secondary btn-sm" href="/logout">Uitloggen</a>
         </li>
@@ -58,7 +60,7 @@
     <div class="col-lg-8">
 
       <div class="mb-4">
-        <h1 class="h3 fw-bold text-primary mb-1">Mijn Matches</h1>
+        <h1 class="h3 fw-bold {{ brand_text_class }} mb-1">Mijn Matches</h1>
         <p class="text-muted mb-0">Overzicht van je matches</p>
       </div>
 
@@ -81,7 +83,7 @@
                 <div>
                   <div class="text-muted small mb-1">Match</div>
 
-                  <h2 class="h5 fw-bold text-primary mb-2">
+                  <h2 class="h5 fw-bold {{ brand_text_class }} mb-2">
                     {{ job.title }}
                     {% if job.client %}
                       <span class="text-muted fw-normal"> – {{ job.client }}</span>

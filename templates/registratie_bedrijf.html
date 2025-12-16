@@ -3,29 +3,27 @@
 {% block title %}Swipr - Registratie Bedrijf{% endblock %}
 
 {% block content %}
+
+{% from '_logo.html' import logo_brand %}
+
+{% set brand_color = '#ff4b5c' %}
+
 <div class="container d-flex justify-content-center align-items-center min-vh-100 py-5">
   <div class="card shadow-sm w-100" style="max-width: 560px;">
     <div class="card-body p-4 p-md-5">
 
-      <div class="d-flex align-items-center gap-2 mb-3">
-        <span class="d-inline-flex align-items-center justify-content-center rounded"
-              style="width:32px;height:32px;background:#ff4b5c;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <div class="fw-bold" style="color:#ff4b5c;">Swipr</div>
+      <div class="d-flex align-items-center gap-2 mb-3 fw-bold" style="color:{{ brand_color }};">
+        {{ logo_brand(32, brand_color, '') }}
+        <span>Swipr</span>
       </div>
 
-      <h1 class="h4 fw-bold mb-1" style="color:#ff4b5c;">Registratie Bedrijf</h1>
+      <h1 class="h4 fw-bold mb-1" style="color:{{ brand_color }};">Registratie Bedrijf</h1>
       <p class="text-muted mb-4">Maak een bedrijfsaccount aan.</p>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           {% for category, message in messages %}
-            <div class="alert alert-{% if category == 'danger' %}danger{% elif category == 'success' %}success{% else %}warning{% endif %} mb-3">
+            <div class="alert alert-{% if category == 'danger' %}danger{% elif category == 'success' %}success{% else %}warning{% endif %} mb-3" role="alert">
               {{ message }}
             </div>
           {% endfor %}
@@ -46,7 +44,9 @@
             <label for="vatNumber" class="form-label fw-semibold">BTW-nummer</label>
             <input type="text" class="form-control" id="vatNumber" name="vatNumber"
                    placeholder="BE0123456789" required />
-            <div class="invalid-feedback" id="vatErrorBs">BTW-nummer moet beginnen met 'BE' gevolgd door 10 cijfers.</div>
+            <div class="invalid-feedback" id="vatErrorBs">
+              BTW-nummer moet beginnen met 'BE' gevolgd door 10 cijfers.
+            </div>
             <div class="form-text">Formaat: BE + 10 cijfers</div>
           </div>
 
@@ -54,7 +54,9 @@
             <label for="email" class="form-label fw-semibold">Zakelijke e-mail</label>
             <input type="email" class="form-control" id="email" name="email"
                    placeholder="bv. info@bedrijf.be" required />
-            <div class="invalid-feedback" id="emailErrorBs">Gebruik een professioneel bedrijfsdomein (geen gratis provider).</div>
+            <div class="invalid-feedback" id="emailErrorBs">
+              Gebruik een professioneel bedrijfsdomein (geen gratis provider).
+            </div>
           </div>
 
           <div class="col-12">
@@ -85,7 +87,8 @@
 
           <div class="col-12 text-center">
             <small class="text-muted">
-              Al een account? <a href="/login_bedrijf" class="text-decoration-none" style="color:#ff4b5c;">Log in</a>
+              Al een account?
+              <a href="/login_bedrijf" class="text-decoration-none" style="color:{{ brand_color }};">Log in</a>
             </small>
           </div>
 
@@ -102,8 +105,8 @@
     const vatInput = document.getElementById('vatNumber');
     const emailInput = document.getElementById('email');
 
-    const vatPattern = /^BE\d{10}$/;
-    
+    const vatPattern = /^BE\\d{10}$/;
+    const forbiddenDomains = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com"];
 
     function markValid(input) {
       input.classList.remove('is-invalid');
@@ -130,10 +133,9 @@
       const v = (emailInput.value || '').toLowerCase().trim();
       const isForbidden = forbiddenDomains.some(domain => v.endsWith("@" + domain));
       if (isForbidden) {
-        markInvalid(emailInput, "Ongeldig e-mailadres");
+        markInvalid(emailInput, "Gebruik een professioneel bedrijfsdomein");
         return false;
       }
-      // native email validity also matters
       if (!emailInput.checkValidity()) {
         markInvalid(emailInput, "Ongeldig e-mailadres");
         return false;
@@ -143,7 +145,6 @@
     }
 
     vatInput.addEventListener('input', () => {
-      // only auto-validate when user started typing something
       if (vatInput.value.trim().length >= 2) validateVat();
       else vatInput.classList.remove('is-valid', 'is-invalid');
     });
@@ -154,13 +155,9 @@
     });
 
     form.addEventListener('submit', function (e) {
-      // Bootstrap-like validation flow
       let ok = true;
 
-      // trigger native validation UI state
       if (!form.checkValidity()) ok = false;
-
-      // custom checks
       if (!validateVat()) ok = false;
       if (!validateEmail()) ok = false;
 
@@ -173,4 +170,5 @@
     });
   })();
 </script>
+
 {% endblock %}

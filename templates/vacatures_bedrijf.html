@@ -2,14 +2,19 @@
 
 {% block title %}Vacature Plaatsen — Swipr{% endblock %}
 
+{% from '_logo.html' import logo_brand %}
+
 {% block content %}
 
 <!-- ===== NAVBAR ===== -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
   <div class="container">
-    <a class="navbar-brand fw-bold" style="color:#FF4B5C;" href="/">Swipr</a>
+    <a class="navbar-brand fw-bold text-danger d-flex align-items-center gap-2" href="/recruiter_dashboard">
+      {{ logo_brand(32, '#ff4b5c', 'Swipr') }}
+    </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -34,7 +39,7 @@
       <div class="card shadow-sm">
         <div class="card-body p-4 p-md-5">
 
-          <h1 class="h3 fw-bold mb-1" style="color:#FF4B5C;">Vacature plaatsen</h1>
+          <h1 class="h3 fw-bold text-danger mb-1">Vacature plaatsen</h1>
           <p class="text-muted mb-4">Vul de gegevens in om een nieuwe vacature te publiceren.</p>
 
           <form method="POST" action="/vacature/opslaan">
@@ -111,13 +116,10 @@
               ></textarea>
             </div>
 
-            <button
-              type="submit"
-              class="btn w-100 mt-4 py-2 text-white"
-              style="background-color:#FF4B5C;"
-            >
+            <button type="submit" class="btn btn-swipr-bedrijf w-100 mt-4 py-2">
               Vacature plaatsen
             </button>
+
           </form>
 
         </div>

@@ -3,29 +3,27 @@
 {% block title %}Swipr - Registratie Student{% endblock %}
 
 {% block content %}
+
+{% from '_logo.html' import logo_brand %}
+
+{% set brand_color = '#007bff' %}
+
 <div class="container d-flex justify-content-center align-items-center min-vh-100 py-5">
   <div class="card shadow-sm w-100" style="max-width: 560px;">
     <div class="card-body p-4 p-md-5">
 
-      <div class="d-flex align-items-center gap-2 mb-3">
-        <span class="d-inline-flex align-items-center justify-content-center rounded"
-              style="width:32px;height:32px;background:#007bff;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <div class="fw-bold text-primary">Swipr</div>
+      <div class="d-flex align-items-center gap-2 mb-3 fw-bold" style="color:{{ brand_color }};">
+        {{ logo_brand(32, brand_color, '') }}
+        <span>Swipr</span>
       </div>
 
-      <h1 class="h4 fw-bold text-primary mb-1">Registratie Student</h1>
+      <h1 class="h4 fw-bold mb-1" style="color:{{ brand_color }};">Registratie Student</h1>
       <p class="text-muted mb-4">Maak je studentenaccount aan.</p>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           {% for category, message in messages %}
-            <div class="alert alert-{% if category == 'danger' %}danger{% elif category == 'success' %}success{% else %}warning{% endif %} mb-3">
+            <div class="alert alert-{% if category == 'danger' %}danger{% elif category == 'success' %}success{% else %}warning{% endif %} mb-3" role="alert">
               {{ message }}
             </div>
           {% endfor %}
@@ -72,7 +70,8 @@
 
           <div class="col-12 text-center">
             <small class="text-muted">
-              Al een account? <a href="/login_student" class="text-decoration-none">Log in</a>
+              Al een account?
+              <a href="/login_student" class="text-decoration-none" style="color:{{ brand_color }};">Log in</a>
             </small>
           </div>
 
@@ -101,7 +100,7 @@
       "howest.be"
     ];
 
-    const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+    const strongPattern = /^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,}$/;
 
     function markValid(input) {
       input.classList.remove('is-invalid');
@@ -124,7 +123,7 @@
         return false;
       }
       if (!isAllowed) {
-        markInvalid(emailInput, "Ongeldig e-mailadres");
+        markInvalid(emailInput, "Gebruik je officiële studenten e-mailadres");
         return false;
       }
 
@@ -155,10 +154,7 @@
     form.addEventListener('submit', function (e) {
       let ok = true;
 
-      // native required fields
       if (!form.checkValidity()) ok = false;
-
-      // custom rules
       if (!validateEmail()) ok = false;
       if (!validatePassword()) ok = false;
 
@@ -171,4 +167,5 @@
     });
   })();
 </script>
+
 {% endblock %}
