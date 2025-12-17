@@ -3,14 +3,14 @@
 {% block title %}Login Bedrijf - Swipr{% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center min-vh-100">
-  <div class="card shadow-lg p-5 text-center"
-       style="max-width: 420px; width: 100%; border-radius: 15px;">
+{% from '_logo.html' import logo %}
 
-    {% from '_logo.html' import logo %}
-    {{ logo(26, '#ff4b5c', '#ff4b5c') }}
+<div class="container d-flex justify-content-center align-items-center min-vh-100 py-5">
+  <div class="card shadow-lg text-center p-4 p-md-5 w-100 swipr-auth-card">
 
-    <h1 class="mb-4 text-danger">Login Bedrijf</h1>
+    {{ logo(26) }}
+
+    <h1 class="mb-4 text-swipr-bedrijf">Login Bedrijf</h1>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -45,14 +45,15 @@
 
       <button
         type="submit"
-        class="btn btn-swipr-bedrijf btn-lg w-100 py-3 fs-5">
+        class="btn btn-swipr-bedrijf btn-lg w-100 py-2">
         Login
       </button>
     </form>
 
     <p class="mt-3 mb-0">
       Nog geen account?
-      <a href="/registratie_bedrijf" class="text-decoration-none fw-semibold text-danger">
+      <a href="/registratie_bedrijf"
+         class="text-decoration-none fw-semibold text-swipr-bedrijf">
         Registreer hier
       </a>
     </p>

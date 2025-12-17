@@ -4,20 +4,20 @@
 
 {% block content %}
 
-{% from '_logo.html' import logo_brand %}
+{% from '_navbar.html' import navbar %}
 
-{% set brand_color = '#ff4b5c' %}
+{{ navbar(
+  variant='bedrijf',
+  show_brand=True,
+  links=[],
+  right_buttons=[{'href':'/login_bedrijf','label':'Log in','style':'outline'}]
+) }}
 
 <div class="container d-flex justify-content-center align-items-center min-vh-100 py-5">
-  <div class="card shadow-sm w-100" style="max-width: 560px;">
+  <div class="card shadow-sm w-100 swipr-auth-card">
     <div class="card-body p-4 p-md-5">
 
-      <div class="d-flex align-items-center gap-2 mb-3 fw-bold" style="color:{{ brand_color }};">
-        {{ logo_brand(32, brand_color, '') }}
-        <span>Swipr</span>
-      </div>
-
-      <h1 class="h4 fw-bold mb-1" style="color:{{ brand_color }};">Registratie Bedrijf</h1>
+      <h1 class="h4 fw-bold text-swipr-bedrijf mb-1">Registratie Bedrijf</h1>
       <p class="text-muted mb-4">Maak een bedrijfsaccount aan.</p>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
@@ -82,13 +82,15 @@
           </div>
 
           <div class="col-12 d-grid mt-2">
-            <button type="submit" class="btn btn-danger btn-lg">Registreren</button>
+            <button type="submit" class="btn btn-swipr-bedrijf btn-lg">
+              Registreren
+            </button>
           </div>
 
           <div class="col-12 text-center">
             <small class="text-muted">
               Al een account?
-              <a href="/login_bedrijf" class="text-decoration-none" style="color:{{ brand_color }};">Log in</a>
+              <a href="/login_bedrijf" class="text-decoration-none fw-semibold text-swipr-bedrijf">Log in</a>
             </small>
           </div>
 
@@ -132,14 +134,16 @@
     function validateEmail() {
       const v = (emailInput.value || '').toLowerCase().trim();
       const isForbidden = forbiddenDomains.some(domain => v.endsWith("@" + domain));
-      if (isForbidden) {
-        markInvalid(emailInput, "Gebruik een professioneel bedrijfsdomein");
-        return false;
-      }
+
       if (!emailInput.checkValidity()) {
         markInvalid(emailInput, "Ongeldig e-mailadres");
         return false;
       }
+      if (isForbidden) {
+        markInvalid(emailInput, "Gebruik een professioneel bedrijfsdomein");
+        return false;
+      }
+
       markValid(emailInput);
       return true;
     }

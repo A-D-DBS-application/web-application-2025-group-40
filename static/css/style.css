@@ -111,3 +111,21 @@ html, body {
   body { background: #fff; }
   nav, .navbar, .btn, .btn-close { display: none !important; }
 }
+.swipr-card-auth {
+  border-radius: 16px;
+  max-width: 460px;
+  width: 100%;
+}
+/* Auth card sizing (login/register cards) */
+.swipr-auth-card{
+  max-width: 420px;
+  border-radius: 15px;
+}
+/* ===== Recruiter dashboard banner ===== */
+.swipr-dashboard-banner {
+  background-color: var(--swipr-red);
+  color: #fff;
+  border-radius: 12px;
+  padding: 24px 32px;
+  margin-bottom: 24px;
+}

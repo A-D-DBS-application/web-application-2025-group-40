@@ -4,49 +4,25 @@
 
 {% block content %}
 
-{% from '_logo.html' import logo_brand %}
+{% from '_navbar.html' import navbar %}
 
-{% set brand_color = '#007bff' %}
+{{ navbar(
+  variant='student',
+  show_brand=True,
+  links=[
+    {'href':'/student_dashboard','label':'Mijn profiel','active':true},
+    {'href':'/match_page','label':'Matches'},
+    {'href':'/vacatures_student','label':'Vacatures'}
+  ],
+  right_buttons=[{'href':'/logout','label':'Uitloggen','style':'outline'}]
+) }}
 
-<!-- ===== NAVBAR ===== -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
-  <div class="container">
-
-    <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="/">
-      {{ logo_brand(32, brand_color, 'Swipr') }}
-    </a>
-
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="mainNav">
-      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
-        <li class="nav-item">
-          <a class="nav-link active fw-semibold" aria-current="page" href="/student_dashboard">Mijn profiel</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/match_page">Matches</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/vacatures_student">Vacatures</a>
-        </li>
-        <li class="nav-item">
-          <a class="btn btn-outline-secondary btn-sm" href="/logout">Uitloggen</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
-<!-- ===== CONTENT ===== -->
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-lg-8">
 
       <div class="mb-4">
-        <h1 class="h3 fw-bold text-primary mb-1">Student profiel</h1>
+        <h1 class="h3 fw-bold text-swipr-student mb-1">Student profiel</h1>
         <p class="text-muted mb-0">
           Werk je gegevens bij zodat werkgevers je correct kunnen benaderen.
         </p>
@@ -131,7 +107,7 @@
                   <button type="button" id="resetBtn" class="btn btn-outline-secondary">
                     Reset
                   </button>
-                  <button type="submit" class="btn btn-primary px-4">
+                  <button type="submit" class="btn btn-swipr-student px-4">
                     Gegevens opslaan
                   </button>
                 </div>

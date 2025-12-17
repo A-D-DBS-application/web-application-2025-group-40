@@ -4,36 +4,18 @@
 
 {% block content %}
 
-{% from '_logo.html' import logo_brand %}
+{% from '_navbar.html' import navbar %}
 
-{% set brand_color = '#ff4b5c' %}
-{% set brand_text_class = 'text-danger' %}
-
-<!-- ===== NAVBAR ===== -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-bold d-flex align-items-center gap-2 {{ brand_text_class }}"
-       href="/recruiter_dashboard">
-      {{ logo_brand(32, brand_color, 'Swipr') }}
-    </a>
-
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="mainNav">
-      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
-        <li class="nav-item">
-          <a class="nav-link" href="/recruiter_dashboard">Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="btn btn-outline-secondary btn-sm" href="/logout">Uitloggen</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
+{{ navbar(
+  variant='bedrijf',
+  show_brand=True,
+  links=[
+    {'href':'/recruiter_dashboard','label':'Dashboard'}
+  ],
+  right_buttons=[
+    {'href':'/logout','label':'Uitloggen','style':'outline'}
+  ]
+) }}
 
 <!-- ===== CONTENT ===== -->
 <div class="container py-5">
@@ -44,7 +26,7 @@
         <div class="card-body p-4 p-md-5">
 
           <div class="mb-4">
-            <h1 class="h4 fw-bold {{ brand_text_class }} mb-1">Bedrijfsprofiel</h1>
+            <h1 class="h4 fw-bold text-swipr-bedrijf mb-1">Bedrijfsprofiel</h1>
             <p class="text-muted mb-0">Werk uw bedrijfsgegevens en accountgegevens bij.</p>
           </div>
 
@@ -121,7 +103,7 @@
                 <button type="button" id="resetBtn" class="btn btn-outline-secondary">
                   Reset
                 </button>
-                <button type="submit" id="saveBtn" class="btn btn-danger px-4">
+                <button type="submit" id="saveBtn" class="btn btn-swipr-bedrijf px-4">
                   Gegevens opslaan
                 </button>
               </div>
@@ -137,7 +119,7 @@
 </div>
 
 <!-- Toast container -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080">
+<div class="position-fixed bottom-0 end-0 p-3 swipr-toast-layer">
   <div id="saveToast" class="toast align-items-center text-bg-light border shadow-sm" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
       <div class="toast-body">Gegevens opgeslagen ✅</div>

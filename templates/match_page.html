@@ -4,55 +4,29 @@
 
 {% block content %}
 
-{% from '_logo.html' import logo_brand %}
+{% from '_navbar.html' import navbar %}
 
 {% set is_recruiter = (current_user.is_authenticated and current_user.role == 'recruiter') %}
-{% set brand_color = '#ff4b5c' if is_recruiter else '#007bff' %}
-{% set brand_text_class = 'text-danger' if is_recruiter else 'text-primary' %}
+{% set variant = 'bedrijf' if is_recruiter else 'student' %}
+{% set brand_text_class = 'text-swipr-bedrijf' if is_recruiter else 'text-swipr-student' %}
 
-<!-- ===== NAVBAR ===== -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
-  <div class="container">
-
-    <a class="navbar-brand fw-bold d-flex align-items-center gap-2 {{ brand_text_class }}"
-       href="{{ '/recruiter_dashboard' if is_recruiter else '/' }}">
-      {{ logo_brand(32, brand_color, 'Swipr') }}
-    </a>
-
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="mainNav">
-      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
-
-        {% if current_user.is_authenticated and current_user.role == 'student' %}
-          <li class="nav-item">
-            <a class="nav-link" href="/student_dashboard">Mijn profiel</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/vacatures_student">Vacatures</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active fw-semibold" aria-current="page" href="/match_page">Matches</a>
-          </li>
-        {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="/recruiter_dashboard">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active fw-semibold" aria-current="page" href="/match_page">Matches</a>
-          </li>
-        {% endif %}
-
-        <li class="nav-item">
-          <a class="btn btn-outline-secondary btn-sm" href="/logout">Uitloggen</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
+{{ navbar(
+  variant=variant,
+  show_brand=True,
+  links=(
+    [
+      {'href':'/student_dashboard','label':'Mijn profiel'},
+      {'href':'/vacatures_student','label':'Vacatures'},
+      {'href':'/match_page','label':'Matches'}
+    ] if (current_user.is_authenticated and current_user.role == 'student')
+    else
+    [
+      {'href':'/recruiter_dashboard','label':'Dashboard'},
+      {'href':'/match_page','label':'Matches'}
+    ]
+  ),
+  right_buttons=[{'href':'/logout','label':'Uitloggen','style':'outline'}]
+) }}
 
 <!-- ===== CONTENT ===== -->
 <div class="container py-5">
@@ -91,11 +65,7 @@
                   </h2>
                 </div>
 
-                {% if match and match.matched_at %}
-                  <span class="badge text-bg-light border">
-                    {{ match.matched_at.strftime("%Y-%m-%d") }}
-                  </span>
-                {% endif %}
+               
               </div>
 
               <ul class="list-unstyled mb-0 mt-3">

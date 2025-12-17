@@ -4,20 +4,20 @@
 
 {% block content %}
 
-{% from '_logo.html' import logo_brand %}
+{% from '_navbar.html' import navbar %}
 
-{% set brand_color = '#007bff' %}
+{{ navbar(
+  variant='student',
+  show_brand=True,
+  links=[],
+  right_buttons=[{'href':'/login_student','label':'Log in','style':'outline'}]
+) }}
 
 <div class="container d-flex justify-content-center align-items-center min-vh-100 py-5">
-  <div class="card shadow-sm w-100" style="max-width: 560px;">
+  <div class="card shadow-sm w-100 swipr-auth-card">
     <div class="card-body p-4 p-md-5">
 
-      <div class="d-flex align-items-center gap-2 mb-3 fw-bold" style="color:{{ brand_color }};">
-        {{ logo_brand(32, brand_color, '') }}
-        <span>Swipr</span>
-      </div>
-
-      <h1 class="h4 fw-bold mb-1" style="color:{{ brand_color }};">Registratie Student</h1>
+      <h1 class="h4 fw-bold text-swipr-student mb-1">Registratie Student</h1>
       <p class="text-muted mb-4">Maak je studentenaccount aan.</p>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
@@ -50,7 +50,7 @@
           <div class="col-12">
             <label for="email" class="form-label fw-semibold">Studenten e-mail</label>
             <input type="email" class="form-control" id="email" name="email"
-                   placeholder="bv. naam@student.ugent.be" required />
+                   placeholder="bv. rene.vl@ugent.be" required />
             <div class="invalid-feedback" id="emailErrorBs">Gebruik je officiële studenten e-mailadres.</div>
             <div class="form-text">Enkel toegelaten studentendomeinen.</div>
           </div>
@@ -65,13 +65,15 @@
           </div>
 
           <div class="col-12 d-grid mt-2">
-            <button type="submit" class="btn btn-primary btn-lg">Registreren</button>
+            <button type="submit" class="btn btn-swipr-student btn-lg">
+              Registreren
+            </button>
           </div>
 
           <div class="col-12 text-center">
             <small class="text-muted">
               Al een account?
-              <a href="/login_student" class="text-decoration-none" style="color:{{ brand_color }};">Log in</a>
+              <a href="/login_student" class="text-decoration-none fw-semibold text-swipr-student">Log in</a>
             </small>
           </div>
 
@@ -100,30 +102,64 @@
       "howest.be"
     ];
 
-    const strongPattern = /^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,}$/;
+    // Simpele email regex (we vertrouwen NIET op typeMismatch/checkValidity)
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+
+    function clearMarks(input) {
+      input.classList.remove('is-valid', 'is-invalid');
+      input.setCustomValidity('');
+    }
     function markValid(input) {
       input.classList.remove('is-invalid');
       input.classList.add('is-valid');
       input.setCustomValidity('');
     }
-
     function markInvalid(input, message) {
       input.classList.remove('is-valid');
       input.classList.add('is-invalid');
       input.setCustomValidity(message || 'invalid');
     }
 
-    function validateEmail() {
-      const emailValue = (emailInput.value || '').toLowerCase().trim();
-      const isAllowed = allowedDomains.some(domain => emailValue.endsWith("@" + domain));
+    function getDomain(v) {
+      const at = v.lastIndexOf('@');
+      if (at === -1) return '';
+      return v.slice(at + 1).trim();
+    }
 
-      if (!emailInput.checkValidity()) {
+    function isAllowedDomain(domain) {
+      // exact: ugent.be
+      // of subdomain: student.ugent.be
+      return allowedDomains.some(d => domain === d);
+    }
+
+    function validateEmail(strict = false) {
+      const v = (emailInput.value || '').trim().toLowerCase();
+
+      // tijdens typen: nog geen @ => neutraal
+      if (!strict && !v.includes('@')) {
+        clearMarks(emailInput);
+        return false;
+      }
+
+      // tijdens typen: pas “iets doen” als het er uitziet als een volledige email
+      if (!strict && !emailPattern.test(v)) {
+        clearMarks(emailInput);
+        return false;
+      }
+
+      // strict (blur/submit): dan echt valideren
+      if (strict && !emailPattern.test(v)) {
         markInvalid(emailInput, "Ongeldig e-mailadres");
         return false;
       }
-      if (!isAllowed) {
-        markInvalid(emailInput, "Gebruik je officiële studenten e-mailadres");
+
+      const domain = getDomain(v);
+
+      if (!isAllowedDomain(domain)) {
+        if (strict) markInvalid(emailInput, "Gebruik je officiële studenten e-mailadres");
+        else clearMarks(emailInput);
         return false;
       }
 
@@ -131,32 +167,39 @@
       return true;
     }
 
-    function validatePassword() {
+    function validatePassword(strict = false) {
       const value = passwordInput.value || '';
-      if (!strongPattern.test(value)) {
-        markInvalid(passwordInput, "Wachtwoord niet sterk genoeg");
+
+      if (!strict && value.length === 0) {
+        clearMarks(passwordInput);
         return false;
       }
+
+      if (!strongPattern.test(value)) {
+        if (strict) markInvalid(passwordInput, "Wachtwoord niet sterk genoeg");
+        else clearMarks(passwordInput);
+        return false;
+      }
+
       markValid(passwordInput);
       return true;
     }
 
-    emailInput.addEventListener('input', () => {
-      if (emailInput.value.trim().length >= 3) validateEmail();
-      else emailInput.classList.remove('is-valid', 'is-invalid');
-    });
+    emailInput.addEventListener('input', () => validateEmail(false));
+    emailInput.addEventListener('blur', () => validateEmail(true));
 
-    passwordInput.addEventListener('input', () => {
-      if (passwordInput.value.length > 0) validatePassword();
-      else passwordInput.classList.remove('is-valid', 'is-invalid');
-    });
+    passwordInput.addEventListener('input', () => validatePassword(false));
+    passwordInput.addEventListener('blur', () => validatePassword(true));
 
     form.addEventListener('submit', function (e) {
       let ok = true;
 
+      // laat bootstrap required velden checken
       if (!form.checkValidity()) ok = false;
-      if (!validateEmail()) ok = false;
-      if (!validatePassword()) ok = false;
+
+      // maar email/password doen we zelf strict
+      if (!validateEmail(true)) ok = false;
+      if (!validatePassword(true)) ok = false;
 
       if (!ok) {
         e.preventDefault();
