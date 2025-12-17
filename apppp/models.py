@@ -160,7 +160,12 @@ class Joblike(db.Model):
     def __repr__(self):
         return f'<Joblike user_id={self.user_id} job_id={self.job_id}>'
     
-    class Stopword(db.Model):
+
+# ---------------------------------------------------
+# STOPWORD
+# ---------------------------------------------------
+    
+class Stopword(db.Model):
         __tablename__ = 'stopwords'
         id = db.Column(db.Integer, primary_key=True)
         word = db.Column(db.String(50), unique=True, nullable=False)
