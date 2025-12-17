@@ -11,7 +11,8 @@ def create_app():
     with app.app_context():
         db.create_all()  # Create sql tables for our data models
 
-    from .routes import main
-    app.register_blueprint(main)
+    # Do not automatically import or register routes on package import.
+    # Route registration is performed explicitly by importing the desired
+    # routes module from the application entrypoint (app.py).
 
     return app

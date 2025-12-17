@@ -89,17 +89,6 @@
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
 
-    const allowedDomains = [
-      "ugent.be", "student.ugent.be",
-      "kuleuven.be", "student.kuleuven.be",
-      "hogent.be", "student.hogent.be",
-      "vub.be",
-      "arteveldehs.be",
-      "student.odisee.be",
-      "student.uantwerpen.be",
-      "student.vives.be",
-      "howest.be"
-    ];
 
     const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
 
@@ -117,7 +106,6 @@
 
     function validateEmail() {
       const emailValue = (emailInput.value || '').toLowerCase().trim();
-      const isAllowed = allowedDomains.some(domain => emailValue.endsWith("@" + domain));
 
       if (!emailInput.checkValidity()) {
         markInvalid(emailInput, "Ongeldig e-mailadres");
