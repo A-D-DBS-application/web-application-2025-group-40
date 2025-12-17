@@ -11,11 +11,7 @@
   --swipr-red-dark: #e04352;
 }
 
-/* Optioneel: minimale body styling (Bootstrap blijft leidend) */
-html, body {
-  margin: 0;
-  padding: 0;
-}
+
 
 /* ===== Footer (als je die gebruikt) ===== */
 .site-footer {
@@ -110,11 +106,7 @@ html, body {
 @media print {
   body { background: #fff; }
   nav, .navbar, .btn, .btn-close { display: none !important; }
-}
-.swipr-card-auth {
-  border-radius: 16px;
-  max-width: 460px;
-  width: 100%;
+
 }
 /* Auth card sizing (login/register cards) */
 .swipr-auth-card{
