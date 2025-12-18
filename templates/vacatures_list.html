@@ -7,15 +7,15 @@
 {% from '_navbar.html' import navbar %}
 
 {{ navbar(
-  variant='student',
-  show_brand=True,
-  links=[
-    {'href':'/student_dashboard','label':'Mijn profiel'},
-    {'href':'/match_page','label':'Matches'}
-  ],
-  right_buttons=[
-    {'href':'/logout','label':'Uitloggen','style':'outline'}
-  ]
+variant='student',
+show_brand=True,
+links=[
+{'href':'/student_dashboard','label':'Mijn profiel'},
+{'href':'/match_page','label':'Matches'}
+],
+right_buttons=[
+{'href':'/logout','label':'Uitloggen','style':'outline'}
+]
 ) }}
 
 <!-- ===== CONTENT ===== -->
@@ -27,68 +27,69 @@
       <p class="text-muted mb-4">Kies een vacature en like/dislike om te matchen.</p>
 
       {% if jobs %}
-        {% for item in jobs %}
-          <div class="card shadow-sm mb-4 position-relative">
-            <div class="card-body p-4">
+      {% for item in jobs %}
+      <div class="card shadow-sm mb-4 position-relative">
+        <div class="card-body p-4">
 
-              <!-- Match badge -->
-              <div class="position-absolute top-0 end-0 m-3">
-                <span class="badge rounded-pill text-bg-primary">
-                  {{ item.fit_pct }}% match
-                </span>
-              </div>
+          <!-- Match badge -->
+          <div class="position-absolute top-0 end-0 m-3">
+            <span class="badge rounded-pill text-bg-primary">
+              {{ item.fit_pct }}% match
+            </span>
+          </div>
 
-              <h2 class="h5 fw-bold text-swipr-student mb-3">
-                {{ item.job.title }}
-                {% if item.job.client %}
-                  <span class="text-muted fw-normal"> – {{ item.job.client }}</span>
-                {% endif %}
-              </h2>
+          <h2 class="h5 fw-bold text-swipr-student mb-3">
+            {{ item.job.title }}
+            {% if item.job.client %}
+            <span class="text-muted fw-normal"> – {{ item.job.client }}</span>
+            {% endif %}
+          </h2>
 
-              <div class="mb-3">
-                <div class="fw-semibold small text-secondary">Bedrijf</div>
-                <div class="bg-light border rounded p-3">
-                  {{ item.job.client or item.job.company_name or 'Onbekend' }}
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <div class="fw-semibold small text-secondary">Locatie</div>
-                <div class="bg-light border rounded p-3">
-                  {{ item.job.location }}
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <div class="fw-semibold small text-secondary">Beschrijving</div>
-                <div class="bg-light border rounded p-3">
-                  {{ item.job.description }}
-                </div>
-              </div>
-
-              <div class="d-flex gap-2 flex-wrap mt-4">
-                <form action="/jobs/{{ item.job.id }}/like" method="POST" class="m-0">
-                  <button type="submit" class="btn btn-swipr-student px-4">
-                    👍 Like
-                  </button>
-                </form>
-
-                <form action="/jobs/{{ item.job.id }}/dislike" method="POST" class="m-0">
-                  <button type="submit" class="btn btn-outline-secondary px-4">
-                    👎 Dislike
-                  </button>
-                </form>
-              </div>
-
+          <div class="mb-3">
+            <div class="fw-semibold small text-secondary">Bedrijf</div>
+            <div class="bg-light border rounded p-3">
+              {{ item.job.client or item.job.company_name or 'Onbekend' }}
             </div>
           </div>
-        {% endfor %}
-      {% else %}
-        <div class="card shadow-sm">
-          <div class="card-body p-4">
-            <p class="text-muted mb-0">Geen vacatures beschikbaar op dit moment.</p>
+
+          <div class="mb-3">
+            <div class="fw-semibold small text-secondary">Locatie</div>
+            <div class="bg-light border rounded p-3">
+              {{ item.job.location }}
+            </div>
           </div>
+
+          <div class="mb-3">
+            <div class="fw-semibold small text-secondary">Beschrijving</div>
+            <div class="bg-light border rounded p-3">
+              {{ item.job.description }}
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 flex-wrap mt-4">
+            <form action="/jobs/{{ item.job.id }}/like" method="POST" class="m-0">
+              <button type="submit" class="btn btn-like px-4">
+                👍 Like
+              </button>
+            </form>
+
+            <form action="/jobs/{{ item.job.id }}/dislike" method="POST" class="m-0">
+              <button type="submit" class="btn btn-dislike px-4">
+                👎 Dislike
+              </button>
+            </form>
+
+          </div>
+
         </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <p class="text-muted mb-0">Geen vacatures beschikbaar op dit moment.</p>
+        </div>
+      </div>
       {% endif %}
 
     </div>

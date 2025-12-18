@@ -107,8 +107,9 @@
     const vatInput = document.getElementById('vatNumber');
     const emailInput = document.getElementById('email');
 
-    const vatPattern = /^BE\\d{10}$/;
-    const forbiddenDomains = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com"];
+    const vatPattern = /^BE\d{10}$/i;
+    const forbiddenDomains = new Set(["gmail.com", "hotmail.com", "outlook.com", "yahoo.com"]);
+
 
     function markValid(input) {
       input.classList.remove('is-invalid');
@@ -132,21 +133,33 @@
     }
 
     function validateEmail() {
-      const v = (emailInput.value || '').toLowerCase().trim();
-      const isForbidden = forbiddenDomains.some(domain => v.endsWith("@" + domain));
+  const v = (emailInput.value || '').trim().toLowerCase();
 
-      if (!emailInput.checkValidity()) {
-        markInvalid(emailInput, "Ongeldig e-mailadres");
-        return false;
-      }
-      if (isForbidden) {
-        markInvalid(emailInput, "Gebruik een professioneel bedrijfsdomein");
-        return false;
-      }
+  // eerst basis email check (HTML5)
+  if (!emailInput.checkValidity()) {
+    markInvalid(emailInput, "Ongeldig e-mailadres");
+    return false;
+  }
 
-      markValid(emailInput);
-      return true;
-    }
+  // domein uit e-mail halen
+  const parts = v.split("@");
+  if (parts.length !== 2) {
+    markInvalid(emailInput, "Ongeldig e-mailadres");
+    return false;
+  }
+
+  const domain = parts[1].trim();
+
+  // enkel blokkeren als domein exact een gratis provider is
+  if (forbiddenDomains.has(domain)) {
+    markInvalid(emailInput, "Gebruik een professioneel bedrijfsdomein");
+    return false;
+  }
+
+  markValid(emailInput);
+  return true;
+}
+
 
     vatInput.addEventListener('input', () => {
       if (vatInput.value.trim().length >= 2) validateVat();

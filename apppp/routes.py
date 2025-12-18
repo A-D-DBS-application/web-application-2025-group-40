@@ -1,372 +1,450 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, abort
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import IntegrityError
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, login_user, login_required, current_user, logout_user, UserMixin
-from datetime import datetime
-from sqlalchemy.dialects.postgresql import ARRAY, DATERANGE
-from collections import Counter
+# apppp/routes.py
 import re
-from utils.stopwords import load_stopwords_from_db
-from models import AppUser, Employer, RecruiterUser, Student, JobListing, JobLike, Match
+from datetime import datetime, timedelta
+
+from flask import render_template, request, redirect, url_for, flash, abort, jsonify
+from flask_login import login_user, login_required, logout_user, current_user
+
+from apppp.extensions import db
+from apppp.models import AppUser, Student, RecruiterUser, Employer, JobListing, Match, Dislike
 
 
-# ------------------ APP SETUP ------------------
-app = Flask(__name__)
-# NOTE: replace the URI below with your real credentials or use environment variables
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Group40Ufora%21@db.aicnouxwbuydippwukbs.supabase.co:5432/postgres'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'replace-this-with-a-secure-random-value'
+def register_routes(app, supabase=None):
 
-# ------------------ DB & LOGIN ------------------
-db = SQLAlchemy(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+    # -----------------------
+    # Helpers
+    # -----------------------
+    def get_current_recruiter():
+        if not (current_user.is_authenticated and getattr(current_user, "role", None) == "recruiter"):
+            return None
+        return RecruiterUser.query.filter_by(user_id=current_user.id).first()
 
+    def get_employer_for_current_user():
+        rec = get_current_recruiter()
+        return rec.employer if rec and rec.employer else None
 
+    def recruiter_owns_job(job):
+        rec = get_current_recruiter()
+        return bool(rec and rec.employer and job and rec.employer.id == job.employer_id)
 
-# ------------------ LOGIN MANAGER ------------------
-@login_manager.user_loader
-def load_user(user_id):
-    return AppUser.query.get(int(user_id))
+    def populate_jobs_display_fields(jobs):
+        for job in jobs:
+            job.company_name = job.employer.name if job.employer else "Onbekend"
+            job.match_count = len(job.matches or [])
 
+    def tokenize(text: str, stopwords: set[str]) -> list[str]:
+        """Split text into words, lowercased, stopwords removed."""
+        if not text:
+            return []
+        words = re.findall(r"\w+", text.lower())
+        return [w for w in words if w and w not in stopwords]
 
-# ------------------ UTILITIES ------------------
+    # -----------------------
+    # ROUTES
+    # -----------------------
+    @app.route("/")
+    def index():
+        return render_template("index.html")
 
+    @app.route("/terms")
+    def terms():
+        return render_template("terms.html")
 
-def tokenize(text):
-    if not text:
-        return []
+    @app.route("/login_bedrijf", methods=["GET", "POST"])
+    def login_bedrijf():
+        if request.method == "POST":
+            email = request.form.get("email")
+            password = request.form.get("password")
 
-    words = re.findall(r"\w+", text.lower())
-    return [w for w in words if w not in STOPWORDS]
+            user = AppUser.query.filter_by(email=email).first()
+            if not user or not user.check_password(password):
+                flash("Foute email of wachtwoord!", "danger")
+                return redirect(url_for("login_bedrijf"))
 
+            if user.role != "recruiter":
+                flash("Dit account is geen bedrijf/recruiter account.", "danger")
+                return redirect(url_for("login_bedrijf"))
 
+            login_user(user)
+            flash("Inloggen gelukt.", "success")
+            return redirect(url_for("recruiter_dashboard_view"))
 
-# ------------------ AUTH / REGISTER HELPERS ------------------
+        return render_template("login_bedrijf.html")
 
-def authenticate_user(email, password):
-    user = AppUser.query.filter_by(email=email).first()
-    if not user:
-        return None, "Geen account gevonden."
-    if not user.check_password(password):
-        return None, "Verkeerd wachtwoord."
-    return user, None
+    @app.route("/login_student", methods=["GET", "POST"])
+    def login_student():
+        if request.method == "POST":
+            agree = request.form.get("agree_terms")
+            if agree != "on":
+                flash("Je moet de algemene voorwaarden accepteren.", "danger")
+                return redirect(url_for("login_student"))
 
+            email = request.form.get("email")
+            password = request.form.get("password")
 
-def create_user(username, email, password, role='student'):
-    user = AppUser(username=username, email=email, role=role)
-    user.set_password(password)
-    return user
+            user = AppUser.query.filter_by(email=email).first()
+            if not user or not user.check_password(password):
+                flash("Foute email of wachtwoord!", "danger")
+                return redirect(url_for("login_student"))
 
+            if user.role != "student":
+                flash("Dit account is geen student account.", "danger")
+                return redirect(url_for("login_student"))
 
-# ------------------ ROUTES ------------------
+            login_user(user)
+            return redirect(url_for("vacatures_student"))
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+        return render_template("login_student.html")
 
+    @app.route("/logout")
+    @login_required
+    def logout():
+        logout_user()
+        flash("Uitgelogd.", "info")
+        return redirect(url_for("index"))
 
-@app.route('/choose_role')
-def choose_role():
-    return render_template('choose_role.html')
+    @app.route("/registratie_student", methods=["GET", "POST"])
+    def registratie_student():
+        if request.method == "POST":
+            email = request.form.get("email")
+            password = request.form.get("password")
 
+            # matcht met jouw template input names:
+            first_name = request.form.get("firstName", "")
+            last_name = request.form.get("lastName", "")
 
-@app.route('/login', methods=['GET', 'POST'])
-def login_route():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        user, error = authenticate_user(email, password)
-        if error:
-            return jsonify({'error': error}), 400
-        login_user(user)
-        return jsonify({'success': f'Ingelogd als {user.role}!'}), 200
-    return render_template('login.html')
+            if AppUser.query.filter_by(email=email).first():
+                flash("Email is al in gebruik.", "danger")
+                return redirect(url_for("registratie_student"))
 
-
-@app.route('/login_bedrijf', methods=['GET', 'POST'])
-def login_bedrijf():
-    """Login voor recruiters/bedrijven —zelfde flow als student login maar controleert rol."""
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        user, error = authenticate_user(email, password)
-        if error:
-            return jsonify({'error': error}), 400
-
-        # Zorg dat alleen recruiters/bedrijven via deze route kunnen inloggen
-        if not user or user.role != 'recruiter':
-            return jsonify({'error': 'Geen bedrijf/recruiter account gevonden voor deze inloggegevens.'}), 403
-
-        login_user(user)
-        return jsonify({'success': f'Ingelogd als {user.role}!'}), 200
-    return render_template('login_bedrijf.html')
-
-
-@app.route('/logout')
-@login_required
-def logout_route():
-    logout_user()
-    return redirect(url_for('index'))
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register_route():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        role = request.form.get('role', 'student')
-
-        existing_user = AppUser.query.filter((AppUser.email == email) | (AppUser.username == username)).first()
-        if existing_user:
-            return jsonify({'error': 'Dit emailadres of username is al gebruikt.'}), 400
-
-        new_user = create_user(username=username, email=email, password=password, role=role)
-        try:
-            db.session.add(new_user)
-            db.session.commit()
-            login_user(new_user)
-            return jsonify({'success': 'Account aangemaakt en ingelogd!'}), 201
-        except IntegrityError:
-            db.session.rollback()
-            return jsonify({'error': 'Kon account niet aanmaken.'}), 500
-
-    return render_template('register.html')
-
-
-@app.route('/register_bedrijf', methods=['GET', 'POST'])
-def register_company_route():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        company_name = request.form.get('company_name', 'Onbekend')
-
-        if AppUser.query.filter((AppUser.email == email) | (AppUser.username == username)).first():
-            return jsonify({'error': 'Email of username al in gebruik.'}), 400
-
-        try:
-            new_employer = Employer(name=company_name)
-            db.session.add(new_employer)
+            user = AppUser(email=email, role="student")
+            user.set_password(password)
+            db.session.add(user)
             db.session.flush()
 
-            recruiter = create_user(username=username, email=email, password=password, role='recruiter')
-            db.session.add(recruiter)
-            db.session.flush()
-
-            recruiter_link = RecruiterUser(employer_id=new_employer.id, user_id=recruiter.id, is_admin=True)
-            db.session.add(recruiter_link)
+            student = Student(user_id=user.id, first_name=first_name, last_name=last_name)
+            db.session.add(student)
             db.session.commit()
 
-            login_user(recruiter)
-            return jsonify({'success': f"Bedrijf '{company_name}' aangemaakt met recruiter {username}"}), 201
-        except IntegrityError:
-            db.session.rollback()
-            return jsonify({'error': 'Kon bedrijf niet registreren.'}), 500
+            flash("Account aangemaakt. Log in met je gegevens.", "success")
+            return redirect(url_for("login_student"))
 
-    return render_template('registratie_bedrijf.html')
+        return render_template("registratie_student.html")
 
+    @app.route("/registratie_bedrijf", methods=["GET", "POST"])
+    def registratie_bedrijf():
+        if request.method == "POST":
+            company_name = request.form.get("companyName")
+            email = request.form.get("email")
+            password = request.form.get("password")
 
-@app.route('/api/vacatures', methods=['GET'])
-def get_vacatures():
-    vacatures = [
-        {"id": 1, "title": "Student Kassamedewerker", "description": "Weekendjob in supermarkt", "location": "Gent"},
-        {"id": 2, "title": "IT Support Student", "description": "Helpdesk op campus", "location": "Antwerpen"},
-        {"id": 3, "title": "Barista", "description": "Studentenjob in koffiebar", "location": "Leuven"}
-    ]
-    return jsonify(vacatures)
+            if AppUser.query.filter_by(email=email).first():
+                flash("Email is al in gebruik.", "danger")
+                return redirect(url_for("registratie_bedrijf"))
 
+            employer = Employer(name=company_name, contact_email=email)
+            db.session.add(employer)
+            db.session.flush()
 
-@app.route('/api/notificatie', methods=['POST'])
-def send_notificatie():
-    data = request.json or {}
-    vacature_id = data.get('vacatureId')
-    app.logger.info(f"Student heeft vacature {vacature_id} geliket!")
-    return jsonify({'message': 'Notificatie verzonden'}), 200
+            user = AppUser(email=email, role="recruiter")
+            user.set_password(password)
+            db.session.add(user)
+            db.session.flush()
 
+            rec = RecruiterUser(employer_id=employer.id, user_id=user.id, is_admin=True)
+            db.session.add(rec)
+            db.session.commit()
 
-@app.route('/jobs/<int:job_id>/like', methods=['POST'])
-@login_required
-def like_job(job_id):
-    user_id = current_user.id
-    job = JobListing.query.get(job_id)
-    if not job:
-        return jsonify({'error': 'Job bestaat niet'}), 404
+            flash("Account aangemaakt. Log in met je gegevens.", "success")
+            return redirect(url_for("login_bedrijf"))
 
-    existing = JobLike.query.filter_by(user_id=user_id, job_id=job_id).first()
-    if existing:
-        return jsonify({'message': 'Job is al geliked'}), 200
+        return render_template("registratie_bedrijf.html")
 
-    like = JobLike(user_id=user_id, job_id=job_id)
-    db.session.add(like)
-    db.session.commit()
-    return jsonify({'message': 'Job geliked'}), 201
+    @app.route("/recruiter_dashboard")
+    @login_required
+    def recruiter_dashboard_view():
+        if getattr(current_user, "role", None) != "recruiter":
+            abort(403)
 
+        employer = get_employer_for_current_user()
+        if not employer:
+            employer = Employer.query.filter_by(name="ACME BV").first()
 
-# ------------------ RECRUITER: LIST & DELETE OWN JOBS ------------------
-@app.route('/api/my-jobs', methods=['GET'])
-@login_required
-def get_my_jobs():
-    # Haal employer ids waar huidige gebruiker recruiter voor is
-    recruiter_links = RecruiterUser.query.filter_by(user_id=current_user.id).all()
-    employer_ids = [link.employer_id for link in recruiter_links]
+        jobs = []
+        if employer:
+            jobs = JobListing.query.filter_by(employer_id=employer.id, is_active=True).all()
 
-    if not employer_ids:
-        return jsonify([]), 200
+        populate_jobs_display_fields(jobs)
+        jobs = sorted(jobs, key=lambda j: getattr(j, "match_count", 0), reverse=True)
 
-    jobs = JobListing.query.filter(JobListing.employer_id.in_(employer_ids)).all()
-    result = []
-    for job in jobs:
-        result.append({
-            'id': int(job.id),
-            'title': job.title,
-            'location': job.location,
-            'description': job.description or ''
-        })
-    return jsonify(result), 200
+        active_job_count = len(jobs)
+        total_matches = 0
+        matches_last_7_days = 0
+        cutoff = datetime.utcnow() - timedelta(days=7)
 
+        for job in jobs:
+            jm = job.matches or []
+            total_matches += len(jm)
+            for m in jm:
+                if m.matched_at and m.matched_at >= cutoff:
+                    matches_last_7_days += 1
 
-@app.route('/jobs/<int:job_id>/delete', methods=['POST'])
-@login_required
-def delete_job(job_id):
-    job = JobListing.query.get(job_id)
-    if not job:
-        app.logger.info('Delete attempt failed: job %s not found (user %s)', job_id, getattr(current_user, 'id', None))
-        return jsonify({'error': 'Job bestaat niet'}), 404
+        stats = {
+            "active_job_count": active_job_count,
+            "total_matches": total_matches,
+            "matches_last_7_days": matches_last_7_days,
+        }
 
-    app.logger.info('Delete attempt for job %s (employer_id=%s) by user %s', job_id, job.employer_id, getattr(current_user, 'id', None))
+        return render_template("recruiter_dashboard.html", stats=stats, jobs=jobs)
 
-    # Controleer of huidige gebruiker recruiter is voor het bedrijf van de vacature
-    recruiter_link = RecruiterUser.query.filter_by(
-        user_id=current_user.id,
-        employer_id=job.employer_id
-    ).first()
+    @app.route("/recruiter_profiel", methods=["GET", "POST"])
+    @login_required
+    def recruiter_profiel():
+        if getattr(current_user, "role", None) != "recruiter":
+            abort(403)
 
-    if not recruiter_link:
-        app.logger.info('Delete denied: user %s is not recruiter for employer %s', current_user.id, job.employer_id)
-        return jsonify({'error': 'Je hebt geen toestemming om deze vacature te verwijderen'}), 403
+        user = current_user
+        rec = RecruiterUser.query.filter_by(user_id=user.id).first()
+        employer = rec.employer if rec else None
 
-    try:
-        # Verwijder gerelateerde likes en matches
-        JobLike.query.filter_by(job_id=job_id).delete()
-        Match.query.filter_by(job_id=job_id).delete()
+        if request.method == "POST":
+            email = request.form.get("email")
+            password = request.form.get("password")
 
-        db.session.delete(job)
+            company_name = request.form.get("company_name")
+            contact_person = request.form.get("contact_person")
+            contact_email = request.form.get("contact_email")
+            btw_number = request.form.get("btw_number")
+            description = request.form.get("description")
+
+            if email and email != user.email:
+                if AppUser.query.filter_by(email=email).first():
+                    flash("Email is al in gebruik.", "danger")
+                    return redirect(url_for("recruiter_profiel"))
+                user.email = email
+
+            if password:
+                user.set_password(password)
+
+            if not employer:
+                employer = Employer(
+                    name=company_name or "Onbekend",
+                    contact_person=contact_person,
+                    contact_email=contact_email,
+                    btw_number=btw_number,
+                    description=description,
+                )
+                db.session.add(employer)
+                db.session.flush()
+
+                rec.employer_id = employer.id
+                db.session.add(rec)
+            else:
+                if company_name:
+                    employer.name = company_name
+                employer.contact_person = contact_person
+                employer.contact_email = contact_email
+                employer.btw_number = btw_number
+                employer.description = description
+                db.session.add(employer)
+
+            db.session.add(user)
+            db.session.commit()
+            flash("Profiel bijgewerkt.", "success")
+            return redirect(url_for("recruiter_dashboard_view"))
+
+        return render_template("recruiter_profiel.html", user=user, employer=employer)
+
+    @app.route("/vacature/nieuw")
+    @login_required
+    def vacature_nieuw():
+        if getattr(current_user, "role", None) != "recruiter":
+            abort(403)
+
+        employer = get_employer_for_current_user()
+        return render_template("vacatures_bedrijf.html", employer=employer)
+
+    @app.route("/vacature/opslaan", methods=["POST"])
+    @login_required
+    def vacature_opslaan():
+        if getattr(current_user, "role", None) != "recruiter":
+            abort(403)
+
+        job_title = request.form.get("jobTitle")
+        location = request.form.get("location")
+        description = request.form.get("description")
+        client = request.form.get("client")
+
+        employer = get_employer_for_current_user()
+        if not employer:
+            flash("Geen werkgever gekoppeld aan dit account.", "danger")
+            return redirect(url_for("recruiter_dashboard_view"))
+
+        job = JobListing(
+            employer_id=employer.id,
+            client=client,
+            title=job_title,
+            description=description,
+            location=location,
+            is_active=True,
+        )
+        db.session.add(job)
         db.session.commit()
-        app.logger.info('Vacature %s verwijderd door user %s', job_id, current_user.id)
-        return jsonify({'message': 'Vacature verwijderd'}), 200
-    except Exception as e:
-        db.session.rollback()
-        app.logger.exception('Fout bij verwijderen vacature %s', job_id)
-        # stuur foutmelding terug (veilig: korte boodschap)
-        return jsonify({'error': 'Interne serverfout bij verwijderen (zie server logs)'}), 500
 
-@app.route('/jobs/<int:job_id>/delete', methods=['POST'])
-@login_required
-def delete_job(job_id):
-    job = JobListing.query.get(job_id)
-    if not job:
-        return jsonify({'error': 'Job bestaat niet'}), 404
+        flash("Vacature succesvol geplaatst ✅", "success")
+        return redirect(url_for("recruiter_dashboard_view"))
 
-    # Check of huidige recruiter eigenaar is van dit bedrijf
-    recruiter_link = RecruiterUser.query.filter_by(
-        user_id=current_user.id,
-        employer_id=job.employer_id
-    ).first()
-    
-    if not recruiter_link:
-        return jsonify({'error': 'Je hebt geen toestemming om deze vacature te verwijderen'}), 403
+    # =========================================================
+    # ✅ STUDENT VACATURES MET MATCH-ALGORITME (fit_pct)
+    # =========================================================
+    @app.route("/vacatures_student")
+    @login_required
+    def vacatures_student():
+        if getattr(current_user, "role", None) != "student":
+            flash("Alleen studenten kunnen deze pagina bekijken.", "danger")
+            return redirect(url_for("index"))
 
-    try:
-        # Verwijder gerelateerde likes en matches
-        JobLike.query.filter_by(job_id=job_id).delete()
-        Match.query.filter_by(job_id=job_id).delete()
-        
-        # Verwijder de job
-        db.session.delete(job)
-        db.session.commit()
-        return jsonify({'message': 'Vacature verwijderd'}), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': f'Fout bij verwijdering: {str(e)}'}), 500
-        
+        # stopwords laden (als je utils/stopwords.py hebt)
+        stopwords = set()
+        try:
+            from utils.stopwords import load_stopwords_from_db  # project-level utils/
+            stopwords = set(load_stopwords_from_db() or [])
+        except Exception:
+            stopwords = set()
 
+        # alle actieve jobs
+        jobs = JobListing.query.filter_by(is_active=True).all()
 
-# ------------------ RECOMMENDATION LOGIC ------------------
+        # likes/dislikes van student
+        liked_matches = Match.query.filter_by(user_id=current_user.id).all()
+        liked_job_ids = [m.job_id for m in liked_matches]
+        disliked_job_ids = [d.job_id for d in Dislike.query.filter_by(user_id=current_user.id).all()]
 
-def get_recommendations_for_user(user_id, limit=10):
-    liked = JobLike.query.filter_by(user_id=user_id).all()
-    if not liked:
-        return JobListing.query.order_by(JobListing.created_at.desc()).limit(limit).all()
+        # woorden uit liked jobs verzamelen
+        liked_words = []
+        for m in liked_matches:
+            job = JobListing.query.get(m.job_id)
+            if job:
+                fields = f"{job.title or ''} {job.description or ''} {job.location or ''}"
+                liked_words.extend(tokenize(fields, stopwords))
 
-    liked_job_ids = [l.job_id for l in liked]
-    liked_jobs = JobListing.query.filter(JobListing.id.in_(liked_job_ids)).all()
+        liked_word_set = set(liked_words)
 
-    description_word_counts = Counter()
-    user_locations = set()
-    liked_title_words = set()
+        def job_fit_score_and_pct(job: JobListing):
+            fields = f"{job.title or ''} {job.description or ''} {job.location or ''}"
+            job_words = tokenize(fields, stopwords)
+            job_word_set = set(job_words)
 
-    for job in liked_jobs:
-        description_word_counts.update(tokenize(job.description))
-        if job.location:
-            user_locations.add(job.location.lower())
-        liked_title_words.update(tokenize(job.title))
+            overlap = len(job_word_set & liked_word_set)
+            total = len(job_word_set)
+            pct = int((overlap / total) * 100) if total > 0 else 0
+            return overlap, pct
 
-    all_jobs = JobListing.query.filter(~JobListing.id.in_(liked_job_ids)).all()
-    scored = []
+        jobs_to_show = []
+        for job in jobs:
+            if job.id in liked_job_ids or job.id in disliked_job_ids:
+                continue
 
-    for job in all_jobs:
-        score = 0
-        job_words = tokenize(job.description)
-        word_overlap = sum(description_word_counts[w] for w in job_words if w in description_word_counts)
-        score += word_overlap * 1.5
+            job.company_name = job.employer.name if job.employer else "Onbekend"
+            overlap, pct = job_fit_score_and_pct(job)
 
-        if job.location and job.location.lower() in user_locations:
-            score += 2
+            jobs_to_show.append(
+                {
+                    "job": job,
+                    "liked": False,
+                    "fit_pct": pct,
+                    "overlap": overlap,
+                }
+            )
 
-        job_title_words = tokenize(job.title)
-        title_overlap = len(liked_title_words.intersection(job_title_words))
-        score += title_overlap * 1
+        # sorteer: hoogste match eerst
+        jobs_sorted = sorted(jobs_to_show, key=lambda x: (x["fit_pct"], x["overlap"]), reverse=True)
 
-        if score > 0:
-            scored.append((score, job))
+        return render_template("vacatures_list.html", jobs=jobs_sorted)
 
-    scored.sort(key=lambda x: x[0], reverse=True)
-    recommendations = [job for score, job in scored[:limit]]
-    return recommendations
+    @app.route("/jobs/<int:job_id>/like", methods=["POST"])
+    @login_required
+    def like_job(job_id):
+        if getattr(current_user, "role", None) != "student":
+            abort(403)
 
+        existing = Match.query.filter_by(user_id=current_user.id, job_id=job_id).first()
+        if not existing:
+            db.session.add(Match(user_id=current_user.id, job_id=job_id))
+            db.session.commit()
 
-@app.route('/recommend/jobs', methods=['GET'])
-@login_required
-def recommend_jobs_route():
-    user_id = current_user.id
-    recs = get_recommendations_for_user(user_id)
-    result = []
-    for r in recs:
-        result.append({
-            'id': int(r.id),
-            'title': r.title,
-            'location': r.location,
-            'description': (r.description[:200] if r.description else '')
-        })
-    return jsonify(result), 200
+        return redirect(url_for("vacatures_student"))
 
-STOPWORDS = load_stopwords_from_db()
+    @app.route("/jobs/<int:job_id>/dislike", methods=["POST"])
+    @login_required
+    def dislike_job(job_id):
+        if getattr(current_user, "role", None) != "student":
+            abort(403)
 
-def extract_keywords(text):
-    if not text:
-        return []
+        existing = Dislike.query.filter_by(user_id=current_user.id, job_id=job_id).first()
+        if not existing:
+            db.session.add(Dislike(user_id=current_user.id, job_id=job_id))
+            db.session.commit()
 
-    words = re.findall(r"\w+", text.lower())
+        return redirect(url_for("vacatures_student"))
 
-    return [w for w in words if w not in STOPWORDS]
+    @app.route("/student_dashboard", methods=["GET", "POST"])
+    @login_required
+    def student_dashboard():
+        if getattr(current_user, "role", None) != "student":
+            abort(403)
 
-# ------------------ DB DEBUG (ONE-TIME USE) ------------------
-# with app.app_context():
-#     db.create_all()
+        user = current_user
+        student = Student.query.filter_by(user_id=user.id).first()
 
+        if request.method == "POST":
+            first_name = (request.form.get("firstName") or "").strip()
+            last_name = (request.form.get("lastName") or "").strip()
+            email = (request.form.get("email") or "").strip().lower()
+            password = (request.form.get("password") or "")
 
-if __name__ == '__main__':
-    app.run(debug=True)
+            if not first_name or not last_name or not email:
+                flash("Vul voornaam, achternaam en e-mail in.", "danger")
+                return redirect(url_for("student_dashboard"))
+
+            if email != user.email:
+                existing = AppUser.query.filter_by(email=email).first()
+                if existing:
+                    flash("Dit e-mailadres is al in gebruik.", "danger")
+                    return redirect(url_for("student_dashboard"))
+                user.email = email
+
+            if not student:
+                student = Student(user_id=user.id, first_name=first_name, last_name=last_name)
+                db.session.add(student)
+            else:
+                student.first_name = first_name
+                student.last_name = last_name
+
+            if password.strip():
+                user.set_password(password)
+
+            db.session.add(user)
+            db.session.commit()
+
+            flash("Profiel opgeslagen ✅", "success")
+            return redirect(url_for("student_dashboard"))
+
+        return render_template("student_dashboard.html", student=student, user=user)
+
+    @app.route("/match_page")
+    @login_required
+    def match_page():
+        if getattr(current_user, "role", None) == "recruiter":
+            rec = get_current_recruiter()
+            matches = []
+            if rec and rec.employer:
+                for job in rec.employer.job_listings:
+                    for m in job.matches:
+                        matches.append(m)
+            return render_template("match_page.html", matches=matches)
+
+        formatted = []
+        for m in current_user.matches:
+            formatted.append({"match": m, "job": m.job, "user": current_user})
+        return render_template("match_page.html", matches=formatted)

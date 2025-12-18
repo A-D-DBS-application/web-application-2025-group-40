@@ -1,18 +1,13 @@
+# config.py
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
+load_dotenv(find_dotenv(), override=True)
 
 class Config:
-    #Haalt SECRET_KEY op uit de omgevingsvariabelen (.env)
-    SECRET_KEY = os.environ.get('SECRET_KEY')
-
-    #Haalt DATABASE_URL op uit de omgevingsvariabelen (.env)
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-    #SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:Group40Ufora%21@db.aicnouxwbuydippwukbs.supabase.co:5432/postgres'
-
+    SECRET_KEY = os.environ.get("FLASK_SECRET_KEY") or os.environ.get("SECRET_KEY")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    #Eventuele Supabase URL's / sleutels, mochten we deze later nodig hebben
-    SUPABASE_URL = os.environ.get('SUPABASE_URL')
-    SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
