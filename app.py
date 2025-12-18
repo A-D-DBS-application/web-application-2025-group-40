@@ -2,27 +2,23 @@
 import os
 from flask import Flask
 from dotenv import load_dotenv
-from supabase import create_client
 
 from apppp.extensions import db, login_manager
 from apppp.routes import register_routes
+from apppp.models import AppUser  # nodig voor login loader
 
-# Zorg dat models “bekend” zijn bij SQLAlchemy vóór db.create_all()
-from apppp.models import AppUser  # noqa: F401
+from supabase import create_client
 
-load_dotenv()  # leest .env in vanuit project root
-
+load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-
-    # Secret key
     app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
 
-    # Database config
-    database_url = os.environ.get("DATABASE_URL")
-    if database_url:
-        app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+    # DB config
+    DATABASE_URL = os.environ.get("DATABASE_URL")
+    if DATABASE_URL:
+        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
         app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
             "pool_size": 1,
             "max_overflow": 0,
@@ -30,7 +26,6 @@ def create_app():
             "pool_pre_ping": True,
         }
     else:
-        # fallback local sqlite (alleen voor lokaal testen)
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tinderjobs.db"
         app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {}
 
@@ -48,17 +43,17 @@ def create_app():
         except Exception:
             return None
 
-    # optional supabase client (voor storage / API, niet nodig voor DB connectie)
+    # optional supabase client
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
     supabase = None
-    supabase_url = os.environ.get("SUPABASE_URL")
-    supabase_key = os.environ.get("SUPABASE_KEY")
-    if supabase_url and supabase_key:
+    if SUPABASE_URL and SUPABASE_KEY:
         try:
-            supabase = create_client(supabase_url, supabase_key)
+            supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
         except Exception:
             supabase = None
 
-    # routes
+    # register routes
     register_routes(app, supabase=supabase)
 
     return app
