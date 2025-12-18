@@ -1,0 +1,67 @@
+{% from '_logo.html' import logo_brand %}
+
+{#
+  Gebruik:
+  {{ navbar(
+      variant='student' | 'bedrijf',
+      brand_href='/',
+      items=[
+        {'href':'/student_dashboard','text':'Mijn profiel','active':true},
+        {'href':'/match_page','text':'Matches'}
+      ],
+      cta_href='/logout',
+      cta_text='Uitloggen'
+  ) }}
+#}
+
+{% macro navbar(variant='student', show_brand=True, links=[], right_buttons=[]) %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+  <div class="container">
+
+    {% if show_brand %}
+  {% set brand_bg = '#007bff' if variant == 'student' else '#ff4b5c' %}
+  <a class="navbar-brand fw-bold d-flex align-items-center gap-2
+     {% if variant == 'student' %}text-swipr-student{% else %}text-swipr-bedrijf{% endif %}"
+     href="/">
+    {{ logo_brand(32, brand_bg, 'Swipr') }}
+  </a>
+{% endif %}
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+        {% for link in links %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ link.href }}">{{ link.label }}</a>
+          </li>
+        {% endfor %}
+
+        {% for btn in right_buttons %}
+          <li class="nav-item">
+            <a href="{{ btn.href }}"
+               class="btn
+               {% if btn.style == 'outline' %}
+                 btn-outline-secondary btn-sm
+               {% elif variant == 'student' %}
+                 btn-swipr-student
+               {% else %}
+                 btn-swipr-bedrijf
+               {% endif %}">
+              {{ btn.label }}
+            </a>
+          </li>
+        {% endfor %}
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+{% endmacro %}
+

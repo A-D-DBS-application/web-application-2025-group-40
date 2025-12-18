@@ -3,25 +3,25 @@
 {% block title %}Kies uw rol — Swipr{% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center min-vh-100">
+<div class="container min-vh-100 d-flex justify-content-center align-items-center py-5">
 
-  <div class="card shadow-lg text-center p-5" style="border-radius: 16px;">
+  <div class="card shadow-lg text-center p-5 swipr-card-auth">
 
     {% from '_logo.html' import logo %}
     {{ logo() }}
 
-    <!-- Titel -->
     <h1 class="mb-4">Kies uw rol</h1>
 
-    <!-- Knoppen -->
     <button
-      class="btn student mb-3"
+      type="button"
+      class="btn btn-swipr-student btn-lg w-100 mb-3 py-3 fs-5"
       onclick="window.location.href='{{ url_for('login_student') }}'">
       Student
     </button>
 
     <button
-      class="btn bedrijf"
+      type="button"
+      class="btn btn-swipr-bedrijf btn-lg w-100 py-3 fs-5"
       onclick="window.location.href='{{ url_for('login_bedrijf') }}'">
       Bedrijf
     </button>
@@ -30,5 +30,3 @@
 
 </div>
 {% endblock %}
-
-

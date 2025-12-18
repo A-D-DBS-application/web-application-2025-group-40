@@ -4,24 +4,16 @@
 
 {% block content %}
 
-<!-- ===== NAVBAR (zelfde Bootstrap-stijl als de andere pagina’s) ===== -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-bold text-primary" href="/">Swipr</a>
+{% from '_navbar.html' import navbar %}
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="mainNav">
-      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
-        <li class="nav-item">
-          <a class="btn btn-outline-secondary btn-sm" href="/login_student">Terug naar login</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
+{{ navbar(
+  variant='student',
+  show_brand=True,
+  links=[],
+  right_buttons=[
+    {'href':'/login_student','label':'Terug naar login','style':'outline'}
+  ]
+) }}
 
 <!-- ===== CONTENT ===== -->
 <div class="container py-5">
@@ -30,13 +22,19 @@
 
       <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
         <div>
-          <h1 class="h3 fw-bold text-primary mb-1">Algemene Voorwaarden & Privacyverklaring</h1>
+          <h1 class="h3 fw-bold text-swipr-student mb-1">
+            Algemene Voorwaarden & Privacyverklaring
+          </h1>
           <p class="text-muted mb-0">Swipr — schoolproject (MVP)</p>
         </div>
 
         <div class="d-flex gap-2">
-          <button type="button" class="btn btn-outline-secondary" onclick="window.print()">Printen</button>
-          <a class="btn btn-primary" href="/login_student">Terug</a>
+          <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
+            Printen
+          </button>
+          <a class="btn btn-swipr-student" href="/login_student">
+            Terug
+          </a>
         </div>
       </div>
 
@@ -65,7 +63,7 @@
         <div class="card-body p-4 p-md-5">
 
           <section id="inleiding" class="mb-4">
-            <h2 class="h5 fw-bold text-primary">1. Inleiding</h2>
+            <h2 class="h5 fw-bold text-swipr-student">1. Inleiding</h2>
             <p>
               Deze Algemene Voorwaarden en Privacyverklaring zijn van toepassing op het gebruik van de webapplicatie
               Swipr (hierna "de Applicatie"), ontwikkeld in het kader van een educatief project van studenten van de
@@ -79,7 +77,7 @@
           </section>
 
           <section id="doel" class="mb-4">
-            <h2 class="h5 fw-bold text-primary">2. Doel van de Applicatie</h2>
+            <h2 class="h5 fw-bold text-swipr-student">2. Doel van de Applicatie</h2>
             <p class="mb-0">
               De Applicatie heeft als doel studenten te matchen met potentiële opportuniteiten, opdrachten of werkervaringen
               van Go4Jobs, een externe partner. De Applicatie is een MVP (Minimum Viable Product) en wordt uitsluitend gebruikt
@@ -88,7 +86,7 @@
           </section>
 
           <section id="gegevens" class="mb-4">
-            <h2 class="h5 fw-bold text-primary">3. Gegevens die worden verzameld</h2>
+            <h2 class="h5 fw-bold text-swipr-student">3. Gegevens die worden verzameld</h2>
             <p>De Applicatie verzamelt enkel de minimale gegevens die nodig zijn voor de werking van het platform.</p>
             <p class="mb-2">De volgende persoonsgegevens kunnen worden verwerkt:</p>
             <ul class="mb-2">
@@ -102,7 +100,7 @@
           </section>
 
           <section id="doel-verwerking" class="mb-4">
-            <h2 class="h5 fw-bold text-primary">4. Doel van de gegevensverwerking</h2>
+            <h2 class="h5 fw-bold text-swipr-student">4. Doel van de gegevensverwerking</h2>
             <p class="mb-2">De persoonsgegevens worden uitsluitend verwerkt voor de volgende doeleinden:</p>
             <ul class="mb-2">
               <li>Het gebruik van de Applicatie mogelijk maken — bijvoorbeeld: het opslaan van de matchresultaten tussen student en job.</li>
@@ -119,7 +117,7 @@
           </section>
 
           <section id="delen" class="mb-4">
-            <h2 class="h5 fw-bold text-primary">5. Delen van gegevens met Go4Jobs</h2>
+            <h2 class="h5 fw-bold text-swipr-student">5. Delen van gegevens met Go4Jobs</h2>
             <p class="mb-2">Wanneer de student een match bevestigt in de Applicatie, wordt het volgende gedeeld met Go4Jobs:</p>
             <ul class="mb-2">
               <li>Het e-mailadres van de student</li>
@@ -133,7 +131,7 @@
           </section>
 
           <section id="bewaartermijn" class="mb-4">
-            <h2 class="h5 fw-bold text-primary">6. Bewaartermijn</h2>
+            <h2 class="h5 fw-bold text-swipr-student">6. Bewaartermijn</h2>
             <p class="mb-0">
               De persoonsgegevens worden uitsluitend bewaard zolang nodig is voor het afronden en evalueren van het MVP-project.
               Na afloop van het academiejaar worden alle verzamelde persoonsgegevens verwijderd of geanonimiseerd.
@@ -141,7 +139,7 @@
           </section>
 
           <section id="beveiliging" class="mb-4">
-            <h2 class="h5 fw-bold text-primary">7. Beveiliging</h2>
+            <h2 class="h5 fw-bold text-swipr-student">7. Beveiliging</h2>
             <p class="mb-2">
               Hoewel het om een MVP gaat, nemen de ontwikkelaars redelijke technische en organisatorische maatregelen om persoonsgegevens te beveiligen.
               Dit omvat o.a.:
@@ -157,7 +155,7 @@
           </section>
 
           <section id="rechten" class="mb-4">
-            <h2 class="h5 fw-bold text-primary">8. Rechten van de gebruiker</h2>
+            <h2 class="h5 fw-bold text-swipr-student">8. Rechten van de gebruiker</h2>
             <p class="mb-2">De Student heeft op elk moment het recht om:</p>
             <ul class="mb-2">
               <li>In te zien welke gegevens over hem/haar zijn opgeslagen</li>
@@ -171,7 +169,7 @@
           </section>
 
           <section id="aansprakelijkheid" class="mb-4">
-            <h2 class="h5 fw-bold text-primary">9. Aansprakelijkheid</h2>
+            <h2 class="h5 fw-bold text-swipr-student">9. Aansprakelijkheid</h2>
             <p class="mb-0">
               Aangezien deze Applicatie een schoolproject betreft, kan geen volledige beschikbaarheid of foutloze werking worden gegarandeerd.
               De ontwikkelaars zijn niet aansprakelijk voor fouten, dataverlies, downtime of gevolgen van het gebruik van deze Applicatie.
@@ -179,14 +177,14 @@
           </section>
 
           <section id="contact" class="mb-4">
-            <h2 class="h5 fw-bold text-primary">10. Contact</h2>
+            <h2 class="h5 fw-bold text-swipr-student">10. Contact</h2>
             <p class="mb-0">
               Voor vragen over deze Algemene Voorwaarden of Privacyverklaring kan contact worden opgenomen met het studententeam of de begeleidende docent.
             </p>
           </section>
 
           <section id="acceptatie" class="mb-0">
-            <h2 class="h5 fw-bold text-primary">11. Acceptatie</h2>
+            <h2 class="h5 fw-bold text-swipr-student">11. Acceptatie</h2>
             <p class="mb-2">Door het plaatsen van een vinkje bij "Ik ga akkoord met de algemene voorwaarden" verklaart de student:</p>
             <ul class="mb-0">
               <li>✔ Dat hij/zij deze Algemene Voorwaarden en Privacyverklaring volledig heeft gelezen</li>
@@ -203,3 +201,4 @@
 </div>
 
 {% endblock %}
+

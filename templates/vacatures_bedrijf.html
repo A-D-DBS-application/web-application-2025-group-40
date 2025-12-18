@@ -4,27 +4,18 @@
 
 {% block content %}
 
-<!-- ===== NAVBAR ===== -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-bold" style="color:#FF4B5C;" href="/">Swipr</a>
+{% from '_navbar.html' import navbar %}
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="mainNav">
-      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
-        <li class="nav-item">
-          <a class="nav-link" href="/recruiter_dashboard">Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="btn btn-outline-secondary btn-sm" href="/logout">Uitloggen</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
+{{ navbar(
+  variant='bedrijf',
+  show_brand=True,
+  links=[
+    {'href':'/recruiter_dashboard','label':'Dashboard'}
+  ],
+  right_buttons=[
+    {'href':'/logout','label':'Uitloggen','style':'outline'}
+  ]
+) }}
 
 <!-- ===== CONTENT ===== -->
 <div class="container py-5">
@@ -34,7 +25,7 @@
       <div class="card shadow-sm">
         <div class="card-body p-4 p-md-5">
 
-          <h1 class="h3 fw-bold mb-1" style="color:#FF4B5C;">Vacature plaatsen</h1>
+          <h1 class="h3 fw-bold text-swipr-bedrijf mb-1">Vacature plaatsen</h1>
           <p class="text-muted mb-4">Vul de gegevens in om een nieuwe vacature te publiceren.</p>
 
           <form method="POST" action="/vacature/opslaan">
@@ -44,11 +35,10 @@
                 <label class="form-label fw-semibold">Bedrijfsnaam</label>
 
                 {% if employer %}
-                  <div class="form-control bg-light" style="height:auto;">
+                  <div class="form-control bg-light">
                     <span class="fw-semibold text-dark">{{ employer.name }}</span>
                   </div>
 
-                  <!-- include employer id (preferred) and keep companyName for backward compatibility -->
                   <input type="hidden" id="employer_id" name="employer_id" value="{{ employer.id }}" />
                   <input type="hidden" id="companyName" name="companyName" value="{{ employer.name }}" />
                 {% else %}
@@ -111,13 +101,10 @@
               ></textarea>
             </div>
 
-            <button
-              type="submit"
-              class="btn w-100 mt-4 py-2 text-white"
-              style="background-color:#FF4B5C;"
-            >
+            <button type="submit" class="btn btn-swipr-bedrijf w-100 mt-4 py-2">
               Vacature plaatsen
             </button>
+
           </form>
 
         </div>
