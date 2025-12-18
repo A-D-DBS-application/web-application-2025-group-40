@@ -111,16 +111,11 @@
       input.setCustomValidity(message || 'invalid');
     }
 
-<<<<<<< HEAD
-    function validateEmail() {
-      const emailValue = (emailInput.value || '').toLowerCase().trim();
-=======
     function getDomain(v) {
       const at = v.lastIndexOf('@');
       if (at === -1) return '';
       return v.slice(at + 1).trim();
     }
->>>>>>> 49f70cb7b4f42340d657c23ae3dd599625c44994
 
     function isAllowedDomain(domain) {
       // exact: ugent.be
