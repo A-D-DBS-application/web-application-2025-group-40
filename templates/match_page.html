@@ -65,6 +65,22 @@
                   </h2>
                 </div>
 
+                {# If recruiter, show the student who matched (email + name if available) #}
+                <div class="text-end">
+                  {% if is_recruiter and match and match.user %}
+                    {% set su = match.user %}
+                    <div class="small text-muted">Student</div>
+                    <div class="fw-semibold">
+                      {% if su.student and (su.student.first_name or su.student.last_name) %}
+                        {{ su.student.first_name or '' }} {{ su.student.last_name or '' }}
+                        <span class="text-muted">({{ su.email }})</span>
+                      {% else %}
+                        {{ su.email }}
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+
                
               </div>
 

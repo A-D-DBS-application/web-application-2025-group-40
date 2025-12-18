@@ -130,3 +130,24 @@
 </div>
 
 {% endblock %}
+
+{% block extra_js %}
+  {{ super() }}
+  <script>
+    function viewLikes(jobId) {
+      if (!jobId) return;
+      window.location.href = '/match_page?job_id=' + encodeURIComponent(jobId);
+    }
+
+    function confirmDelete(jobId) {
+      if (!jobId) return;
+      if (confirm('Weet je zeker dat je deze vacature wilt verwijderen?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/vacature/' + encodeURIComponent(jobId) + '/verwijder';
+        document.body.appendChild(form);
+        form.submit();
+      }
+    }
+  </script>
+{% endblock %}

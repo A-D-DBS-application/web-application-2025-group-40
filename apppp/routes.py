@@ -294,6 +294,23 @@ def register_routes(app, supabase=None):
         flash("Vacature succesvol geplaatst ✅", "success")
         return redirect(url_for("recruiter_dashboard_view"))
 
+    @app.route("/vacature/<int:job_id>/verwijder", methods=["POST"])
+    @login_required
+    def vacature_verwijder(job_id):
+        # only recruiters who own the job may delete it
+        if getattr(current_user, "role", None) != "recruiter":
+            abort(403)
+
+        job = JobListing.query.get(job_id)
+        if not job or not recruiter_owns_job(job):
+            flash("Je hebt geen toestemming om deze vacature te verwijderen.", "danger")
+            return redirect(url_for("recruiter_dashboard_view"))
+
+        db.session.delete(job)
+        db.session.commit()
+        flash("Vacature verwijderd.", "success")
+        return redirect(url_for("recruiter_dashboard_view"))
+
     # =========================================================
     # ✅ STUDENT VACATURES MET MATCH-ALGORITME (fit_pct)
     # =========================================================
@@ -435,13 +452,21 @@ def register_routes(app, supabase=None):
     @app.route("/match_page")
     @login_required
     def match_page():
+        # allow optional filtering by job_id so recruiter can view matches for a specific vacancy
+        job_id = request.args.get('job_id', type=int)
+
         if getattr(current_user, "role", None) == "recruiter":
             rec = get_current_recruiter()
             matches = []
             if rec and rec.employer:
-                for job in rec.employer.job_listings:
-                    for m in job.matches:
-                        matches.append(m)
+                if job_id:
+                    job = JobListing.query.filter_by(id=job_id, employer_id=rec.employer.id).first()
+                    if job:
+                        matches = list(job.matches or [])
+                else:
+                    for job in rec.employer.job_listings:
+                        for m in job.matches:
+                            matches.append(m)
             return render_template("match_page.html", matches=matches)
 
         formatted = []
