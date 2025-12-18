@@ -4,37 +4,26 @@
 
 {% block content %}
 
-<!-- ===== NAVBAR ===== -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-bold text-primary" href="/">Swipr</a>
+{% from '_navbar.html' import navbar %}
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="mainNav">
-      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
-        <li class="nav-item">
-          <a class="nav-link" href="/student_dashboard">Mijn profiel</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/match_page">Matches</a>
-        </li>
-        <li class="nav-item">
-          <a class="btn btn-outline-secondary btn-sm" href="/logout">Uitloggen</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
+{{ navbar(
+  variant='student',
+  show_brand=True,
+  links=[
+    {'href':'/student_dashboard','label':'Mijn profiel'},
+    {'href':'/match_page','label':'Matches'}
+  ],
+  right_buttons=[
+    {'href':'/logout','label':'Uitloggen','style':'outline'}
+  ]
+) }}
 
 <!-- ===== CONTENT ===== -->
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-lg-8">
 
-      <h1 class="h3 fw-bold text-primary mb-1">Beschikbare vacatures</h1>
+      <h1 class="h3 fw-bold text-swipr-student mb-1">Beschikbare vacatures</h1>
       <p class="text-muted mb-4">Kies een vacature en like/dislike om te matchen.</p>
 
       {% if jobs %}
@@ -49,7 +38,7 @@
                 </span>
               </div>
 
-              <h2 class="h5 fw-bold text-primary mb-3">
+              <h2 class="h5 fw-bold text-swipr-student mb-3">
                 {{ item.job.title }}
                 {% if item.job.client %}
                   <span class="text-muted fw-normal"> – {{ item.job.client }}</span>
@@ -79,13 +68,13 @@
 
               <div class="d-flex gap-2 flex-wrap mt-4">
                 <form action="/jobs/{{ item.job.id }}/like" method="POST" class="m-0">
-                  <button type="submit" class="btn btn-success px-4">
+                  <button type="submit" class="btn btn-swipr-student px-4">
                     👍 Like
                   </button>
                 </form>
 
                 <form action="/jobs/{{ item.job.id }}/dislike" method="POST" class="m-0">
-                  <button type="submit" class="btn btn-danger px-4">
+                  <button type="submit" class="btn btn-outline-secondary px-4">
                     👎 Dislike
                   </button>
                 </form>

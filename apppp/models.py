@@ -87,6 +87,7 @@ class RecruiterUser(db.Model):
     employer = db.relationship('Employer', back_populates='recruiters')
 
 
+<<<<<<< HEAD
 
 class Employer(db.Model):
     __tablename__ = 'employer'
@@ -190,3 +191,20 @@ def get_unseen_jobs_for_user(user):
     else:
         jobs = JobListing.query.all()
     return jobs
+=======
+    def __repr__(self):
+        return f'<Joblike user_id={self.user_id} job_id={self.job_id}>'
+    
+
+# ---------------------------------------------------
+# STOPWORD
+# ---------------------------------------------------
+    
+class Stopword(db.Model):
+        __tablename__ = 'stopwords'
+        id = db.Column(db.Integer, primary_key=True)
+        word = db.Column(db.String(50), unique=True, nullable=False)
+        
+        def __repr__(self):
+            return f'<Stopword {self.word}>'    
+>>>>>>> 49f70cb7b4f42340d657c23ae3dd599625c44994
