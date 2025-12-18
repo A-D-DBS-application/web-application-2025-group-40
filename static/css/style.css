@@ -11,8 +11,6 @@
   --swipr-red-dark: #e04352;
 }
 
-
-
 /* ===== Footer (als je die gebruikt) ===== */
 .site-footer {
   text-align: center;
@@ -23,11 +21,7 @@
   color: #666;
 }
 
-/* ===== Swipr knoppen (veilig naast Bootstrap) =====
-   Gebruik in HTML:
-   <a class="btn btn-swipr-student">...</a>
-   <button class="btn btn-swipr-bedrijf">...</button>
-*/
+/* ===== Swipr knoppen (veilig naast Bootstrap) ===== */
 .btn-swipr-student {
   background-color: var(--swipr-blue);
   border-color: var(--swipr-blue);
@@ -58,7 +52,6 @@
   border-color: #28a745;
   color: #fff;
 }
-
 .btn-like:hover,
 .btn-like:focus {
   background-color: #218838;
@@ -71,7 +64,6 @@
   border-color: #dc3545;
   color: #fff;
 }
-
 .btn-dislike:hover,
 .btn-dislike:focus {
   background-color: #c82333;
@@ -79,21 +71,21 @@
   color: #fff;
 }
 
-/* ===== Swipr accent tekst (handig voor headings) ===== */
+/* ===== Swipr accent tekst ===== */
 .text-swipr-student { color: var(--swipr-blue) !important; }
 .text-swipr-bedrijf { color: var(--swipr-red) !important; }
 
-
-
-
-/* ===== Logo (gebruikt door _logo.html macro) ===== */
+/* =========================================================
+   LOGO (fix: niet meer hardcoded blauw)
+   Gebruik in _logo.html: logo-icon logo-student / logo-bedrijf
+   en logo-text text-student / text-bedrijf
+   ========================================================= */
 .logo { margin-bottom: 20px; }
 
 .logo-icon {
   width: 70px;
   height: 70px;
   border-radius: 14px;
-  background-color: var(--swipr-blue);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -103,10 +95,17 @@
 .logo-text {
   font-size: 2.2rem;
   font-weight: bold;
-  color: var(--swipr-blue);
   margin-bottom: 10px;
   letter-spacing: 1px;
 }
+
+/* Variants (achtergrond van het icoon) */
+.logo-student { background-color: var(--swipr-blue); }
+.logo-bedrijf { background-color: var(--swipr-red); }
+
+/* Variants (kleur van "Swipr" tekst) */
+.text-student { color: var(--swipr-blue) !important; }
+.text-bedrijf { color: var(--swipr-red) !important; }
 
 /* ===== Terms checkbox (login_student) ===== */
 #login-submit[disabled] {
@@ -118,13 +117,14 @@
 @media print {
   body { background: #fff; }
   nav, .navbar, .btn, .btn-close { display: none !important; }
-
 }
+
 /* Auth card sizing (login/register cards) */
 .swipr-auth-card{
   max-width: 420px;
   border-radius: 15px;
 }
+
 /* ===== Recruiter dashboard banner ===== */
 .swipr-dashboard-banner {
   background-color: var(--swipr-red);
