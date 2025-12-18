@@ -1,12 +1,12 @@
 {# =======================
    Groot logo (login / index)
    ======================= #}
-{% macro logo(size=28, bg_color='#007bff', text_color='#007bff') %}
+{% macro logo(size=28, variant='student') %}
 <div class="text-center mb-4">
 
   <div class="d-flex justify-content-center mb-2">
-    <div class="d-flex align-items-center justify-content-center rounded"
-         style="width:70px;height:70px;background-color:{{ bg_color }};">
+    <div class="logo-icon logo-{{ variant }}"
+         style="width:70px;height:70px;">
       <svg width="{{ size }}" height="{{ size }}" viewBox="0 0 24 24" fill="none"
            xmlns="http://www.w3.org/2000/svg">
         <path d="M5 12h12" stroke="white" stroke-width="2"
@@ -17,7 +17,7 @@
     </div>
   </div>
 
-  <div class="fw-bold fs-2" style="color:{{ text_color }};letter-spacing:1px;">
+  <div class="fw-bold fs-2 logo-text text-{{ variant }}" style="letter-spacing:1px;">
     Swipr
   </div>
 
@@ -28,11 +28,11 @@
 {# =======================
    Compact logo (navbar)
    ======================= #}
-{% macro logo_brand(size=32, bg_color='#007bff', text='Swipr') %}
+{% macro logo_brand(size=32, variant='student', text='Swipr') %}
 <span class="d-inline-flex align-items-center gap-2 fw-semibold">
 
-  <span class="d-inline-flex align-items-center justify-content-center rounded"
-        style="width:{{ size }}px;height:{{ size }}px;background-color:{{ bg_color }};">
+  <span class="logo-icon logo-{{ variant }}"
+        style="width:{{ size }}px;height:{{ size }}px;">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
          xmlns="http://www.w3.org/2000/svg">
       <path d="M5 12h12" stroke="white" stroke-width="2"
