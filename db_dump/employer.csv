@@ -1,0 +1,33 @@
+id,name,contact_email,is_agency,created_at
+3,ACME BV,null,false,2025-12-10 09:34:29.071099
+4,Go4Jobs,null,null,null
+5,Go4Jobs,null,false,null
+6,eva,bedrijf@colruyt.com,false,2025-12-10 13:20:05.895228
+7,eva,eva.delputte@coluyt.com,false,2025-12-10 13:27:49.9189
+8,eva,eva.delputte@action.com,null,2025-12-10 13:40:29.347108
+10,RedBull,luca@redbull.com,null,2025-12-10 14:17:39.936714
+13,TechCorp,hr@techcorp.com,false,2025-12-10 14:26:29.765959
+14,EduJobs,contact@edujobs.be,true,2025-12-10 14:26:29.765959
+15,eva,eva.delputte@nalu.com,null,2025-12-10 15:03:45.018191
+16,b,renevanlandschoot@outlook.be,null,2025-12-10 15:52:35.484413
+17,bbb,renekl@icloud.com,null,2025-12-10 16:30:30.333495
+18,bob,rene10@icloud.com,null,2025-12-10 16:31:25.739779
+19,bab,renevanl@icloud.com,null,2025-12-10 16:32:43.267499
+20,r,r@icloud.com,null,2025-12-10 16:34:10.527913
+21,d,d@action.com,null,2025-12-11 12:12:04.451465
+22,Marc,marc@info.be,null,2025-12-11 12:41:44.720586
+23,test,test@icloud.com,null,2025-12-11 14:26:47.532171
+24,Upfront,luca@upfront.be,null,2025-12-11 14:38:18.684918
+25,spa,spainfo@bedrijf.be,null,2025-12-11 15:45:54.330175
+26,MJCP,maih@lijncom.com,null,2025-12-11 15:56:43.331146
+27,iphone,i@phone,null,2025-12-11 16:12:41.461783
+28,eva,fjdskqmljqdfs@ugent.be,null,2025-12-11 17:02:04.723829
+29,ice tea,icetea@icloud.com,null,2025-12-12 17:43:06.304081
+30,cola,cola@icloud.com,null,2025-12-12 17:43:51.99807
+31,"Tennisclub eeklo ",info@tennisclubeeklo.be,null,2025-12-12 19:36:42.346986
+32,Tietho,info@Tietho.be,null,2025-12-12 22:30:20.600048
+33,j beyst,info3@Tietho.be,null,2025-12-13 10:24:09.64252
+34,Lijncom,christine@lijncom.be,null,2025-12-16 19:22:44.363853
+35,Lijncom,christine@lijncom.be,null,2025-12-16 19:22:46.209937
+36,testen,info@info.be,null,2025-12-16 19:55:05.133617
+37,lays,lays@lays.be,null,2025-12-16 20:14:13.583597

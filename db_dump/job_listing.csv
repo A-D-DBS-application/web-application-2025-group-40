@@ -1,0 +1,11 @@
+id,employer_id,title,description,location,client,is_active
+4,3,programmeur,/,gent,null,true
+5,3,Kassamedewerker,hele reeks aan uitleg,gent,null,true
+6,3,e,ddddd,gent,null,true
+7,3,"rekkenvulle ",aaa,gent,null,true
+8,3,Promotor,Je deelt RedBulls uit.,Ninove,null,true
+9,3,Promotor,Promote cola bij eva thuis,Anzegem,null,true
+10,3,waterverkoper,"Water verkopen
+",Spa,null,true
+11,3,Kassamedewerker,"verkoper in griekenland
+",Spa,null,true

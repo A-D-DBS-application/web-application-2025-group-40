@@ -1,0 +1,8 @@
+id,user_id,job_id,matched_at,notification_sent,notification_sent_at,notification_message
+4,15,4,2025-12-10 11:02:15.292096,false,null,null
+5,15,5,2025-12-10 11:13:30.774865,false,null,null
+6,15,6,2025-12-10 11:13:37.589619,false,null,null
+7,19,5,2025-12-10 11:43:30.009677,false,null,null
+8,19,4,2025-12-10 11:43:32.348981,false,null,null
+9,19,8,2025-12-10 12:55:32.961745,false,null,null
+10,19,9,2025-12-10 12:55:37.404173,false,null,null
