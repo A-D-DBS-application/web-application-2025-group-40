@@ -97,8 +97,8 @@ Video 1: https://drive.google.com/file/d/14-gbG2DQlSJVwL0YdKsO-sc6s-O5VOYX/view?
 Video 2: https://drive.google.com/file/d/1LVrqZdZveejJjB-5VphpRAJJWsxdC_3f/view?usp=sharing
 
 ---
-
-**Authors**  
+ 
 Group 40 
+
 Academic Year 2025–2026
 
