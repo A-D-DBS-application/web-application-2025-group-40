@@ -16,16 +16,6 @@ The UI prototype was created using **Lovable**.
 
 ---
 
-## Technologies Used
-
-- **Backend:** Python, Flask  
-- **Database:** PostgreSQL (Supabase)  
-- **Frontend:** Flask templates  
-- **Prototype:** Lovable  
-- **Version control:** Git & GitHub  
-
----
-
 ## Setup Instructions
 
 ### 1. Clone the Repository
